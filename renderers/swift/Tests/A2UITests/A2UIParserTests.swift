@@ -11,26 +11,24 @@ final class A2UIParserTests: XCTestCase {
 
     // MARK: - Root Message Parsing
 
-    /// Verifies that a `beginRendering` message is correctly decoded with all optional fields.
-    func testParseBeginRendering() throws {
+    /// Verifies that a `createSurface` message is correctly decoded with all optional fields.
+    func testParseCreateSurface() throws {
         let json = """
         {
-            "beginRendering": {
+            "createSurface": {
                 "surfaceId": "s1",
-                "root": "r1",
                 "catalogId": "v08",
-                "styles": { "primaryColor": "#FF0000" }
+                "theme": { "primaryColor": "#FF0000" }
             }
         }
         """
         let messages = try parser.parse(line: json)
         if case .createSurface(let value) = messages.first {
             XCTAssertEqual(value.surfaceId, "s1")
-            XCTAssertEqual(value.root, "r1")
             XCTAssertEqual(value.catalogId, "v08")
-            XCTAssertEqual(value.styles?["primaryColor"]?.value as? String, "#FF0000")
+            XCTAssertEqual(value.theme?["primaryColor"]?.value as? String, "#FF0000")
         } else {
-            XCTFail("Failed to decode beginRendering")
+            XCTFail("Failed to decode createSurface")
         }
     }
 
@@ -52,13 +50,13 @@ final class A2UIParserTests: XCTestCase {
     func testParseAllComponentTypes() throws {
         let componentsJson = """
         {
-            "surfaceUpdate": {
+            "updateComponents": {
                 "surfaceId": "s1",
                 "components": [
                     { "id": "t1", "component": { "Text": { "text": "Hello" } } },
                     { "id": "b1", "component": { "Button": { "child": "t1", "action": { "name": "tap" } } } },
                     { "id": "r1", "component": { "Row": { "children": { "explicitList": ["t1"] } } } },
-                    { "id": "c1", "component": { "Column": { "children": { "explicitList": ["b1"] }, "alignment": "center" } } },
+                    { "id": "c1", "component": { "Column": { "children": { "explicitList": ["b1"] }, "align": "center" } } },
                     { "id": "card1", "component": { "Card": { "child": "r1" } } }
                 ]
             }
@@ -72,14 +70,14 @@ final class A2UIParserTests: XCTestCase {
 
         XCTAssertEqual(update.components.count, 5)
         
-        // Check Row Distribution/Alignment
+        // Check Row
         if case .row(let props) = update.components[2].component {
             XCTAssertEqual(props.children.explicitList, ["t1"])
         } else { XCTFail("Type mismatch for row") }
 
         // Check Column Alignment
         if case .column(let props) = update.components[3].component {
-            XCTAssertEqual(props.alignment, "center")
+            XCTAssertEqual(props.align, "center")
         } else { XCTFail("Type mismatch for column") }
     }
 
@@ -90,7 +88,7 @@ final class A2UIParserTests: XCTestCase {
     func testBoundValueVariants() throws {
         let json = """
         {
-            "surfaceUpdate": {
+            "updateComponents": {
                 "surfaceId": "s1",
                 "components": [
                     { "id": "t1", "component": { "Text": { "text": { "path": "/user/name" } } } },
@@ -113,76 +111,11 @@ final class A2UIParserTests: XCTestCase {
         }
     }
 
-    /// Verifies that dynamic data updates handle nested maps and different value types correctly.
-    func testDataModelUpdateComplexity() throws {
-        let json = """
-        {
-            "dataModelUpdate": {
-                "surfaceId": "s1",
-                "contents": [
-                    { "key": "k1", "valueString": "v1" },
-                    { "key": "k2", "valueNumber": 123.45 },
-                    { "key": "k3", "valueBoolean": true },
-                    { "key": "k4", "valueMap": {
-                        "sub": { "key": "sub", "valueString": "nested" }
-                    }}
-                ]
-            }
-        }
-        """
-        let messages = try parser.parse(line: json)
-        guard case .dataModelUpdate(let update) = messages.first else {
-            XCTFail()
-            return
-        }
-        
-        XCTAssertEqual(update.contents.count, 4)
-        XCTAssertEqual(update.contents[1].valueNumber, 123.45)
-        XCTAssertEqual(update.contents[3].valueMap?["sub"]?.valueString, "nested")
-    }
-
-    func testDataModelUpdateContentsDictionary() throws {
-        let json = """
-        {
-            "dataModelUpdate": {
-                "surfaceId": "s1",
-                "contents": {
-                    "str": "value",
-                    "num": 42,
-                    "nested": { "foo": "bar" },
-                    "list": ["a", "b"]
-                }
-            }
-        }
-        """
-        let messages = try parser.parse(line: json)
-        guard case .dataModelUpdate(let update) = messages.first else {
-            XCTFail("Expected dataModelUpdate")
-            return
-        }
-
-        XCTAssertTrue(update.contents.contains { $0.key == "str" && $0.valueString == "value" })
-        XCTAssertTrue(update.contents.contains { $0.key == "num" && $0.valueNumber == 42 })
-
-        if let nested = update.contents.first(where: { $0.key == "nested" })?.valueMap {
-            XCTAssertEqual(nested["foo"]?.valueString, "bar")
-        } else {
-            XCTFail("Nested map entry missing")
-        }
-
-        if let listEntry = update.contents.first(where: { $0.key == "list" })?.valueList {
-            XCTAssertEqual(listEntry[0].valueString, "a")
-            XCTAssertEqual(listEntry[1].valueString, "b")
-        } else {
-            XCTFail("List entry missing")
-        }
-    }
-
     // MARK: - Error Handling & Edge Cases
 
     /// Verifies that the parser decodes unknown component types as .custom instead of throwing.
     func testParseUnknownComponent() throws {
-        let json = "{\"surfaceUpdate\": {\"surfaceId\": \"s1\", \"components\": [{\"id\": \"1\", \"component\": {\"Unknown\": {\"foo\":\"bar\"}}}]}}"
+        let json = "{\"updateComponents\": {\"surfaceId\": \"s1\", \"components\": [{\"id\": \"1\", \"component\": {\"Unknown\": {\"foo\":\"bar\"}}}]}}"
         let messages = try parser.parse(line: json)
         
         if case .surfaceUpdate(let update) = messages.first,
@@ -198,7 +131,7 @@ final class A2UIParserTests: XCTestCase {
     /// even if separated by commas (common in some non-standard JSONL producers).
     func testParseCommaSeparatedObjectsOnOneLine() throws {
         let json = """
-        {"dataModelUpdate":{"surfaceId":"s1","contents":[]}},{"surfaceUpdate":{"surfaceId":"s1","components":[]}}
+        {"updateDataModel":{"surfaceId":"s1"}},{"updateComponents":{"surfaceId":"s1","components":[]}}
         """
         let messages = try parser.parse(line: json)
         XCTAssertEqual(messages.count, 2)
@@ -250,31 +183,28 @@ final class A2UIParserTests: XCTestCase {
 
     /// Verifies that all component types can be encoded and decoded without loss.
     func testSymmetricComponentEncoding() throws {
-        let action = Action.createCustom(name: "testAction")
+        let action = Action.custom(name: "testAction", context: nil)
         let boundStr = BoundValue<String>(literal: "test")
         let boundBool = BoundValue<Bool>(literal: true)
         let boundNum = BoundValue<Double>(literal: 42)
-        let children = Children(explicitList: ["c1"])
+        let children = Children(explicitList: ["c1"], template: nil)
 
         let components: [ComponentType] = [
-            .text(.init(text: boundStr, usageHint: "H")),
-            .button(.init(label: boundStr, child: "C", action: action, primary: true)),
-            .row(.init(children: children, distribution: "fill", alignment: "center")),
-            .column(.init(children: children, distribution: "start", alignment: "leading")),
+            .text(.init(text: boundStr, variant: "h1")),
+            .button(.init(child: "C", action: action, variant: "primary")),
+            .row(.init(children: children, justify: "fill", align: "center")),
+            .column(.init(children: children, justify: "start", align: "leading")),
             .card(.init(child: "C")),
-            .image(.init(url: boundStr, altText: boundStr, width: 100, height: 100)),
-            .icon(.init(name: boundStr, size: 24, color: "#FF0000")),
-            .video(.init(url: boundStr, autoPlay: true, loop: true)),
-            .audioPlayer(.init(url: boundStr, autoPlay: false, loop: false)),
-            .divider(.init()),
-            .list(.init(children: children, scrollable: true)),
-            .tabs(.init(tabItems: [TabItem(title: boundStr, child: "c1")])),
-            .modal(.init(entryPointChild: "e1", contentChild: "c1", isOpen: boundBool)),
-            .textField(.init(label: boundStr, value: boundStr, placeholder: boundStr, type: "email", action: action)),
-            .checkBox(.init(label: boundStr, value: boundBool, action: action)),
-            .dateTimeInput(.init(label: boundStr, value: boundStr, type: "date", action: action)),
-            .multipleChoice(.init(label: boundStr, selections: [SelectionOption(label: boundStr, value: "v1", isSelected: boundBool)], type: "radio", action: action)),
-            .slider(.init(label: boundStr, value: boundNum, min: 0, max: 100, step: 1, action: action)),
+            .image(.init(url: boundStr, fit: "cover", variant: nil)),
+            .icon(.init(name: boundStr)),
+            .video(.init(url: boundStr, description: boundStr)),
+            .audioPlayer(.init(url: boundStr, description: nil)),
+            .divider(.init(axis: "horizontal")),
+            .list(.init(children: children, direction: "vertical", align: nil)),
+            .tabs(.init(tabs: [TabItem(title: boundStr, child: "c1")])),
+            .textField(.init(label: boundStr, value: boundStr, variant: "shortText")),
+            .checkBox(.init(label: boundStr, value: boundBool)),
+            .slider(.init(label: boundStr, min: 0, max: 100, value: boundNum)),
             .custom("CustomComp", ["key": AnyCodable("val")])
         ]
         

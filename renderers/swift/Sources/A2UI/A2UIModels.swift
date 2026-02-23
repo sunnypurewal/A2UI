@@ -136,6 +136,12 @@ public struct ComponentInstance: Codable {
     public let weight: Double?
     public let component: ComponentType
     
+    public init(id: String, weight: Double? = nil, component: ComponentType) {
+        self.id = id
+        self.weight = weight
+        self.component = component
+    }
+
     enum CodingKeys: String, CodingKey {
         case id, weight, component
     }
@@ -280,6 +286,27 @@ struct RawCodingKey: CodingKey {
 public struct TextProperties: Codable, Sendable {
     public let text: BoundValue<String>
     public let variant: String? // h1, h2, h3, h4, h5, caption, body
+    
+    public init(text: BoundValue<String>, variant: String?) {
+        self.text = text
+        self.variant = variant
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case text, variant
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.text = try container.decode(BoundValue<String>.self, forKey: .text)
+        self.variant = try container.decodeIfPresent(String.self, forKey: .variant)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(text, forKey: .text)
+        try container.encodeIfPresent(variant, forKey: .variant)
+    }
 }
 
 public struct ButtonProperties: Codable, Sendable {

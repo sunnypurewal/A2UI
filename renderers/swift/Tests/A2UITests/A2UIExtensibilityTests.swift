@@ -12,7 +12,8 @@ final class A2UIExtensibilityTests: XCTestCase {
     }
 
     func testCustomComponentDecoding() {
-        let json = "{\"surfaceUpdate\":{\"surfaceId\":\"s1\",\"components\":[{\"id\":\"c1\",\"component\":{\"ChatSurface\":{\"historyPath\":\"/app/history\"}}}]}}"
+        store.process(chunk: "{\"createSurface\":{\"surfaceId\":\"s1\",\"catalogId\":\"c1\"}}\n")
+        let json = "{\"updateComponents\":{\"surfaceId\":\"s1\",\"components\":[{\"id\":\"c1\",\"component\":{\"ChatSurface\":{\"historyPath\":\"/app/history\"}}}]}}"
         
         // Process as chunk (with newline for parser)
         store.process(chunk: json + "\n")
@@ -32,7 +33,7 @@ final class A2UIExtensibilityTests: XCTestCase {
         }
         
         // Verify helper property
-        XCTAssertEqual(component?.componentTypeName, "ChatSurface")
+        XCTAssertEqual(component?.component.typeName, "ChatSurface")
     }
 
     func testCustomRendererRegistry() {
@@ -46,15 +47,16 @@ final class A2UIExtensibilityTests: XCTestCase {
         }
         
         // Simulate a message arriving
-        let json = "{\"surfaceUpdate\":{\"surfaceId\":\"s1\",\"components\":[{\"id\":\"c1\",\"component\":{\"ChatSurface\":{\"historyPath\":\"/app/history\"}}}]}}"
+        store.process(chunk: "{\"createSurface\":{\"surfaceId\":\"s1\",\"catalogId\":\"c1\"}}\n")
+        let json = "{\"updateComponents\":{\"surfaceId\":\"s1\",\"components\":[{\"id\":\"c1\",\"component\":{\"ChatSurface\":{\"historyPath\":\"/app/history\"}}}]}}"
         store.process(chunk: json + "\n")
         
-        // In a real app, A2UIComponentRenderer would call this. 
+        // In a real app, A2UIComponentRenderer would call this.
         // We can verify the lookup manually here.
         let surface = store.surfaces["s1"]!
         let component = surface.components["c1"]!
         
-        if let renderer = store.customRenderers[component.componentTypeName] {
+        if let renderer = store.customRenderers[component.component.typeName] {
             let _ = renderer(component)
         } else {
             XCTFail("Custom renderer not found in registry")
