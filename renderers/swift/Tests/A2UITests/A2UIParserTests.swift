@@ -197,7 +197,7 @@ final class A2UIParserTests: XCTestCase {
             .card(.init(child: "C")),
             .image(.init(url: boundStr, fit: "cover", variant: nil)),
             .icon(.init(name: boundStr)),
-            .video(.init(url: boundStr, description: boundStr)),
+            .video(.init(url: boundStr)),
             .audioPlayer(.init(url: boundStr, description: nil)),
             .divider(.init(axis: "horizontal")),
             .list(.init(children: children, direction: "vertical", align: nil)),
