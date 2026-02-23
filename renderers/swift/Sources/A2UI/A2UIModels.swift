@@ -194,6 +194,18 @@ public enum ComponentType: Codable {
             self = .custom(typeName, props)
         }
     }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: RawCodingKey.self)
+        guard let key = container.allKeys.first else {
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Missing component type")
+            )
+        }
+
+        let nestedDecoder = try container.superDecoder(forKey: key)
+        self = try ComponentType(typeName: key.stringValue, from: nestedDecoder)
+    }
     case text(TextProperties)
     case button(ButtonProperties)
     case row(ContainerProperties)

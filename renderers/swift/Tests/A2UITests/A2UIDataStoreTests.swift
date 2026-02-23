@@ -99,9 +99,11 @@ final class A2UIDataStoreTests: XCTestCase {
     func testDataStoreFlush() {
         let partial = "{\"createSurface\":{\"surfaceId\":\"s-flush\",\"catalogId\":\"c1\"}}"
         store.process(chunk: partial) // No newline
-        XCTAssertNil(store.surfaces["s-flush"])
+        XCTAssertNotNil(store.surfaces["s-flush"])
         
+        let beforeFlush = store.surfaces["s-flush"]
         store.flush()
         XCTAssertNotNil(store.surfaces["s-flush"])
+        XCTAssertIdentical(store.surfaces["s-flush"], beforeFlush)
     }
 }

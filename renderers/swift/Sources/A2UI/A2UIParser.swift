@@ -65,7 +65,17 @@ public class A2UIParser {
                 os_log("A2UI Parser Error: %{public}@ on line: %{public}@", log: log, type: .error, "\(error)", line)
             }
         }
-        
+
+        if !remainder.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            do {
+                let parsedMessages = try parse(line: remainder)
+                messages.append(contentsOf: parsedMessages)
+                remainder = ""
+            } catch {
+                // Keep remainder for next chunk
+            }
+        }
+
         let end = DispatchTime.now()
         let diff = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
         if !messages.isEmpty {

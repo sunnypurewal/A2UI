@@ -154,14 +154,15 @@ import OSLog
         let cleanPath = path.hasPrefix("/") ? String(path.dropFirst()) : path
         let normalizedPath = cleanPath.replacingOccurrences(of: ".", with: "/")
         let parts = normalizedPath.split(separator: "/").map(String.init)
+        let normalizedValue = normalize(value: value)
         
         guard !parts.isEmpty else {
-            if let dict = value as? [String: Any] {
+            if let dict = normalizedValue as? [String: Any] {
                 mergeRaw(dict, into: &dataModel)
             }
             return
         }
-        
+
         func update(dict: [String: Any], parts: [String], newValue: Any) -> [String: Any] {
             var newDict = dict
             let key = parts[0]
@@ -170,12 +171,28 @@ import OSLog
                 newDict[key] = newValue
             } else {
                 let subDict = (dict[key] as? [String: Any]) ?? [:]
-                newDict[key] = update(dict: subDict, parts: Array(parts.dropFirst()), newValue: newValue)
+                newDict[key] = update(dict: subDict, parts: Array(parts.dropFirst()), newValue: normalize(value: newValue))
             }
             return newDict
         }
-        
-        dataModel = update(dict: dataModel, parts: parts, newValue: value)
+
+        dataModel = update(dict: dataModel, parts: parts, newValue: normalizedValue)
+    }
+
+    private func normalize(value: Any) -> Any {
+        if let dict = value as? [String: Sendable] {
+            var result: [String: Any] = [:]
+            for (key, entry) in dict {
+                result[key] = normalize(value: entry)
+            }
+            return result
+        }
+
+        if let array = value as? [Sendable] {
+            return array.map { normalize(value: $0) }
+        }
+
+        return value
     }
 
     public func mergeRaw(_ source: [String: Any], into destination: inout [String: Any]) {
