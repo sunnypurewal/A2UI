@@ -41,10 +41,13 @@ struct ContentView: View {
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("A2UI Gallery")
         }
-        .sheet(item: $jsonToShow) { json in
+        .sheet(isPresented: Binding(
+            get: { jsonToShow != nil },
+            set: { if !$0 { jsonToShow = nil } }
+        )) {
             NavigationView {
                 ScrollView {
-                    Text(json)
+                    Text(jsonToShow ?? "")
                         .font(.system(.body, design: .monospaced))
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -60,8 +63,4 @@ struct ContentView: View {
             }
         }
     }
-}
-
-extension String: Identifiable {
-    public var id: String { self }
 }
