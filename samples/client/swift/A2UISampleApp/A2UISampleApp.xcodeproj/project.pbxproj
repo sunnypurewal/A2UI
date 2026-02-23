@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A33BAF0C2F4CA08800614D0C /* A2UI in Frameworks */ = {isa = PBXBuildFile; productRef = A33BAF0B2F4CA08800614D0C /* A2UI */; };
+		A33BAF412F4CCEA800614D0C /* A2UI in Frameworks */ = {isa = PBXBuildFile; productRef = A33BAF402F4CCEA800614D0C /* A2UI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A33BAF0C2F4CA08800614D0C /* A2UI in Frameworks */,
+				A33BAF412F4CCEA800614D0C /* A2UI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +73,7 @@
 			name = A2UISampleApp;
 			packageProductDependencies = (
 				A33BAF0B2F4CA08800614D0C /* A2UI */,
+				A33BAF402F4CCEA800614D0C /* A2UI */,
 			);
 			productName = A2UISampleApp;
 			productReference = A33BAEFC2F4CA06E00614D0C /* A2UISampleApp.app */;
@@ -101,7 +104,7 @@
 			mainGroup = A33BAEF32F4CA06E00614D0C;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A33BAF0A2F4CA08800614D0C /* XCLocalSwiftPackageReference "../../../swift" */,
+				A33BAF3F2F4CCEA800614D0C /* XCLocalSwiftPackageReference "../../../../renderers/swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A33BAEFD2F4CA06E00614D0C /* Products */;
@@ -339,14 +342,18 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		A33BAF0A2F4CA08800614D0C /* XCLocalSwiftPackageReference "../../../swift" */ = {
+		A33BAF3F2F4CCEA800614D0C /* XCLocalSwiftPackageReference "../../../../renderers/swift" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../../swift;
+			relativePath = ../../../../renderers/swift;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		A33BAF0B2F4CA08800614D0C /* A2UI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = A2UI;
+		};
+		A33BAF402F4CCEA800614D0C /* A2UI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = A2UI;
 		};
