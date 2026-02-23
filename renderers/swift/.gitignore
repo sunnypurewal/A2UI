@@ -6,8 +6,10 @@
 
 # Xcode
 .DS_Store
-*.xcodeproj
-*.xcworkspace
 *.playground/
-xcuserdata/
 DerivedData/
+
+# User-specific workspace/project files
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
