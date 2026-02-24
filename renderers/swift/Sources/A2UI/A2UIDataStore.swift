@@ -41,19 +41,26 @@ import OSLog
         switch message {
         case .createSurface(let create):
             os_log("Create surface: %{public}@", log: log, type: .info, create.surfaceId)
-            let surface = getOrCreateSurface(id: create.surfaceId)
-            surface.isReady = true
+            let _ = getOrCreateSurface(id: create.surfaceId)
+            
             
         case .surfaceUpdate(let update):
             let surface = getOrCreateSurface(id: update.surfaceId)
             os_log("Surface update: %{public}@ (%d components)", log: log, type: .debug, update.surfaceId, update.components.count)
             surface.isReady = true
+            os_log("Surface %{public}@ is now READY", log: log, type: .info, update.surfaceId)
             for component in update.components {
                 surface.components[component.id] = component
             }
-            // If no root set yet, look for a component with id "root"
-            if surface.rootComponentId == nil, update.components.contains(where: { $0.id == "root" }) {
-                surface.rootComponentId = "root"
+            // If no root set yet, try to determine it
+            if surface.rootComponentId == nil {
+                if update.components.contains(where: { $0.id == "root" }) {
+                    surface.rootComponentId = "root"
+                } else if let first = update.components.first {
+                    // Fallback: use the first component as root if "root" isn't found
+                    surface.rootComponentId = first.id
+                    os_log("No 'root' component found, defaulting to first component: %{public}@", log: log, type: .info, first.id)
+                }
             }
             
         case .dataModelUpdate(let update):
@@ -127,7 +134,26 @@ import OSLog
 
     public func resolve<T>(_ boundValue: BoundValue<T>) -> T? {
         if let path = boundValue.path {
-            return getValue(at: path) as? T
+            let value = getValue(at: path)
+            if value is NSNull { return nil }
+            
+            // Special handling for String conversion
+            if T.self == String.self {
+                if let stringValue = value as? String {
+                    return stringValue as? T
+                } else if let intValue = value as? Int {
+                    return String(intValue) as? T
+                } else if let doubleValue = value as? Double {
+                    // Format appropriately, maybe avoid trailing zeros if it's an integer-like double
+                    return String(format: "%g", doubleValue) as? T
+                } else if let boolValue = value as? Bool {
+                    return String(boolValue) as? T
+                } else if value != nil {
+                     return String(describing: value!) as? T
+                }
+            }
+            
+            return value as? T
         }
         return boundValue.literal
     }
@@ -180,6 +206,10 @@ import OSLog
     }
 
     private func normalize(value: Any) -> Any {
+        if value is JSONNull {
+            return NSNull()
+        }
+        
         if let dict = value as? [String: Sendable] {
             var result: [String: Any] = [:]
             for (key, entry) in dict {

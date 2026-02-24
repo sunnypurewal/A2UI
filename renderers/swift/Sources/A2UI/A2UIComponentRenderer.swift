@@ -1,26 +1,53 @@
 import SwiftUI
+import OSLog
 
 /// A internal view that resolves a component ID and renders the appropriate SwiftUI view.
 struct A2UIComponentRenderer: View {
     @Environment(A2UIDataStore.self) var dataStore
     @Environment(SurfaceState.self) var surface
     let componentId: String
+    let surfaceOverride: SurfaceState?
+    private let log = OSLog(subsystem: "org.a2ui.renderer", category: "ComponentRenderer")
+
+    init(componentId: String, surface: SurfaceState? = nil) {
+        self.componentId = componentId
+        self.surfaceOverride = surface
+    }
+    
+    private var activeSurface: SurfaceState? {
+        surfaceOverride ?? surface
+    }
 
     var body: some View {
-        let (instance, contextSurface) = resolveInstanceAndContext()
+        Group {
+            if let surface = activeSurface {
+                renderContent(surface: surface)
+            } else {
+                Text("Error: No SurfaceState available").foregroundColor(.red)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func renderContent(surface: SurfaceState) -> some View {
+        let (instance, contextSurface) = resolveInstanceAndContext(surface: surface)
         
         if let instance = instance {
-            render(instance: instance)
+            let _ = os_log("Rendering component: %{public}@ (%{public}@)", log: log, type: .debug, componentId, instance.componentTypeName)
+            render(instance: instance, surface: surface)
                 .environment(contextSurface ?? surface)
         } else {
+            let _ = os_log("Missing component: %{public}@", log: log, type: .error, componentId)
             // Fallback for missing components to help debugging
             Text("Missing: \(componentId)")
-                .foregroundColor(.red)
+                .foregroundColor(.white)
+                .padding(4)
+                .background(Color.red)
                 .font(.caption)
         }
     }
     
-    private func resolveInstanceAndContext() -> (instance: ComponentInstance?, contextSurface: SurfaceState?) {
+    private func resolveInstanceAndContext(surface: SurfaceState) -> (instance: ComponentInstance?, contextSurface: SurfaceState?) {
         let virtualIdParts = componentId.split(separator: ":")
 
         // Check if it's a virtual ID from a template: "templateId:dataBinding:index"
@@ -53,12 +80,17 @@ struct A2UIComponentRenderer: View {
         } else {
             // This is a regular component, not part of a template.
             // Return the component instance and no special context surface.
-            return (surface.components[componentId], nil)
+            if let component = surface.components[componentId] {
+                return (component, nil)
+            } else {
+                os_log("Component not found in surface: %{public}@", log: log, type: .error, componentId)
+                return (nil, nil)
+            }
         }
     }
 
     @ViewBuilder
-    private func render(instance: ComponentInstance) -> some View {
+    private func render(instance: ComponentInstance, surface: SurfaceState) -> some View {
         let content = Group {
             // Check for custom registered components first
             if let customRenderer = surface.customRenderers[instance.componentTypeName] {

@@ -35,7 +35,7 @@ struct A2UIImageView: View {
 }
 
 struct A2UIVideoView: View {
-    let properties: MediaProperties
+    let properties: VideoProperties
     @Environment(SurfaceState.self) var surface
 
     var body: some View {
@@ -48,7 +48,7 @@ struct A2UIVideoView: View {
 }
 
 struct A2UIAudioPlayerView: View {
-    let properties: MediaProperties
+    let properties: AudioPlayerProperties
     @Environment(SurfaceState.self) var surface
     @State private var player: AVPlayer?
 

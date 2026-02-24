@@ -88,7 +88,7 @@ public struct CreateSurfaceMessage: Codable {
     public let catalogId: String
     public let theme: [String: AnyCodable]?
     public let sendDataModel: Bool?
-    
+
     enum CodingKeys: String, CodingKey {
         case surfaceId, catalogId, theme, sendDataModel
     }
@@ -151,13 +151,8 @@ public struct ComponentInstance: Codable {
         self.id = try container.decode(String.self, forKey: .id)
         self.weight = try container.decodeIfPresent(Double.self, forKey: .weight)
         
-        // Discriminator check for 'component' property
-        let nested = try container.nestedContainer(keyedBy: RawCodingKey.self, forKey: .component)
-        guard let typeName = nested.allKeys.first?.stringValue,
-              let typeKey = RawCodingKey(stringValue: typeName) else {
-            throw DecodingError.dataCorruptedError(forKey: .component, in: container, debugDescription: "Missing component discriminator")
-        }
-        self.component = try ComponentType(typeName: typeName, from: nested.superDecoder(forKey: typeKey))
+        let typeName = try container.decode(String.self, forKey: .component)
+        self.component = try ComponentType(typeName: typeName, from: decoder)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -178,8 +173,8 @@ public enum ComponentType: Codable {
         case "Card": self = .card(try CardProperties(from: decoder))
         case "Image": self = .image(try ImageProperties(from: decoder))
         case "Icon": self = .icon(try IconProperties(from: decoder))
-        case "Video": self = .video(try MediaProperties(from: decoder))
-        case "AudioPlayer": self = .audioPlayer(try MediaProperties(from: decoder))
+        case "Video": self = .video(try VideoProperties(from: decoder))
+        case "AudioPlayer": self = .audioPlayer(try AudioPlayerProperties(from: decoder))
         case "Divider": self = .divider(try DividerProperties(from: decoder))
         case "List": self = .list(try ListProperties(from: decoder))
         case "Tabs": self = .tabs(try TabsProperties(from: decoder))
@@ -213,8 +208,8 @@ public enum ComponentType: Codable {
     case card(CardProperties)
     case image(ImageProperties)
     case icon(IconProperties)
-    case video(MediaProperties)
-    case audioPlayer(MediaProperties)
+    case video(VideoProperties)
+    case audioPlayer(AudioPlayerProperties)
     case divider(DividerProperties)
     case list(ListProperties)
     case tabs(TabsProperties)
@@ -327,26 +322,6 @@ public struct ButtonProperties: Codable, Sendable {
     public let variant: String? // primary, borderless
 }
 
-public struct ContainerProperties: Codable, Sendable {
-    public let children: Children
-    public let justify: String?
-    public let align: String?
-}
-
-extension ContainerProperties {
-    var resolvedAlign: String {
-        align ?? "start"
-    }
-
-    var resolvedJustify: String {
-        justify ?? "start"
-    }
-}
-
-public struct CardProperties: Codable, Sendable {
-    public let child: String
-}
-
 public struct ImageProperties: Codable, Sendable {
     public let url: BoundValue<String>
     public let fit: String? // contain, cover, fill, none, scaleDown
@@ -357,13 +332,13 @@ public struct IconProperties: Codable, Sendable {
     public let name: BoundValue<String> // v0.10: String or path object, we'll keep it simple for now
 }
 
-public struct MediaProperties: Codable, Sendable {
+public struct VideoProperties: Codable, Sendable {
     public let url: BoundValue<String>
-    public let description: BoundValue<String>?
 }
 
-public struct DividerProperties: Codable, Sendable {
-    public let axis: String? // horizontal, vertical
+public struct AudioPlayerProperties: Codable, Sendable {
+    public let url: BoundValue<String>
+    public let description: BoundValue<String>?
 }
 
 public struct ListProperties: Codable, Sendable {
@@ -384,6 +359,10 @@ public struct TabItem: Codable, Sendable {
 public struct ModalProperties: Codable, Sendable {
     public let trigger: String
     public let content: String
+}
+
+public struct DividerProperties: Codable, Sendable {
+    public let axis: String? // horizontal, vertical
 }
 
 public struct TextFieldProperties: Codable, Sendable {
@@ -425,22 +404,90 @@ public struct DateTimeInputProperties: Codable, Sendable {
     public let max: BoundValue<String>?
 }
 
+public struct ContainerProperties: Codable, Sendable {
+    public let children: Children
+    public let justify: String?
+    public let align: String?
+}
+
+extension ContainerProperties {
+    var resolvedAlign: String {
+        align ?? "start"
+    }
+
+    var resolvedJustify: String {
+        justify ?? "start"
+    }
+}
+
+public struct CardProperties: Codable, Sendable {
+    public let child: String
+}
+
 // MARK: - Supporting Types
 
 public struct Children: Codable, Sendable {
     public let explicitList: [String]?
     public let template: Template?
+    
+    public init(explicitList: [String]? = nil, template: Template? = nil) {
+        self.explicitList = explicitList
+        self.template = template
+    }
+
+    public init(from decoder: Decoder) throws {
+        if let list = try? [String](from: decoder) {
+            self.explicitList = list
+            self.template = nil
+        } else {
+            self.template = try Template(from: decoder)
+            self.explicitList = nil
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        if let list = explicitList {
+            try list.encode(to: encoder)
+        } else if let template = template {
+            try template.encode(to: encoder)
+        }
+    }
 }
 
 public struct Template: Codable, Sendable {
     public let componentId: String
     public let dataBinding: String
+    
+    enum CodingKeys: String, CodingKey {
+        case componentId
+        case dataBinding = "path"
+    }
 }
 
 public struct FunctionCall: Codable, Sendable {
     public let call: String
     public let args: [String: AnyCodable]
     public let returnType: String?
+
+    enum CodingKeys: String, CodingKey {
+        case call, args, returnType
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        call = try container.decode(String.self, forKey: .call)
+        args = try container.decodeIfPresent([String: AnyCodable].self, forKey: .args) ?? [:]
+        returnType = try container.decodeIfPresent(String.self, forKey: .returnType)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(call, forKey: .call)
+        if !args.isEmpty {
+            try container.encode(args, forKey: .args)
+        }
+        try container.encodeIfPresent(returnType, forKey: .returnType)
+    }
 }
 
 public enum Action: Codable, Sendable {

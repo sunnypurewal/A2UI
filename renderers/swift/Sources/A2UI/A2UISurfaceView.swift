@@ -20,7 +20,7 @@ public struct A2UISurfaceView: View {
             if let surface = surface, surface.isReady {
                 let _ = os_log("Surface is ready, attempting to render root.", log: log, type: .debug)
                 if let rootId = surface.rootComponentId {
-                    A2UIComponentRenderer(componentId: rootId)
+                    A2UIComponentRenderer(componentId: rootId, surface: surface)
                         .environment(surface)
                         .onAppear {
                             os_log("Surface rendered: %{public}@", log: log, type: .info, surfaceId)
