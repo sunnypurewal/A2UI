@@ -55,8 +55,8 @@ final class A2UIParserTests: XCTestCase {
                 "components": [
                     { "id": "t1", "component": { "Text": { "text": "Hello" } } },
                     { "id": "b1", "component": { "Button": { "child": "t1", "action": { "name": "tap" } } } },
-                    { "id": "r1", "component": { "Row": { "children": { "explicitList": ["t1"] } } } },
-                    { "id": "c1", "component": { "Column": { "children": { "explicitList": ["b1"] }, "align": "center" } } },
+                    { "id": "r1", "component": { "Row": { "children": ["t1"] } } },
+                    { "id": "c1", "component": { "Column": { "children": ["b1"], "align": "center" } } },
                     { "id": "card1", "component": { "Card": { "child": "r1" } } }
                 ]
             }
