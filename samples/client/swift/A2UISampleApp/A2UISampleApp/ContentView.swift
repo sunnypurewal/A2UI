@@ -5,12 +5,12 @@ struct ContentView: View {
     @Environment(A2UIDataStore.self) var dataStore
     @State private var jsonToShow: String?
 
-    let categories = ["Layout", "Content", "Input", "Navigation", "Decoration"]
-
     var body: some View {
         NavigationView {
-			List(categories, id: \.self) { category in
-                Text(category)
+			List(ComponentCategory.allCases, id: \.self) { category in
+				NavigationLink(destination: category.linkDestination) {
+					Text(category.rawValue)
+				}
             }
             .navigationTitle("A2UI Gallery")
         }
@@ -36,4 +36,20 @@ struct ContentView: View {
             }
         }
     }
+}
+
+enum ComponentCategory: String, CaseIterable {
+	case layout = "Layout"
+	case content = "Content"
+	case input = "Input"
+	case navigation = "Navigation"
+	case decoration = "Decoration"
+	var linkDestination: some View {
+		switch self {
+			case .layout:
+				return AnyView(LayoutOptionsView())
+			default:
+				return AnyView(Text("\(rawValue) Detail"))
+		}
+	}
 }
