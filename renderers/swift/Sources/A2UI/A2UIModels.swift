@@ -502,7 +502,12 @@ public enum Action: Codable, Sendable {
     case functionCall(FunctionCall)
 
     enum CodingKeys: String, CodingKey {
-        case name, context, dataUpdate, functionCall
+        case name, context, dataUpdate, functionCall, event
+    }
+
+    struct EventPayload: Decodable {
+        let name: String
+        let context: [String: AnyCodable]?
     }
 
     public init(from decoder: Decoder) throws {
@@ -511,6 +516,8 @@ public enum Action: Codable, Sendable {
             self = .dataUpdate(dataUpdate)
         } else if let functionCall = try? container.decode(FunctionCall.self, forKey: .functionCall) {
             self = .functionCall(functionCall)
+        } else if let event = try? container.decode(EventPayload.self, forKey: .event) {
+            self = .custom(name: event.name, context: event.context)
         } else if let name = try? container.decode(String.self, forKey: .name) {
             let context = try? container.decode([String: AnyCodable].self, forKey: .context)
             self = .custom(name: name, context: context)
