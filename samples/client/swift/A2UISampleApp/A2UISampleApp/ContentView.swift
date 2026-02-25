@@ -4,6 +4,7 @@ import A2UI
 struct ContentView: View {
     @Environment(A2UIDataStore.self) var dataStore
     @State private var jsonToShow: String?
+	@State private var selectedComponent: String?
 
     var body: some View {
         NavigationView {
@@ -53,3 +54,5 @@ enum ComponentCategory: String, CaseIterable {
 		}
 	}
 }
+
+

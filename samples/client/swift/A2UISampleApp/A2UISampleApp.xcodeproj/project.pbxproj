@@ -15,9 +15,22 @@
 		A33BAEFC2F4CA06E00614D0C /* A2UISampleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = A2UISampleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A365B9BF2F4F785100E1F974 /* Exceptions for "A2UISampleApp" folder in "A2UISampleApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SectionDetailView.swift,
+			);
+			target = A33BAEFB2F4CA06E00614D0C /* A2UISampleApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A33BAEFE2F4CA06E00614D0C /* A2UISampleApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A365B9BF2F4F785100E1F974 /* Exceptions for "A2UISampleApp" folder in "A2UISampleApp" target */,
+			);
 			path = A2UISampleApp;
 			sourceTree = "<group>";
 		};
