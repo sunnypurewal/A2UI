@@ -72,7 +72,13 @@ struct GalleryComponent: Identifiable {
 	let template: String
 	let staticComponents: [StaticComponent]
 	var dataModelFields: [DataModelField]
+	var canEditDataModel: Bool {
+		return !dataModelFields.isEmpty && id != "List"
+	}
 	var properties: [PropertyDefinition]
+	var canEditProperties: Bool {
+		return !properties.isEmpty
+	}
 	
 	mutating func setProperty(_ key: String, to value: String) {
 		guard let index = properties.firstIndex(where: { $0.key == key }) else { return }
@@ -101,7 +107,7 @@ struct GalleryComponent: Identifiable {
 	}
 	
 	var resolvedComponents: [String] {
-		return staticComponents.map { $0.rawValue } + [resolvedTemplate]
+		return [resolvedTemplate] + staticComponents.map { $0.rawValue } 
 	}
 	
 	var prettyJson: String {
@@ -168,7 +174,7 @@ extension GalleryComponent {
 				template: #"{"id":"gallery_component","component":{"List":{"children":{"template":{"componentId":"card_content_container","path":"/items"}}}}}"#,
 				staticComponents: [.root, .cardContentContainer, .cardContentTop, .cardContentBottom, .listH2, .listBody, .listCaption],
 				dataModelFields: [
-					.init(path: "/items", label: "Items (JSON array)", value: .listObjects([]))
+					.init(path: "/items", label: "Items (JSON array)", value: .listObjects((1...20).map { ["headline":"Headline \($0)","body":"Body text \($0)","caption":"Caption \($0)"] }))
 				],
 				properties: []
 			)
@@ -196,7 +202,7 @@ enum StaticComponent: String {
 	case cardContentContainer = #"{"id":"card_content_container","component":{"Column":{"children":["card_content_top","card_content_bottom"],"justify":"spaceAround","align":"center"}}}"#
 	case cardContentTop = #"{"id":"card_content_top","component":{"Row":{"children":["t_h2"],"justify":"start","align":"center"}}}"#
 	case cardContentBottom = #"{"id":"card_content_bottom","component":{"Row":{"children":["t_body","t_caption"],"justify":"spaceBetween","align":"center"}}}"#
-	case listH2 = #"{"id":"t_h2","component":{"Text":{"text":{"path":"headline/text"},"variant":"h2"}}}"#
-	case listBody = #"{"id":"t_body","component":{"Text":{"text":{"path":"body/text"},"variant":"body"}}}"#
-	case listCaption = #"{"id":"t_caption","component":{"Text":{"text":{"path":"caption/text"},"variant":"caption"}}}"#
+	case listH2 = #"{"id":"t_h2","component":{"Text":{"text":{"path":"headline"},"variant":"h2"}}}"#
+	case listBody = #"{"id":"t_body","component":{"Text":{"text":{"path":"body"},"variant":"body"}}}"#
+	case listCaption = #"{"id":"t_caption","component":{"Text":{"text":{"path":"caption"},"variant":"caption"}}}"#
 }

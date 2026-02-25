@@ -23,9 +23,9 @@ struct ComponentView: View {
 				.background(Color(.systemBackground))
 				.cornerRadius(12)
 				.shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
-				.frame(height: 200)
+//				.frame(height: 200)
 			
-			if !component.properties.isEmpty {
+			if component.canEditProperties {
 				VStack(alignment: .leading, spacing: 10) {
 					ForEach($component.properties) { prop in
 						HStack {
@@ -62,7 +62,7 @@ struct ComponentView: View {
 			.background(Color.accentColor.opacity(0.1))
 			.cornerRadius(8)
 
-			if !component.dataModelFields.isEmpty {
+			if component.canEditDataModel {
 				VStack(alignment: .leading, spacing: 10) {
 					ForEach($component.dataModelFields) { field in
 						HStack {
@@ -132,7 +132,7 @@ struct ComponentView: View {
 	private func dataModelJson() -> String {
 		let dataModel = buildDataModel()
 		guard JSONSerialization.isValidJSONObject(dataModel),
-			  let data = try? JSONSerialization.data(withJSONObject: dataModel, options: [.prettyPrinted, .sortedKeys]),
+			  let data = try? JSONSerialization.data(withJSONObject: dataModel, options: [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]),
 			  let pretty = String(data: data, encoding: .utf8) else {
 			return "{}"
 		}
