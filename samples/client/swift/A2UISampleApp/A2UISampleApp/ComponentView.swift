@@ -49,6 +49,18 @@ struct ComponentView: View {
 				.background(Color(.secondarySystemBackground))
 				.cornerRadius(10)
 			}
+			
+			Button(action: {
+				jsonToShow = component.prettyJson
+			}) {
+				Label("A2UI JSON", systemImage: "doc.text")
+					.font(.footnote)
+			}
+			.buttonStyle(PlainButtonStyle())
+			.padding(.horizontal, 12)
+			.padding(.vertical, 8)
+			.background(Color.accentColor.opacity(0.1))
+			.cornerRadius(8)
 
 			if !component.dataModelFields.isEmpty {
 				VStack(alignment: .leading, spacing: 10) {
@@ -67,11 +79,10 @@ struct ComponentView: View {
 				.cornerRadius(10)
 			}
 			
-			
 			Button(action: {
-				jsonToShow = component.prettyJson
+				/// TODO: Show Data Model JSON
 			}) {
-				Label("Show JSON", systemImage: "doc.text")
+				Label("Data Model JSON", systemImage: "doc.text")
 					.font(.footnote)
 			}
 			.buttonStyle(PlainButtonStyle())
