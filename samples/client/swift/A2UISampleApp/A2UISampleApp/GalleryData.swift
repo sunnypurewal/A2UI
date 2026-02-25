@@ -58,19 +58,12 @@ struct DataModelField: Identifiable {
 }
 
 struct GalleryData {
-	static var all: [ComponentCategory: [String: GalleryComponent]] = [
-		.layout: [
-			"Row": .row,
-			"Column": .column,
-			"List": .list,
-		]
-	]
 	static func components(for category: ComponentCategory) -> [GalleryComponent] {
 		switch category {
 			case .layout:
 				return [.row, .column, .list]
 			case .content:
-				return [.text]
+				return [.text, .image]
 			default:
 				return []
 		}
@@ -189,8 +182,19 @@ extension GalleryComponent {
 				.init(path: "/text", label: "Text", value: .string("Sample text")),
 			],
 			properties: [
-				PropertyDefinition(key: variantKey, label: "Variant", options: A2UIVariant.allCases.map { $0.rawValue }, value: A2UIVariant.body.rawValue)
+				PropertyDefinition(key: variantKey, label: "Variant", options: A2UITextVariant.allCases.map { $0.rawValue }, value: A2UITextVariant.body.rawValue)
 			]
+		)
+	}()
+	static let image: Self = {
+		return .init(
+			id: "Image",
+			template: #"{"id":"gallery_component","component":{"Image":{"source":{"path":"/url"}}}}"#,
+			staticComponents: [.root],
+			dataModelFields: [
+				.init(path: "/url", label: "Image URL", value: .string("https://picsum.photos/200"))
+			],
+			properties: []
 		)
 	}()
 }

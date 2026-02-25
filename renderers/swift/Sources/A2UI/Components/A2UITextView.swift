@@ -4,7 +4,7 @@ struct A2UITextView: View {
     @Environment(SurfaceState.self) var surface
     let properties: TextProperties
 	
-	private var variant: A2UIVariant { properties.variant ?? .body }
+	private var variant: A2UITextVariant { properties.variant ?? .body }
 
     var body: some View {
         let content = surface.resolve(properties.text) ?? ""
@@ -14,7 +14,7 @@ struct A2UITextView: View {
             .fixedSize(horizontal: false, vertical: true)
     }
 
-    private func fontFor(variant: A2UIVariant) -> Font {
+    private func fontFor(variant: A2UITextVariant) -> Font {
         switch variant {
 			case .h1: return .system(size: 34, weight: .bold)
 			case .h2: return .system(size: 28, weight: .bold)
