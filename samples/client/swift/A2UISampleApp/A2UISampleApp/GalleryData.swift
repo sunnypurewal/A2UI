@@ -1,6 +1,32 @@
 import Foundation
 import A2UI
 
+struct DataModelField: Identifiable {
+	enum Value {
+		case string(String)
+		case number(Double)
+		case bool(Bool)
+	}
+	
+	let id = UUID()
+	let path: String
+	let label: String
+	var value: Value
+	
+	func updateDataModelA2UI(surfaceId: String) -> String {
+		let valueJson: String
+		switch value {
+		case .string(let stringValue):
+			valueJson = "\"\(stringValue)\""
+		case .number(let numberValue):
+			valueJson = "\(numberValue)"
+		case .bool(let boolValue):
+			valueJson = boolValue ? "true" : "false"
+		}
+		return #"{"version":"v0.10","updateDataModel":{"surfaceId":"\#(surfaceId)","path":"\#(path)","value":\#(valueJson)}}"#
+	}
+}
+
 struct GalleryData {
 	static var all: [ComponentCategory: [String: GalleryComponent]] = [
 		.layout: [
@@ -14,6 +40,7 @@ struct GalleryComponent: Identifiable {
 	let id: String
 	let template: String
 	let staticComponents: [StaticComponent]
+	let dataModelFields: [DataModelField]
 	var properties: [PropertyDefinition]
 	
 	mutating func setProperty(_ key: String, to value: String) {
@@ -30,7 +57,9 @@ struct GalleryComponent: Identifiable {
 	}
 	
 	var a2ui: String {
-		return [createSurfaceA2UI, updateComponentsA2UI].joined(separator: "\n")
+		let dataModelUpdates = dataModelFields.map { $0.updateDataModelA2UI(surfaceId: id) }
+		return ([createSurfaceA2UI, updateComponentsA2UI] + dataModelUpdates)
+			.joined(separator: "\n")
 	}
 	
 	var createSurfaceA2UI: String {
@@ -66,6 +95,11 @@ extension GalleryComponent {
 			id: "Row",
 			template: #"{"id":"gallery_component","component":{"Row":{"children":["t_h2","t_body","t_caption"],"justify":"{{\#(justifyKey)}}","align":"{{\#(alignKey)}}"}}}"#,
 			staticComponents: [.root, .h2, .body, .caption],
+			dataModelFields: [
+				.init(path: "/headline/text", label: "Headline", value: .string("Headline")),
+				.init(path: "/body/text", label: "Body", value: .string("Body text")),
+				.init(path: "/caption/text", label: "Caption", value: .string("Caption"))
+			],
 			properties: [
 				PropertyDefinition(key: justifyKey, label: "Justify", options: A2UIJustify.allCases.map { $0.rawValue }, value: A2UIJustify.start.rawValue),
 				PropertyDefinition(key: alignKey, label: "Align", options: A2UIAlign.allCases.map { $0.rawValue }, value: A2UIAlign.start.rawValue)
@@ -77,6 +111,11 @@ extension GalleryComponent {
 			id: "Column",
 			template: #"{"id":"gallery_component","component":{"Column":{"children":["t_h2","t_body","t_caption"],"justify":"{{\#(justifyKey)}}","align":"{{\#(alignKey)}}"}}}"#,
 			staticComponents: [.root, .h2, .body, .caption],
+			dataModelFields: [
+				.init(path: "/headline/text", label: "Headline", value: .string("Headline")),
+				.init(path: "/body/text", label: "Body", value: .string("Body text")),
+				.init(path: "/caption/text", label: "Caption", value: .string("Caption"))
+			],
 			properties: [
 				PropertyDefinition(key: justifyKey, label: "Justify", options: A2UIJustify.allCases.map { $0.rawValue }, value: A2UIJustify.start.rawValue),
 				PropertyDefinition(key: alignKey, label: "Align", options: A2UIAlign.allCases.map { $0.rawValue }, value: A2UIAlign.start.rawValue)
@@ -84,21 +123,23 @@ extension GalleryComponent {
 		)
 	}()
 //	static let card: Self = {
-//		return .init(
-//			id: "Card",
-//			template: #"{"id":"gallery_component","component":{"Card":{"child":"card_content_container"}}}"#,
-//			staticComponents: [.root, .cardContentContainer, .cardContentTop, .cardContentBottom, .h2, .body, .caption],
-//			properties: []
-//		)
-//	}()
+	//		return .init(
+	//			id: "Card",
+	//			template: #"{"id":"gallery_component","component":{"Card":{"child":"card_content_container"}}}"#,
+	//			staticComponents: [.root, .cardContentContainer, .cardContentTop, .cardContentBottom, .h2, .body, .caption],
+	//			dataModelFields: [],
+	//			properties: []
+	//		)
+	//	}()
 //	static let list: Self = {
-//		return .init(
-//			id: "List",
-//			template: #"{"id":"gallery_component","component":{"List":{"children":explicitList:[]}}}"#,
-//			staticComponents: [.root, .h2, .body, .caption, .row],
-//			properties: []
-//		)
-//	}()
+	//		return .init(
+	//			id: "List",
+	//			template: #"{"id":"gallery_component","component":{"List":{"children":explicitList:[]}}}"#,
+	//			staticComponents: [.root, .h2, .body, .caption, .row],
+	//			dataModelFields: [],
+	//			properties: []
+	//		)
+	//	}()
 }
 
 struct PropertyDefinition: Identifiable {
