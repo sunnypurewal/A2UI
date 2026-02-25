@@ -13,7 +13,7 @@ struct A2UITextFieldView: View {
 
             TextField("", text: $text)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onChange(of: text) { newValue in
+                .onChange(of: text) { _, newValue in
                     updateBinding(surface: surface, binding: properties.value, newValue: newValue)
                 }
         }
@@ -33,7 +33,7 @@ struct A2UICheckBoxView: View {
             Text(resolveValue(surface, binding: properties.label) ?? "")
         }
         .toggleStyle(CheckBoxToggleStyle())
-        .onChange(of: isOn) { newValue in
+        .onChange(of: isOn) { _, newValue in
             updateBinding(surface: surface, binding: properties.value, newValue: newValue)
         }
         .onAppear {
@@ -61,7 +61,7 @@ struct A2UISliderView: View {
             } maximumValueLabel: {
                 Text("\(Int(properties.max))")
             }
-            .onChange(of: value) { newValue in
+            .onChange(of: value) { _, newValue in
                 updateBinding(surface: surface, binding: properties.value, newValue: newValue)
             }
         }
@@ -112,7 +112,7 @@ struct A2UIChoicePickerView: View {
                 }
             }
         }
-        .onChange(of: selections) { newValue in
+        .onChange(of: selections) { _, newValue in
             updateBinding(surface: surface, binding: properties.value, newValue: Array(newValue))
         }
         .onAppear {
@@ -135,7 +135,7 @@ struct A2UIDateTimeInputView: View {
             in: dateRange,
             displayedComponents: dateComponents
         )
-        .onChange(of: date) { newValue in
+        .onChange(of: date) { _, newValue in
             updateDate(newValue)
         }
         .onAppear {
@@ -157,7 +157,6 @@ struct A2UIDateTimeInputView: View {
     }
 
     private var dateRange: ClosedRange<Date> {
-        let formatter = ISO8601DateFormatter()
         let minDate = resolvedDate(from: resolveValue(surface, binding: properties.min)) ?? Date.distantPast
         let maxDate = resolvedDate(from: resolveValue(surface, binding: properties.max)) ?? Date.distantFuture
         return minDate...maxDate
