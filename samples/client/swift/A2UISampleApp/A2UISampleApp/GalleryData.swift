@@ -17,13 +17,31 @@ struct DataModelField: Identifiable {
 		let valueJson: String
 		switch value {
 		case .string(let stringValue):
-			valueJson = "\"\(stringValue)\""
+			valueJson = jsonLiteral(from: stringValue)
 		case .number(let numberValue):
 			valueJson = "\(numberValue)"
 		case .bool(let boolValue):
 			valueJson = boolValue ? "true" : "false"
 		}
 		return #"{"version":"v0.10","updateDataModel":{"surfaceId":"\#(surfaceId)","path":"\#(path)","value":\#(valueJson)}}"#
+	}
+
+	private func jsonLiteral(from stringValue: String) -> String {
+		if let data = stringValue.data(using: .utf8),
+		   let object = try? JSONSerialization.jsonObject(with: data),
+		   JSONSerialization.isValidJSONObject(object),
+		   let jsonData = try? JSONSerialization.data(withJSONObject: object),
+		   let jsonString = String(data: jsonData, encoding: .utf8) {
+			return jsonString
+		}
+
+		guard let data = try? JSONSerialization.data(withJSONObject: [stringValue]),
+			  let wrapped = String(data: data, encoding: .utf8),
+			  wrapped.count >= 2 else {
+			return "\"\""
+		}
+
+		return String(wrapped.dropFirst().dropLast())
 	}
 }
 
