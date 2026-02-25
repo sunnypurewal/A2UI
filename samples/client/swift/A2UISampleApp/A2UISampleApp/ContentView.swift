@@ -5,7 +5,9 @@ struct SectionDetailView: View {
     let section: GalleryData.Section
     
     var body: some View {
-        A2UISurfaceView(surfaceId: section.id.uuidString)
+		VStack {
+			A2UISurfaceView(surfaceId: section.id.uuidString)
+		}
     }
 }
 

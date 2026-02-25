@@ -5,7 +5,7 @@ struct A2UIRowView: View {
     @Environment(SurfaceState.self) var surface
 
     var body: some View {
-        HStack(alignment: verticalAlignment, spacing: 8) {
+        HStack(alignment: verticalAlignment) {
             renderChildren()
         }
         .frame(maxWidth: .infinity, alignment: horizontalAlignment)
@@ -27,20 +27,20 @@ struct A2UIRowView: View {
     }
 
     private var verticalAlignment: VerticalAlignment {
-        switch properties.resolvedAlign {
-        case "start": return .top
-        case "center": return .center
-        case "end": return .bottom
-        default: return .center
+        switch properties.align {
+			case .start: return .top
+			case .center: return .center
+			case .end: return .bottom
+			default: return .center
         }
     }
 
     private var horizontalAlignment: Alignment {
-        switch properties.resolvedJustify {
-        case "start": return .leading
-        case "center": return .center
-        case "end": return .trailing
-        default: return .leading
+        switch properties.justify {
+			case .start: return .leading
+			case .center: return .center
+			case .end: return .trailing
+			default: return .leading
         }
     }
 }
@@ -72,11 +72,11 @@ struct A2UIColumnView: View {
     }
 
     private var horizontalAlignment: HorizontalAlignment {
-        switch properties.resolvedAlign {
-        case "start": return .leading
-        case "center": return .center
-        case "end": return .trailing
-        default: return .leading
+		switch properties.align {
+			case .start: return .leading
+			case .center: return .center
+			case .end: return .trailing
+			default: return .leading
         }
     }
 }
