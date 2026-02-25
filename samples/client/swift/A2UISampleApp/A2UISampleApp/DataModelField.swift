@@ -6,6 +6,7 @@ struct DataModelField: Identifiable {
 		case number(Double)
 		case bool(Bool)
 		case listObjects([[String: Any]])
+		case choice(String, [String])
 	}
 	
 	let id = UUID()
@@ -24,6 +25,8 @@ struct DataModelField: Identifiable {
 				valueJson = boolValue ? "true" : "false"
 			case .listObjects(let listValue):
 				valueJson = jsonArrayLiteral(from: listValue)
+			case .choice(let selected, _):
+				valueJson = jsonLiteral(from: selected)
 		}
 		return #"{"version":"v0.10","updateDataModel":{"surfaceId":"\#(surfaceId)","path":"\#(path)","value":\#(valueJson)}}"#
 	}

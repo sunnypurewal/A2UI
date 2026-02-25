@@ -133,15 +133,16 @@ extension GalleryComponent {
 	}()
 	static let icon: Self = {
 		let nameKey = "name"
+		let allIconNames = A2UIIconName.allCases.map { $0.rawValue }
 		return .init(
 			id: "Icon",
-			template: #"{"id":"gallery_component","component":{"Icon":{"name":"{{\#(nameKey)}}","variant":"{{\#(variantKey)}}"}}}"#,
+			template: #"{"id":"gallery_component","component":{"Icon":{"name":{"path":"/name"},"variant":"{{\#(variantKey)}}"}}}"#,
 			staticComponents: [.root],
 			dataModelFields: [
-				.init(path: "/name", label: "Icon Name", value: .string(A2UIIconName.search.rawValue))
+				.init(path: "/name", label: "Icon Name", value: .choice(A2UIIconName.search.rawValue, allIconNames))
 			],
 			properties: [
-				PropertyDefinition(key: nameKey, label: "Icon", options: A2UIIconName.allCases.map { $0.rawValue }, value: A2UIIconName.search.rawValue),
+				PropertyDefinition(key: variantKey, label: "Variant", options: ["filled", "outlined"], value: "filled")
 			]
 		)
 	}()

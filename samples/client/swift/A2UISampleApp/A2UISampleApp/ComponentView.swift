@@ -173,6 +173,8 @@ struct ComponentView: View {
 			return boolValue
 		case .listObjects(let listValue):
 			return listValue
+		case .choice(let selected, _):
+			return selected
 		}
 	}
 
@@ -194,7 +196,39 @@ struct ComponentView: View {
 			TextField("", text: listBinding(for: field))
 				.textFieldStyle(.roundedBorder)
 				.frame(width: 180)
+		case .choice:
+			Picker("", selection: choiceBinding(for: field)) {
+				let options = getChoiceOptions(for: field.wrappedValue.value)
+				ForEach(options, id: \.self) { option in
+					Text(option).tag(option)
+				}
+			}
+			.pickerStyle(.menu)
 		}
+	}
+
+	private func getChoiceOptions(for value: DataModelField.Value) -> [String] {
+		if case .choice(_, let options) = value {
+			return options
+		}
+		return []
+	}
+
+	private func choiceBinding(for field: Binding<DataModelField>) -> Binding<String> {
+		Binding(
+			get: {
+				if case .choice(let selected, _) = field.wrappedValue.value {
+					return selected
+				}
+				return ""
+			},
+			set: { newValue in
+				if case .choice(_, let options) = field.wrappedValue.value {
+					field.wrappedValue.value = .choice(newValue, options)
+					updateDataModel(for: field.wrappedValue)
+				}
+			}
+		)
 	}
 
 	private func stringBinding(for field: Binding<DataModelField>) -> Binding<String> {
