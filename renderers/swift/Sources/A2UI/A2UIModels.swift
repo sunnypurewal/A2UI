@@ -410,7 +410,7 @@ public struct DateTimeInputProperties: Codable, Sendable {
     public let max: BoundValue<String>?
 }
 
-public enum LayoutJustification: String, Codable, Sendable {
+public enum A2UIJustify: String, Codable, Sendable {
     case center = "center"
     case end = "end"
     case spaceAround = "spaceAround"
@@ -420,7 +420,7 @@ public enum LayoutJustification: String, Codable, Sendable {
     case stretch = "stretch"
 }
 
-public enum LayoutAlignment: String, Codable, Sendable {
+public enum A2UIAlign: String, Codable, Sendable {
 	case start = "start"
 	case center = "center"
 	case end = "end"
@@ -429,8 +429,22 @@ public enum LayoutAlignment: String, Codable, Sendable {
 
 public struct ContainerProperties: Codable, Sendable {
     public let children: Children
-	public let justify: LayoutJustification = .start
-	public let align: LayoutAlignment = .center
+    public let justify: A2UIJustify?
+    public let align: A2UIAlign?
+
+    enum CodingKeys: String, CodingKey {
+        case children, justify, align
+    }
+}
+
+extension ContainerProperties {
+    public var resolvedJustify: A2UIJustify {
+		justify ?? .spaceBetween
+    }
+
+    public var resolvedAlign: A2UIAlign {
+        align ?? .center
+    }
 }
 
 public struct CardProperties: Codable, Sendable {

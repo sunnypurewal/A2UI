@@ -1,16 +1,6 @@
 import SwiftUI
 import A2UI
 
-struct SectionDetailView: View {
-    let section: GalleryData.Section
-    
-    var body: some View {
-		VStack {
-			A2UISurfaceView(surfaceId: section.id.uuidString)
-		}
-    }
-}
-
 struct ContentView: View {
     @Environment(A2UIDataStore.self) var dataStore
     @State private var jsonToShow: String?
@@ -18,29 +8,18 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
 			List(GalleryData.sections) { section in
-                Section(header: Text(section.name)) {
-                    VStack {
-                        SectionDetailView(section: section)
-                            .frame(height: 300)
-
-                        Button(action: {
-                            jsonToShow = section.prettyJson
-                        }) {
-                            Label("Show JSON", systemImage: "doc.text")
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color(.secondarySystemBackground))
-                        .cornerRadius(10)
-                    }
-                }
+				Section(section.name) {
+					SectionDetailView(section: section, jsonToShow: $jsonToShow)
+				}
             }
-            .listStyle(InsetGroupedListStyle())
+            .listStyle(GroupedListStyle())
             .navigationTitle("A2UI Gallery")
         }
         .onAppear {
             for section in GalleryData.sections {
-                dataStore.process(chunk: section.a2ui)
+				for subsection in section.subsections {
+					dataStore.process(chunk: subsection.a2ui)
+				}
             }
             dataStore.flush()
         }
