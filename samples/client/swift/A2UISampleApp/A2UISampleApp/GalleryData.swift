@@ -69,17 +69,18 @@ struct GalleryComponent: Identifiable {
 	}
 	
 	var prettyJson: String {
-		let objects: [Any] = resolvedComponents.compactMap { json in
-			guard let data = json.data(using: .utf8) else { return nil }
-			return try? JSONSerialization.jsonObject(with: data)
+		guard let data = resolvedTemplate.data(using: .utf8) else { return "{}" }
+		do {
+			let obj = try JSONSerialization.jsonObject(with: data)
+			let options: JSONSerialization.WritingOptions = [.prettyPrinted, .sortedKeys]
+			guard let prettyData = try? JSONSerialization.data(withJSONObject: obj, options: options),
+				  let prettyString = String(data: prettyData, encoding: .utf8) else {
+				return resolvedTemplate
+			}
+			return prettyString
+		} catch {
+			return "{}"
 		}
-		guard !objects.isEmpty else { return "[]" }
-		let options: JSONSerialization.WritingOptions = [.prettyPrinted, .sortedKeys]
-		guard let data = try? JSONSerialization.data(withJSONObject: objects, options: options),
-			  let pretty = String(data: data, encoding: .utf8) else {
-			return "[\n\(resolvedComponents.joined(separator: ",\n"))\n]"
-		}
-		return pretty
 	}
 }
 
