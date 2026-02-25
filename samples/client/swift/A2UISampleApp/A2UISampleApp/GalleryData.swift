@@ -50,6 +50,7 @@ struct GalleryData {
 		.layout: [
 			"Row": .row,
 			"Column": .column,
+			"List": .list,
 		]
 	]
 }
@@ -149,15 +150,17 @@ extension GalleryComponent {
 	//			properties: []
 	//		)
 	//	}()
-//	static let list: Self = {
-	//		return .init(
-	//			id: "List",
-	//			template: #"{"id":"gallery_component","component":{"List":{"children":explicitList:[]}}}"#,
-	//			staticComponents: [.root, .h2, .body, .caption, .row],
-	//			dataModelFields: [],
-	//			properties: []
-	//		)
-	//	}()
+	static let list: Self = {
+			return .init(
+				id: "List",
+				template: #"{"id":"gallery_component","component":{"List":{"children":{"template":{"componentId":"card_content_container","path":"/items"}}}}}"#,
+				staticComponents: [.root, .cardContentContainer, .cardContentTop, .cardContentBottom, .listH2, .listBody, .listCaption],
+				dataModelFields: [
+					.init(path: "/items", label: "Items (JSON array)", value: .string(#""#))
+				],
+				properties: []
+			)
+		}()
 }
 
 struct PropertyDefinition: Identifiable {
@@ -181,4 +184,7 @@ enum StaticComponent: String {
 	case cardContentContainer = #"{"id":"card_content_container","component":{"Column":{"children":["card_content_top","card_content_bottom"],"justify":"spaceAround","align":"center"}}}"#
 	case cardContentTop = #"{"id":"card_content_top","component":{"Row":{"children":["t_h2"],"justify":"start","align":"center"}}}"#
 	case cardContentBottom = #"{"id":"card_content_bottom","component":{"Row":{"children":["t_body","t_caption"],"justify":"spaceBetween","align":"center"}}}"#
+	case listH2 = #"{"id":"t_h2","component":{"Text":{"text":{"path":"headline/text"},"variant":"h2"}}}"#
+	case listBody = #"{"id":"t_body","component":{"Text":{"text":{"path":"body/text"},"variant":"body"}}}"#
+	case listCaption = #"{"id":"t_caption","component":{"Text":{"text":{"path":"caption/text"},"variant":"caption"}}}"#
 }
