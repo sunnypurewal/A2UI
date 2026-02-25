@@ -10,9 +10,66 @@ struct GalleryData {
 	
 	struct SubSection: Identifiable {
 		let id: String
+		var component: GalleryComponent
+		
+		init(component: GalleryComponent) {
+			self.id = component.id
+			self.component = component
+		}
+		
+		var properties: [PropertyDefinition] {
+			get { component.properties }
+			set { component.properties = newValue }
+		}
+		
+		var a2ui: String { component.a2ui }
+		var createSurfaceA2UI: String { component.createSurfaceA2UI }
+		var updateComponentsA2UI: String { component.updateComponentsA2UI }
+		var resolvedComponents: [String] { component.resolvedComponents }
+		var prettyJson: String { component.prettyJson }
+	}
+
+	struct GalleryComponent: Identifiable {
+		let id: String
 		let template: String
 		let staticComponents: [String]
 		var properties: [PropertyDefinition]
+		
+		init(_ id: String) {
+			switch id {
+			case "Row":
+				self.id = "Row"
+				self.template = #"{"id":"gallery_component","component":{"Row":{"children":["t_h2","t_body","t_caption"],"justify":"{{\#(justifyKey)}}","align":"{{\#(alignKey)}}"}}}"#
+				self.staticComponents = [root, h2, body, caption]
+				self.properties = [
+					PropertyDefinition(key: justifyKey, label: "Justify", options: A2UIJustify.allCases.map { $0.rawValue }, value: A2UIJustify.start.rawValue),
+					PropertyDefinition(key: alignKey, label: "Align", options: A2UIAlign.allCases.map { $0.rawValue }, value: A2UIAlign.start.rawValue)
+				]
+			case "Column":
+				self.id = "Column"
+				self.template = #"{"id":"gallery_component","component":{"Column":{"children":["t_h2","t_body","t_caption"],"justify":"{{\#(justifyKey)}}","align":"{{\#(alignKey)}}"}}}"#
+				self.staticComponents = [root, h2, body, caption]
+				self.properties = [
+					PropertyDefinition(key: justifyKey, label: "Justify", options: A2UIJustify.allCases.map { $0.rawValue }, value: A2UIJustify.start.rawValue),
+					PropertyDefinition(key: alignKey, label: "Align", options: A2UIAlign.allCases.map { $0.rawValue }, value: A2UIAlign.start.rawValue)
+				]
+			default:
+				preconditionFailure("Unknown GalleryComponent id: \(id)")
+			}
+		}
+		
+		mutating func setProperty(_ key: String, to value: String) {
+			guard let index = properties.firstIndex(where: { $0.key == key }) else { return }
+			properties[index].value = value
+		}
+		
+		var resolvedTemplate: String {
+			var comp = template
+			for prop in properties {
+				comp = comp.replacingOccurrences(of: "{{\(prop.key)}}", with: prop.value)
+			}
+			return comp
+		}
 		
 		var a2ui: String {
 			return [createSurfaceA2UI, updateComponentsA2UI].joined(separator: "\n")
@@ -26,19 +83,11 @@ struct GalleryData {
 		}
 		
 		var resolvedComponents: [String] {
-			var comp = template
-			for prop in properties {
-				comp = comp.replacingOccurrences(of: "{{\(prop.key)}}", with: prop.value)
-			}
-			return staticComponents + [comp]
+			return staticComponents + [resolvedTemplate]
 		}
 		
 		var prettyJson: String {
-			var comp = template
-			for prop in properties {
-				comp = comp.replacingOccurrences(of: "{{\(prop.key)}}", with: prop.value)
-			}
-			let entries = [comp]
+			let entries = [resolvedTemplate]
 			return "[\n\(entries)\n]"
 		}
 	}
@@ -51,26 +100,10 @@ struct GalleryData {
 		var value: String
 	}
 
-    static let sections: [Section] = [
+	static let sections: [Section] = [
 		Section(name: "Layout", subsections: [
-			SubSection(
-				id: "Row",
-				template: #"{"id":"gallery_component","component":{"Row":{"children":["t_h2","t_body","t_caption"],"justify":"{{\#(justifyKey)}}","align":"{{\#(alignKey)}}"}}}"#,
-				staticComponents: [root, h2, body, caption],
-				properties: [
-					PropertyDefinition(key: justifyKey, label: "Justify", options: A2UIJustify.allCases.map { $0.rawValue }, value: A2UIJustify.start.rawValue),
-					PropertyDefinition(key: alignKey, label: "Align", options: A2UIAlign.allCases.map { $0.rawValue }, value: A2UIAlign.start.rawValue)
-				]
-			),
-			SubSection(
-				id: "Column",
-				template: #"{"id":"gallery_component","component":{"Column":{"children":["t_h2","t_body","t_caption"],"justify":"{{\#(justifyKey)}}","align":"{{\#(alignKey)}}"}}}"#,
-				staticComponents: [root, h2, body, caption],
-				properties: [
-					PropertyDefinition(key: justifyKey, label: "Justify", options: A2UIJustify.allCases.map { $0.rawValue }, value: A2UIJustify.start.rawValue),
-					PropertyDefinition(key: alignKey, label: "Align", options: A2UIAlign.allCases.map { $0.rawValue }, value: A2UIAlign.start.rawValue)
-				]
-			)
+			SubSection(component: GalleryComponent("Row")),
+			SubSection(component: GalleryComponent("Column"))
 		]),
 	]
 	
