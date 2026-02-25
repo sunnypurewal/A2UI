@@ -4,7 +4,11 @@ import OSLog
 /// A parser that handles the JSONL stream and emits A2UIMessages.
 public class A2UIParser {
     private let decoder = JSONDecoder()
+	#if DEBUG
     private let log = OSLog(subsystem: "org.a2ui.renderer", category: "Parser")
+	#else
+		private let log = OSLog.disabled
+	#endif
 
     public init() {}
 

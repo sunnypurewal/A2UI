@@ -432,30 +432,36 @@ public struct CardProperties: Codable, Sendable {
 
 // MARK: - Supporting Types
 
-public struct Children: Codable, Sendable {
-    public let explicitList: [String]?
-    public let template: Template?
+public enum Children: Codable, Sendable {
+    case list([String])
+    case template(Template)
     
-    public init(explicitList: [String]? = nil, template: Template? = nil) {
-        self.explicitList = explicitList
-        self.template = template
-    }
-
     public init(from decoder: Decoder) throws {
-        if let list = try? [String](from: decoder) {
-            self.explicitList = list
-            self.template = nil
+        let container = try decoder.singleValueContainer()
+        if let list = try? container.decode([String].self) {
+            self = .list(list)
+        } else if let template = try? container.decode(Template.self) {
+            self = .template(template)
         } else {
-            self.template = try Template(from: decoder)
-            self.explicitList = nil
+            // Support legacy v0.8 explicitList wrapper for compatibility
+            let keyedContainer = try decoder.container(keyedBy: RawCodingKey.self)
+            if let explicitList = try? keyedContainer.decode([String].self, forKey: RawCodingKey(stringValue: "explicitList")!) {
+                self = .list(explicitList)
+            } else if let template = try? keyedContainer.decode(Template.self, forKey: RawCodingKey(stringValue: "template")!) {
+                self = .template(template)
+            } else {
+                throw DecodingError.dataCorruptedError(in: container, debugDescription: "Children must be an array of strings, a template object, or a legacy explicitList/template wrapper.")
+            }
         }
     }
 
     public func encode(to encoder: Encoder) throws {
-        if let list = explicitList {
-            try list.encode(to: encoder)
-        } else if let template = template {
-            try template.encode(to: encoder)
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .list(let list):
+            try container.encode(list)
+        case .template(let template):
+            try container.encode(template)
         }
     }
 }

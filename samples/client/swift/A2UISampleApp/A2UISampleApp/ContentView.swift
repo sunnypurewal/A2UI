@@ -15,7 +15,7 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-            List(GalleryData.sections) { section in
+			List(GalleryData.sections) { section in
                 Section(header: Text(section.name)) {
                     VStack {
                         SectionDetailView(section: section)

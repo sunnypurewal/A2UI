@@ -9,7 +9,11 @@ import OSLog
     
     private let parser = A2UIParser()
     private var streamRemainder = ""
+	#if DEBUG
     private let log = OSLog(subsystem: "org.a2ui.renderer", category: "DataStore")
+	#else
+		private let log = OSLog.disabled
+	#endif
     
     /// A callback for components to trigger actions that need to be sent back to the server.
     public var actionHandler: ((UserAction) -> Void)?

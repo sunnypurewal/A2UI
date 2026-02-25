@@ -5,7 +5,11 @@ import OSLog
 public struct A2UISurfaceView: View {
     @Environment(A2UIDataStore.self) var dataStore
     public let surfaceId: String
+	#if DEBUG
     private let log = OSLog(subsystem: "org.a2ui.renderer", category: "SurfaceView")
+	#else
+		private let log = OSLog.disabled
+	#endif
 
     public init(surfaceId: String) {
         self.surfaceId = surfaceId

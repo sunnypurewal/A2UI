@@ -7,7 +7,11 @@ struct A2UIComponentRenderer: View {
     @Environment(SurfaceState.self) var surface
     let componentId: String
     let surfaceOverride: SurfaceState?
+	#if DEBUG
     private let log = OSLog(subsystem: "org.a2ui.renderer", category: "ComponentRenderer")
+	#else
+	private let log = OSLog.disabled
+	#endif
 
     init(componentId: String, surface: SurfaceState? = nil) {
         self.componentId = componentId

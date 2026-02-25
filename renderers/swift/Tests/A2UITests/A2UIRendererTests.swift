@@ -107,11 +107,11 @@ final class A2UIRendererTests: XCTestCase {
         render(A2UIButtonView(properties: buttonProps).environment(surface).environment(dataStore))
         
         // Containers
-        let containerProps = ContainerProperties(children: .init(explicitList: ["c1", "c2"], template: nil), justify: "start", align: "center")
+        let containerProps = ContainerProperties(children: .list(["c1", "c2"]), justify: "start", align: "center")
         render(A2UIRowView(properties: containerProps).environment(surface).environment(dataStore))
         render(A2UIColumnView(properties: containerProps).environment(surface).environment(dataStore))
         
-        let listProps = ListProperties(children: .init(explicitList: ["c1"], template: nil), direction: "vertical", align: "start")
+        let listProps = ListProperties(children: .list(["c1"]), direction: "vertical", align: "start")
         render(A2UIListView(properties: listProps).environment(surface).environment(dataStore))
         
         // Layout

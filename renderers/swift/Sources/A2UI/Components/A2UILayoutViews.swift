@@ -13,11 +13,12 @@ struct A2UIRowView: View {
 
     @ViewBuilder
     private func renderChildren() -> some View {
-        if let list = properties.children.explicitList {
+        switch properties.children {
+        case .list(let list):
             ForEach(list, id: \.self) { id in
                 A2UIComponentRenderer(componentId: id)
             }
-        } else if let template = properties.children.template {
+        case .template(let template):
             let ids = surface.expandTemplate(template: template)
             ForEach(ids, id: \.self) { id in
                 A2UIComponentRenderer(componentId: id)
@@ -57,11 +58,12 @@ struct A2UIColumnView: View {
 
     @ViewBuilder
     private func renderChildren() -> some View {
-        if let list = properties.children.explicitList {
+        switch properties.children {
+        case .list(let list):
             ForEach(list, id: \.self) { id in
                 A2UIComponentRenderer(componentId: id)
             }
-        } else if let template = properties.children.template {
+        case .template(let template):
             let ids = surface.expandTemplate(template: template)
             ForEach(ids, id: \.self) { id in
                 A2UIComponentRenderer(componentId: id)

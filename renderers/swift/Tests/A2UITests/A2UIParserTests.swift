@@ -72,7 +72,9 @@ final class A2UIParserTests: XCTestCase {
         
         // Check Row
         if case .row(let props) = update.components[2].component {
-            XCTAssertEqual(props.children.explicitList, ["t1"])
+            if case .list(let list) = props.children {
+                XCTAssertEqual(list, ["t1"])
+            } else { XCTFail("Expected list children") }
         } else { XCTFail("Type mismatch for row") }
 
         // Check Column Alignment
@@ -146,6 +148,96 @@ final class A2UIParserTests: XCTestCase {
         XCTAssertTrue(try parser.parse(line: "   ").isEmpty)
     }
 
+    // MARK: - Children Compatibility Tests
+
+    func testChildrenDirectArray() throws {
+        let json = """
+        {
+            "version": "v0.10",
+            "updateComponents": {
+                "surfaceId": "s1",
+                "components": [
+                    { "id": "r1", "component": { "Row": { "children": ["t1", "t2"] } } }
+                ]
+            }
+        }
+        """
+        let messages = try parser.parse(line: json)
+        guard case .surfaceUpdate(let update) = messages.first else {
+            XCTFail("Expected surfaceUpdate")
+            return
+        }
+        
+        if case .row(let props) = update.components[0].component {
+            if case .list(let list) = props.children {
+                XCTAssertEqual(list, ["t1", "t2"])
+            } else {
+                XCTFail("Expected .list")
+            }
+        } else {
+            XCTFail("Expected .row")
+        }
+    }
+
+    func testChildrenLegacyExplicitList() throws {
+        let json = """
+        {
+            "version": "v0.10",
+            "updateComponents": {
+                "surfaceId": "s1",
+                "components": [
+                    { "id": "r1", "component": { "Row": { "children": { "explicitList": ["t1", "t2"] } } } }
+                ]
+            }
+        }
+        """
+        let messages = try parser.parse(line: json)
+        guard case .surfaceUpdate(let update) = messages.first else {
+            XCTFail("Expected surfaceUpdate")
+            return
+        }
+        
+        if case .row(let props) = update.components[0].component {
+            if case .list(let list) = props.children {
+                XCTAssertEqual(list, ["t1", "t2"])
+            } else {
+                XCTFail("Expected .list")
+            }
+        } else {
+            XCTFail("Expected .row")
+        }
+    }
+
+    func testChildrenTemplate() throws {
+        let json = """
+        {
+            "version": "v0.10",
+            "updateComponents": {
+                "surfaceId": "s1",
+                "components": [
+                    { "id": "r1", "component": { "Row": { "children": { "componentId": "tpl", "path": "/items" } } } }
+                ]
+            }
+        }
+        """
+        let messages = try parser.parse(line: json)
+        guard case .surfaceUpdate(let update) = messages.first else {
+            XCTFail("Expected surfaceUpdate")
+            return
+        }
+        
+        if case .row(let props) = update.components[0].component {
+            if case .template(let template) = props.children {
+                XCTAssertEqual(template.componentId, "tpl")
+                XCTAssertEqual(template.path, "/items")
+            } else {
+                XCTFail("Expected .template")
+            }
+        } else {
+            XCTFail("Expected .row")
+        }
+    }
+
     // MARK: - Helper Utility Tests
 
     /// Verifies that the `AnyCodable` helper correctly handles various JSON types
@@ -187,7 +279,7 @@ final class A2UIParserTests: XCTestCase {
         let boundStr = BoundValue<String>(literal: "test")
         let boundBool = BoundValue<Bool>(literal: true)
         let boundNum = BoundValue<Double>(literal: 42)
-        let children = Children(explicitList: ["c1"], template: nil)
+        let children = Children.list(["c1"])
 
         let components: [ComponentType] = [
             .text(.init(text: boundStr, variant: "h1")),

@@ -23,11 +23,12 @@ struct A2UIListView: View {
 
     @ViewBuilder
     private func renderChildren() -> some View {
-        if let list = properties.children.explicitList {
+        switch properties.children {
+        case .list(let list):
             ForEach(list, id: \.self) { id in
                 A2UIComponentRenderer(componentId: id)
             }
-        } else if let template = properties.children.template {
+        case .template(let template):
             renderTemplate(template)
         }
     }
