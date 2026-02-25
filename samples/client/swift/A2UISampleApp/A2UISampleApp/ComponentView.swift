@@ -80,7 +80,7 @@ struct ComponentView: View {
 			}
 			
 			Button(action: {
-				/// TODO: Show Data Model JSON
+				jsonToShow = dataModelJson()
 			}) {
 				Label("Data Model JSON", systemImage: "doc.text")
 					.font(.footnote)
@@ -127,6 +127,51 @@ struct ComponentView: View {
 	private func updateDataModel(for field: DataModelField) {
 		dataStore.process(chunk: field.updateDataModelA2UI(surfaceId: component.id))
 		dataStore.flush()
+	}
+
+	private func dataModelJson() -> String {
+		let dataModel = buildDataModel()
+		guard JSONSerialization.isValidJSONObject(dataModel),
+			  let data = try? JSONSerialization.data(withJSONObject: dataModel, options: [.prettyPrinted, .sortedKeys]),
+			  let pretty = String(data: data, encoding: .utf8) else {
+			return "{}"
+		}
+		return pretty
+	}
+
+	private func buildDataModel() -> [String: Any] {
+		var root: [String: Any] = [:]
+
+		for field in component.dataModelFields {
+			let segments = field.path.split(separator: "/").map(String.init)
+			guard !segments.isEmpty else { continue }
+			insert(value: field.value, into: &root, path: segments)
+		}
+
+		return root
+	}
+
+	private func insert(value: DataModelField.Value, into dict: inout [String: Any], path: [String]) {
+		guard let head = path.first else { return }
+		if path.count == 1 {
+			dict[head] = jsonValue(for: value)
+			return
+		}
+
+		var child = dict[head] as? [String: Any] ?? [:]
+		insert(value: value, into: &child, path: Array(path.dropFirst()))
+		dict[head] = child
+	}
+
+	private func jsonValue(for value: DataModelField.Value) -> Any {
+		switch value {
+		case .string(let stringValue):
+			return stringValue
+		case .number(let numberValue):
+			return numberValue
+		case .bool(let boolValue):
+			return boolValue
+		}
 	}
 
 	@ViewBuilder
