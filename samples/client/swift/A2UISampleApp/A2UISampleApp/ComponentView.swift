@@ -240,5 +240,6 @@ struct ComponentView: View {
 #Preview {
 	NavigationView {
 		ComponentView(component: GalleryComponent.row)
+			.environment(A2UIDataStore())
 	}
 }
