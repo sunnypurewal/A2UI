@@ -298,9 +298,9 @@ struct RawCodingKey: CodingKey {
 
 public struct TextProperties: Codable, Sendable {
     public let text: BoundValue<String>
-    public let variant: String? // h1, h2, h3, h4, h5, caption, body
+    public let variant: A2UIVariant? // h1, h2, h3, h4, h5, caption, body
     
-    public init(text: BoundValue<String>, variant: String?) {
+    public init(text: BoundValue<String>, variant: A2UIVariant?) {
         self.text = text
         self.variant = variant
     }
@@ -312,7 +312,7 @@ public struct TextProperties: Codable, Sendable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.text = try container.decode(BoundValue<String>.self, forKey: .text)
-        self.variant = try container.decodeIfPresent(String.self, forKey: .variant)
+        self.variant = try container.decodeIfPresent(A2UIVariant.self, forKey: .variant)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -427,6 +427,17 @@ public enum A2UIAlign: String, Codable, Sendable, CaseIterable, Identifiable {
 	case center = "center"
 	case end = "end"
 	case stretch = "stretch"
+}
+
+public enum A2UIVariant: String, Codable, Sendable, CaseIterable, Identifiable {
+	public var id: String { self.rawValue }
+	case h1 = "h1"
+	case h2 = "h2"
+	case h3 = "h3"
+	case h4 = "h4"
+	case h5 = "h5"
+	case caption = "caption"
+	case body = "body"
 }
 
 public struct ContainerProperties: Codable, Sendable {

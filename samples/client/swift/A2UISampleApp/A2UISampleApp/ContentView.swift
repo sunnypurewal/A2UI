@@ -8,9 +8,27 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
 			List(ComponentCategory.allCases, id: \.self) { category in
-				NavigationLink(destination: category.linkDestination) {
+				NavigationLink {
+					let components = GalleryData.components(for: category)
+					List {
+						ForEach(components) { component in
+							NavigationLink {
+								ComponentView(component: component)
+							} label: {
+								Text(component.id.rawValue)
+							}
+
+						}
+					}
+//					List(components, id: \.self) { component in
+//						NavigationLink(destination: ComponentView(component: component)) {
+//							Text(component.id.rawValue)
+//						}
+//					}
+				} label: {
 					Text(category.rawValue)
 				}
+
             }
             .navigationTitle("A2UI Gallery")
         }
@@ -23,14 +41,15 @@ enum ComponentCategory: String, CaseIterable {
 	case input = "Input"
 	case navigation = "Navigation"
 	case decoration = "Decoration"
-	var linkDestination: some View {
-		switch self {
-			case .layout:
-				return AnyView(LayoutOptionsView())
-			default:
-				return AnyView(Text("\(rawValue) Detail"))
-		}
-	}
 }
 
-
+enum ComponentType: String {
+	case row = "Row"
+	case column = "Column"
+	case list = "List"
+	case text = "Text"
+	case image = "Image"
+	case icon = "Icon"
+	case video = "Video"
+	case audioPlayer = "AudioPlayer"
+}

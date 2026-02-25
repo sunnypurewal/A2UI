@@ -65,6 +65,16 @@ struct GalleryData {
 			"List": .list,
 		]
 	]
+	static func components(for category: ComponentCategory) -> [GalleryComponent] {
+		switch category {
+			case .layout:
+				return [.row, .column, .list]
+			case .content:
+				return []
+			default:
+				return []
+		}
+	}
 }
 
 struct GalleryComponent: Identifiable {
@@ -159,15 +169,6 @@ extension GalleryComponent {
 			]
 		)
 	}()
-//	static let card: Self = {
-	//		return .init(
-	//			id: "Card",
-	//			template: #"{"id":"gallery_component","component":{"Card":{"child":"card_content_container"}}}"#,
-	//			staticComponents: [.root, .cardContentContainer, .cardContentTop, .cardContentBottom, .h2, .body, .caption],
-	//			dataModelFields: [],
-	//			properties: []
-	//		)
-	//	}()
 	static let list: Self = {
 			return .init(
 				id: "List",
@@ -179,6 +180,19 @@ extension GalleryComponent {
 				properties: []
 			)
 		}()
+	static let text: Self = {
+		return .init(
+			id: "Text",
+			template: #""#,
+			staticComponents: [],
+			dataModelFields: [
+				.init(path: "/text", label: "Text", value: .string("Sample text")),
+			],
+			properties: [
+				PropertyDefinition(key: variantKey, label: "Variant", options: A2UIVariant.allCases.map { $0.rawValue }, value: A2UIVariant.body.rawValue)
+			]
+		)
+	}()
 }
 
 struct PropertyDefinition: Identifiable {
@@ -191,8 +205,7 @@ struct PropertyDefinition: Identifiable {
 
 let justifyKey = "justify"
 let alignKey = "align"
-let textAlignKey = "textAlign"
-let colorKey = "color"
+let variantKey = "variant"
 
 enum StaticComponent: String {
 	case h2 = #"{"id":"t_h2","component":{"Text":{"text":{"path":"/headline/text"},"variant":"h2"}}}"#

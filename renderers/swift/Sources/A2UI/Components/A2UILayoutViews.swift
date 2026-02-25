@@ -27,6 +27,10 @@ struct A2UIJustifiedContainer: View {
 struct A2UIRowView: View {
     let properties: ContainerProperties
     @Environment(SurfaceState.self) var surface
+	
+	private var justify: A2UIJustify {
+		properties.justify ?? .spaceBetween
+	}
 
     var body: some View {
         let childIds: [String] = {
@@ -37,7 +41,7 @@ struct A2UIRowView: View {
         }()
 
         HStack(alignment: verticalAlignment, spacing: 0) {
-            A2UIJustifiedContainer(childIds: childIds, justify: properties.resolvedJustify)
+			A2UIJustifiedContainer(childIds: childIds, justify: justify)
         }
         .frame(maxWidth: .infinity)
     }
