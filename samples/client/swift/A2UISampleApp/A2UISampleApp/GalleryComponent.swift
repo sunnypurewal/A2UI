@@ -142,7 +142,6 @@ extension GalleryComponent {
 			],
 			properties: [
 				PropertyDefinition(key: nameKey, label: "Icon", options: A2UIIconName.allCases.map { $0.rawValue }, value: A2UIIconName.search.rawValue),
-				PropertyDefinition(key: variantKey, label: "Variant", options: ["filled", "outlined"], value: "filled")
 			]
 		)
 	}()
