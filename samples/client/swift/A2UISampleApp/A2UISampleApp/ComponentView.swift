@@ -171,8 +171,8 @@ struct ComponentView: View {
 			return numberValue
 		case .bool(let boolValue):
 			return boolValue
-		case .list(let listValue):
-			return listValue
+		case .listObjects(let jsonArrayValue):
+			return jsonArrayObjects(from: jsonArrayValue) ?? []
 		}
 	}
 
@@ -190,7 +190,7 @@ struct ComponentView: View {
 		case .bool:
 			Toggle("", isOn: boolBinding(for: field))
 				.labelsHidden()
-		case .list:
+		case .listObjects:
 			TextField("", text: listBinding(for: field))
 				.textFieldStyle(.roundedBorder)
 				.frame(width: 180)
@@ -245,20 +245,25 @@ struct ComponentView: View {
 	private func listBinding(for field: Binding<DataModelField>) -> Binding<String> {
 		Binding(
 			get: {
-				if case .list(let value) = field.wrappedValue.value {
-					return value.joined(separator: ", ")
+				if case .listObjects(let value) = field.wrappedValue.value {
+					return value
 				}
 				return ""
 			},
 			set: { newValue in
-				let items = newValue
-					.split(separator: ",")
-					.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-					.filter { !$0.isEmpty }
-				field.wrappedValue.value = .list(items)
+				field.wrappedValue.value = .listObjects(newValue)
 				updateDataModel(for: field.wrappedValue)
 			}
 		)
+	}
+
+	private func jsonArrayObjects(from jsonArrayValue: String) -> [[String: Any]]? {
+		guard let data = jsonArrayValue.data(using: .utf8),
+			  let object = try? JSONSerialization.jsonObject(with: data),
+			  let array = object as? [[String: Any]] else {
+			return nil
+		}
+		return array
 	}
 }
 
