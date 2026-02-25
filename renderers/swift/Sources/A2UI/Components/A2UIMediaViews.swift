@@ -101,7 +101,7 @@ struct A2UIIconView: View {
 
     var body: some View {
         if let name = surface.resolve(properties.name) {
-            Image(systemName: mapToSFSymbol(name))
+			Image(systemName: A2UIIconName(rawValue: name)!.sfSymbolName)
                 .font(.system(size: 24))
                 .foregroundColor(.primary)
         }
