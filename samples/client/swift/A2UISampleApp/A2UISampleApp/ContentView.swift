@@ -3,19 +3,14 @@ import A2UI
 
 struct SectionDetailView: View {
     let section: GalleryData.Section
-    @State private var dataStore = A2UIDataStore()
     
     var body: some View {
         A2UISurfaceView(surfaceId: section.id.uuidString)
-            .environment(dataStore)
-            .onAppear {
-                dataStore.process(chunk: section.a2ui)
-                dataStore.flush()
-            }
     }
 }
 
 struct ContentView: View {
+    @Environment(A2UIDataStore.self) var dataStore
     @State private var jsonToShow: String?
 
     var body: some View {
@@ -40,6 +35,12 @@ struct ContentView: View {
             }
             .listStyle(InsetGroupedListStyle())
             .navigationTitle("A2UI Gallery")
+        }
+        .onAppear {
+            for section in GalleryData.sections {
+                dataStore.process(chunk: section.a2ui)
+            }
+            dataStore.flush()
         }
         .sheet(isPresented: Binding(
             get: { jsonToShow != nil },

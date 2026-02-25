@@ -462,12 +462,7 @@ public struct Children: Codable, Sendable {
 
 public struct Template: Codable, Sendable {
     public let componentId: String
-    public let dataBinding: String
-    
-    enum CodingKeys: String, CodingKey {
-        case componentId
-        case dataBinding = "path"
-    }
+    public let path: String
 }
 
 public struct FunctionCall: Codable, Sendable {

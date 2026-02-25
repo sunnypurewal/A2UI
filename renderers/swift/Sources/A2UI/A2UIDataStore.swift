@@ -244,13 +244,13 @@ import OSLog
     }
     
     public func expandTemplate(template: Template) -> [String] {
-        guard let data = getValue(at: template.dataBinding) as? [Any] else {
+        guard let data = getValue(at: template.path) as? [Any] else {
             return []
         }
         
         var generatedIds: [String] = []
         for (index, _) in data.enumerated() {
-            let virtualId = "\(template.componentId):\(template.dataBinding):\(index)"
+            let virtualId = "\(template.componentId):\(template.path):\(index)"
             generatedIds.append(virtualId)
         }
         return generatedIds
