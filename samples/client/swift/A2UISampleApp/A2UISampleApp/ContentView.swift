@@ -5,21 +5,14 @@ struct ContentView: View {
     @Environment(A2UIDataStore.self) var dataStore
     @State private var jsonToShow: String?
 
+    let categories = ["Layout", "Content", "Input", "Navigation", "Decoration"]
+
     var body: some View {
         NavigationView {
-			List(GalleryData.sections) { section in
-				SectionDetailView(section: section, jsonToShow: $jsonToShow)
+			List(categories, id: \.self) { category in
+                Text(category)
             }
-            .listStyle(GroupedListStyle())
             .navigationTitle("A2UI Gallery")
-        }
-        .onAppear {
-            for section in GalleryData.sections {
-				for subsection in section.subsections {
-					dataStore.process(chunk: subsection.a2ui)
-				}
-            }
-            dataStore.flush()
         }
         .sheet(isPresented: Binding(
             get: { jsonToShow != nil },
