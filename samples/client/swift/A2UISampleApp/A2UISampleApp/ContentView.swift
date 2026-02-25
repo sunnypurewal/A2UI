@@ -8,9 +8,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
 			List(GalleryData.sections) { section in
-				Section(section.name) {
-					SectionDetailView(section: section, jsonToShow: $jsonToShow)
-				}
+				SectionDetailView(section: section, jsonToShow: $jsonToShow)
             }
             .listStyle(GroupedListStyle())
             .navigationTitle("A2UI Gallery")

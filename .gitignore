@@ -10,6 +10,18 @@ __pycache__
 *.pyc
 .angular
 
+# Xcode
+.DS_Store
+DerivedData/
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+**/xcuserdata/
+**/project.xcworkspace/
+**/DerivedData/
+.build/
+.swiftpm/
+
 # MkDocs build output
 site/
 

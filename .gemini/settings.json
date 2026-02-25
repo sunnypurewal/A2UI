@@ -1,5 +1,15 @@
 {
   "context": {
-    "fileName": ["GEMINI.md"]
+    "fileName": [
+      "GEMINI.md"
+    ]
+  },
+  "mcpServers": {
+    "xcode-tools": {
+      "command": "xcrun",
+      "args": [
+        "mcpbridge"
+      ]
+    }
   }
 }

@@ -1,5 +1,29 @@
 import SwiftUI
 
+struct A2UIJustifiedContainer: View {
+    let childIds: [String]
+    let justify: A2UIJustify
+
+    var body: some View {
+        if justify == .end || justify == .center || justify == .spaceEvenly || justify == .spaceAround {
+            Spacer(minLength: 0)
+        }
+
+        ForEach(Array(childIds.enumerated()), id: \.offset) { index, id in
+            A2UIComponentRenderer(componentId: id)
+            if index < childIds.count - 1 {
+                if justify == .spaceBetween || justify == .spaceEvenly || justify == .spaceAround {
+                    Spacer(minLength: 0)
+                }
+            }
+        }
+
+        if justify == .start || justify == .center || justify == .spaceEvenly || justify == .spaceAround {
+            Spacer(minLength: 0)
+        }
+    }
+}
+
 struct A2UIRowView: View {
     let properties: ContainerProperties
     @Environment(SurfaceState.self) var surface
@@ -13,22 +37,7 @@ struct A2UIRowView: View {
         }()
 
         HStack(alignment: verticalAlignment, spacing: 0) {
-            if properties.resolvedJustify == .end || properties.resolvedJustify == .center || properties.resolvedJustify == .spaceEvenly || properties.resolvedJustify == .spaceAround {
-                Spacer(minLength: 0)
-            }
-
-            ForEach(Array(childIds.enumerated()), id: \.offset) { index, id in
-                A2UIComponentRenderer(componentId: id)
-                if index < childIds.count - 1 {
-                    if properties.resolvedJustify == .spaceBetween || properties.resolvedJustify == .spaceEvenly || properties.resolvedJustify == .spaceAround {
-                        Spacer(minLength: 0)
-                    }
-                }
-            }
-
-            if properties.resolvedJustify == .start || properties.resolvedJustify == .center || properties.resolvedJustify == .spaceEvenly || properties.resolvedJustify == .spaceAround {
-                Spacer(minLength: 0)
-            }
+            A2UIJustifiedContainer(childIds: childIds, justify: properties.resolvedJustify)
         }
         .frame(maxWidth: .infinity)
     }
@@ -48,29 +57,21 @@ struct A2UIColumnView: View {
     @Environment(SurfaceState.self) var surface
 
     var body: some View {
-        VStack(alignment: horizontalAlignment, spacing: 8) {
-            renderChildren()
-        }
-        .frame(maxWidth: .infinity, alignment: horizontalAlignment == .leading ? .leading : (horizontalAlignment == .trailing ? .trailing : .center))
-    }
+        let childIds: [String] = {
+            switch properties.children {
+            case .list(let list): return list
+            case .template(let template): return surface.expandTemplate(template: template)
+            }
+        }()
 
-    @ViewBuilder
-    private func renderChildren() -> some View {
-        switch properties.children {
-        case .list(let list):
-            ForEach(list, id: \.self) { id in
-                A2UIComponentRenderer(componentId: id)
-            }
-        case .template(let template):
-            let ids = surface.expandTemplate(template: template)
-            ForEach(ids, id: \.self) { id in
-                A2UIComponentRenderer(componentId: id)
-            }
+        VStack(alignment: horizontalAlignment, spacing: 0) {
+            A2UIJustifiedContainer(childIds: childIds, justify: properties.resolvedJustify)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: Alignment(horizontal: horizontalAlignment, vertical: .center))
     }
 
     private var horizontalAlignment: HorizontalAlignment {
-		switch properties.align {
+		switch properties.resolvedAlign {
 			case .start: return .leading
 			case .center: return .center
 			case .end: return .trailing
