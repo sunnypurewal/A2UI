@@ -70,7 +70,7 @@ struct GalleryData {
 			case .layout:
 				return [.row, .column, .list]
 			case .content:
-				return []
+				return [.text]
 			default:
 				return []
 		}
@@ -183,8 +183,8 @@ extension GalleryComponent {
 	static let text: Self = {
 		return .init(
 			id: "Text",
-			template: #""#,
-			staticComponents: [],
+			template: #"{"id":"gallery_component","component":{"Text":{"text":{"path":"/text"},"variant":"{{\#(variantKey)}}"}}}"#,
+			staticComponents: [.root],
 			dataModelFields: [
 				.init(path: "/text", label: "Text", value: .string("Sample text")),
 			],

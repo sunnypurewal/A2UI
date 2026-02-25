@@ -9,22 +9,14 @@ struct ContentView: View {
         NavigationView {
 			List(ComponentCategory.allCases, id: \.self) { category in
 				NavigationLink {
-					let components = GalleryData.components(for: category)
-					List {
-						ForEach(components) { component in
-							NavigationLink {
-								ComponentView(component: component)
-							} label: {
-								Text(component.id.rawValue)
-							}
-
+					List(GalleryData.components(for: category)) { component in
+						NavigationLink {
+							ComponentView(component: component)
+						} label: {
+							Text(component.id)
 						}
 					}
-//					List(components, id: \.self) { component in
-//						NavigationLink(destination: ComponentView(component: component)) {
-//							Text(component.id.rawValue)
-//						}
-//					}
+					.navigationTitle(category.rawValue)
 				} label: {
 					Text(category.rawValue)
 				}
