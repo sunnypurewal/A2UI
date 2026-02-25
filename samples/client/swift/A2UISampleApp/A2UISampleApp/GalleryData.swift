@@ -5,7 +5,7 @@ struct GalleryData {
 	static var all: [ComponentCategory: [String: GalleryComponent]] = [
 		.layout: [
 			"Row": .row,
-			"Column": .column
+			"Column": .column,
 		]
 	]
 }
@@ -13,32 +13,8 @@ struct GalleryData {
 struct GalleryComponent: Identifiable {
 	let id: String
 	let template: String
-	let staticComponents: [String]
+	let staticComponents: [StaticComponent]
 	var properties: [PropertyDefinition]
-	
-	static let row: Self = {
-		return .init(
-			id: "Row",
-			template: #"{"id":"gallery_component","component":{"Row":{"children":["t_h2","t_body","t_caption"],"justify":"{{\#(justifyKey)}}","align":"{{\#(alignKey)}}"}}}"#,
-			staticComponents: [root, h2, body, caption],
-			properties: [
-				PropertyDefinition(key: justifyKey, label: "Justify", options: A2UIJustify.allCases.map { $0.rawValue }, value: A2UIJustify.start.rawValue),
-				PropertyDefinition(key: alignKey, label: "Align", options: A2UIAlign.allCases.map { $0.rawValue }, value: A2UIAlign.start.rawValue)
-			]
-		)
-	}()
-	
-	static let column: Self = {
-		return .init(
-			id: "Column",
-			template: #"{"id":"gallery_component","component":{"Column":{"children":["t_h2","t_body","t_caption"],"justify":"{{\#(justifyKey)}}","align":"{{\#(alignKey)}}"}}}"#,
-			staticComponents: [root, h2, body, caption],
-			properties: [
-				PropertyDefinition(key: justifyKey, label: "Justify", options: A2UIJustify.allCases.map { $0.rawValue }, value: A2UIJustify.start.rawValue),
-				PropertyDefinition(key: alignKey, label: "Align", options: A2UIAlign.allCases.map { $0.rawValue }, value: A2UIAlign.start.rawValue)
-			]
-		)
-	}()
 	
 	mutating func setProperty(_ key: String, to value: String) {
 		guard let index = properties.firstIndex(where: { $0.key == key }) else { return }
@@ -65,23 +41,64 @@ struct GalleryComponent: Identifiable {
 	}
 	
 	var resolvedComponents: [String] {
-		return staticComponents + [resolvedTemplate]
+		return staticComponents.map { $0.rawValue } + [resolvedTemplate]
 	}
 	
 	var prettyJson: String {
-		guard let data = resolvedTemplate.data(using: .utf8) else { return "{}" }
-		do {
-			let obj = try JSONSerialization.jsonObject(with: data)
-			let options: JSONSerialization.WritingOptions = [.prettyPrinted, .sortedKeys]
-			guard let prettyData = try? JSONSerialization.data(withJSONObject: obj, options: options),
-				  let prettyString = String(data: prettyData, encoding: .utf8) else {
-				return resolvedTemplate
-			}
-			return prettyString
-		} catch {
-			return "{}"
+		let objects: [Any] = resolvedComponents.compactMap { json in
+			guard let data = json.data(using: .utf8) else { return nil }
+			return try? JSONSerialization.jsonObject(with: data)
 		}
+		guard !objects.isEmpty else { return "[]" }
+		let options: JSONSerialization.WritingOptions = [.prettyPrinted, .sortedKeys]
+		guard let data = try? JSONSerialization.data(withJSONObject: objects, options: options),
+			  let pretty = String(data: data, encoding: .utf8) else {
+			return "[\n\(resolvedComponents.joined(separator: ",\n"))\n]"
+		}
+		return pretty
 	}
+}
+
+extension GalleryComponent {
+	/// Layout
+	static let row: Self = {
+		return .init(
+			id: "Row",
+			template: #"{"id":"gallery_component","component":{"Row":{"children":["t_h2","t_body","t_caption"],"justify":"{{\#(justifyKey)}}","align":"{{\#(alignKey)}}"}}}"#,
+			staticComponents: [.root, .h2, .body, .caption],
+			properties: [
+				PropertyDefinition(key: justifyKey, label: "Justify", options: A2UIJustify.allCases.map { $0.rawValue }, value: A2UIJustify.start.rawValue),
+				PropertyDefinition(key: alignKey, label: "Align", options: A2UIAlign.allCases.map { $0.rawValue }, value: A2UIAlign.start.rawValue)
+			]
+		)
+	}()
+	static let column: Self = {
+		return .init(
+			id: "Column",
+			template: #"{"id":"gallery_component","component":{"Column":{"children":["t_h2","t_body","t_caption"],"justify":"{{\#(justifyKey)}}","align":"{{\#(alignKey)}}"}}}"#,
+			staticComponents: [.root, .h2, .body, .caption],
+			properties: [
+				PropertyDefinition(key: justifyKey, label: "Justify", options: A2UIJustify.allCases.map { $0.rawValue }, value: A2UIJustify.start.rawValue),
+				PropertyDefinition(key: alignKey, label: "Align", options: A2UIAlign.allCases.map { $0.rawValue }, value: A2UIAlign.start.rawValue)
+			]
+		)
+	}()
+//	static let card: Self = {
+//		return .init(
+//			id: "Card",
+//			template: #"{"id":"gallery_component","component":{"Card":{"child":"card_content_container"}}}"#,
+//			staticComponents: [.root, .cardContentContainer, .cardContentTop, .cardContentBottom, .h2, .body, .caption],
+//			properties: []
+//		)
+//	}()
+//	static let list: Self = {
+//		return .init(
+//			id: "List",
+//			template: #"{"id":"gallery_component","component":{"List":{"children":explicitList:[]}}}"#,
+//			staticComponents: [.root, .h2, .body, .caption, .row],
+//			properties: []
+//		)
+//	}()
 }
 
 struct PropertyDefinition: Identifiable {
@@ -97,7 +114,12 @@ let alignKey = "align"
 let textAlignKey = "textAlign"
 let colorKey = "color"
 
-let h2 = #"{"id":"t_h2","component":{"Text":{"text":"h2","variant":"h2"}}}"#
-let body = #"{"id":"t_body","component":{"Text":{"text":"body","variant":"body"}}}"#
-let caption = #"{"id":"t_caption","component":{"Text":{"text":"caption","variant":"caption"}}}"#
-let root = #"{"id":"root","component":{"Card":{"child":"gallery_component"}}}"#
+enum StaticComponent: String {
+	case h2 = #"{"id":"t_h2","component":{"Text":{"text":{"path":"/headline/text"},"variant":"h2"}}}"#
+	case body = #"{"id":"t_body","component":{"Text":{"text":{"path":"/body/text"},"variant":"body"}}}"#
+	case caption = #"{"id":"t_caption","component":{"Text":{"text":{"path":"/caption/text"},"variant":"caption"}}}"#
+	case root = #"{"id":"root","component":{"Card":{"child":"gallery_component"}}}"#
+	case cardContentContainer = #"{"id":"card_content_container","component":{"Column":{"children":["card_content_top","card_content_bottom"],"justify":"spaceAround","align":"center"}}}"#
+	case cardContentTop = #"{"id":"card_content_top","component":{"Row":{"children":["t_h2"],"justify":"start","align":"center"}}}"#
+	case cardContentBottom = #"{"id":"card_content_bottom","component":{"Row":{"children":["t_body","t_caption"],"justify":"spaceBetween","align":"center"}}}"#
+}
