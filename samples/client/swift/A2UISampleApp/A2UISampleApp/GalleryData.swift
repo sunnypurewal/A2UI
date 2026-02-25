@@ -6,6 +6,7 @@ struct DataModelField: Identifiable {
 		case string(String)
 		case number(Double)
 		case bool(Bool)
+		case list([String])
 	}
 	
 	let id = UUID()
@@ -22,6 +23,8 @@ struct DataModelField: Identifiable {
 			valueJson = "\(numberValue)"
 		case .bool(let boolValue):
 			valueJson = boolValue ? "true" : "false"
+		case .list(let listValue):
+			valueJson = jsonArrayLiteral(from: listValue)
 		}
 		return #"{"version":"v0.10","updateDataModel":{"surfaceId":"\#(surfaceId)","path":"\#(path)","value":\#(valueJson)}}"#
 	}
@@ -42,6 +45,14 @@ struct DataModelField: Identifiable {
 		}
 
 		return String(wrapped.dropFirst().dropLast())
+	}
+
+	private func jsonArrayLiteral(from listValue: [String]) -> String {
+		guard let data = try? JSONSerialization.data(withJSONObject: listValue),
+			  let jsonString = String(data: data, encoding: .utf8) else {
+			return "[]"
+		}
+		return jsonString
 	}
 }
 

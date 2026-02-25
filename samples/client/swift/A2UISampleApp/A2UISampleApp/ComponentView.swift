@@ -171,6 +171,8 @@ struct ComponentView: View {
 			return numberValue
 		case .bool(let boolValue):
 			return boolValue
+		case .list(let listValue):
+			return listValue
 		}
 	}
 
@@ -188,6 +190,10 @@ struct ComponentView: View {
 		case .bool:
 			Toggle("", isOn: boolBinding(for: field))
 				.labelsHidden()
+		case .list:
+			TextField("", text: listBinding(for: field))
+				.textFieldStyle(.roundedBorder)
+				.frame(width: 180)
 		}
 	}
 
@@ -231,6 +237,25 @@ struct ComponentView: View {
 			},
 			set: { newValue in
 				field.wrappedValue.value = .bool(newValue)
+				updateDataModel(for: field.wrappedValue)
+			}
+		)
+	}
+
+	private func listBinding(for field: Binding<DataModelField>) -> Binding<String> {
+		Binding(
+			get: {
+				if case .list(let value) = field.wrappedValue.value {
+					return value.joined(separator: ", ")
+				}
+				return ""
+			},
+			set: { newValue in
+				let items = newValue
+					.split(separator: ",")
+					.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+					.filter { !$0.isEmpty }
+				field.wrappedValue.value = .list(items)
 				updateDataModel(for: field.wrappedValue)
 			}
 		)
