@@ -5,6 +5,12 @@ struct ComponentView: View {
 	@Environment(A2UIDataStore.self) var dataStore
 	@State private var jsonToShow: String?
 	@State private var component: GalleryComponent
+	private let numberFormatter: NumberFormatter = {
+		let formatter = NumberFormatter()
+		formatter.numberStyle = .decimal
+		formatter.maximumFractionDigits = 4
+		return formatter
+	}()
 	
 	init(component: GalleryComponent) {
 		self._component = State(initialValue: component)
@@ -36,6 +42,23 @@ struct ComponentView: View {
 							.onChange(of: prop.wrappedValue.value) {
 								updateSurface(for: component)
 							}
+						}
+					}
+				}
+				.padding()
+				.background(Color(.secondarySystemBackground))
+				.cornerRadius(10)
+			}
+
+			if !component.dataModelFields.isEmpty {
+				VStack(alignment: .leading, spacing: 10) {
+					ForEach($component.dataModelFields) { field in
+						HStack {
+							Text(field.wrappedValue.label)
+								.font(.subheadline)
+								.foregroundColor(.secondary)
+							Spacer()
+							dataModelEditor(for: field)
 						}
 					}
 				}
@@ -88,6 +111,73 @@ struct ComponentView: View {
 	private func updateSurface(for component: GalleryComponent) {
 		dataStore.process(chunk: component.updateComponentsA2UI)
 		dataStore.flush()
+	}
+
+	private func updateDataModel(for field: DataModelField) {
+		dataStore.process(chunk: field.updateDataModelA2UI(surfaceId: component.id))
+		dataStore.flush()
+	}
+
+	@ViewBuilder
+	private func dataModelEditor(for field: Binding<DataModelField>) -> some View {
+		switch field.wrappedValue.value {
+		case .string:
+			TextField("", text: stringBinding(for: field))
+				.textFieldStyle(.roundedBorder)
+				.frame(width: 180)
+		case .number:
+			TextField("", value: numberBinding(for: field), formatter: numberFormatter)
+				.textFieldStyle(.roundedBorder)
+				.frame(width: 120)
+		case .bool:
+			Toggle("", isOn: boolBinding(for: field))
+				.labelsHidden()
+		}
+	}
+
+	private func stringBinding(for field: Binding<DataModelField>) -> Binding<String> {
+		Binding(
+			get: {
+				if case .string(let value) = field.wrappedValue.value {
+					return value
+				}
+				return ""
+			},
+			set: { newValue in
+				field.wrappedValue.value = .string(newValue)
+				updateDataModel(for: field.wrappedValue)
+			}
+		)
+	}
+
+	private func numberBinding(for field: Binding<DataModelField>) -> Binding<Double> {
+		Binding(
+			get: {
+				if case .number(let value) = field.wrappedValue.value {
+					return value
+				}
+				return 0
+			},
+			set: { newValue in
+				field.wrappedValue.value = .number(newValue)
+				updateDataModel(for: field.wrappedValue)
+			}
+		)
+	}
+
+	private func boolBinding(for field: Binding<DataModelField>) -> Binding<Bool> {
+		Binding(
+			get: {
+				if case .bool(let value) = field.wrappedValue.value {
+					return value
+				}
+				return false
+			},
+			set: { newValue in
+				field.wrappedValue.value = .bool(newValue)
+				updateDataModel(for: field.wrappedValue)
+			}
+		)
 	}
 }
 

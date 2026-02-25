@@ -40,7 +40,7 @@ struct GalleryComponent: Identifiable {
 	let id: String
 	let template: String
 	let staticComponents: [StaticComponent]
-	let dataModelFields: [DataModelField]
+	var dataModelFields: [DataModelField]
 	var properties: [PropertyDefinition]
 	
 	mutating func setProperty(_ key: String, to value: String) {
