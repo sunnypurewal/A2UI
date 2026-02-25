@@ -330,8 +330,8 @@ public struct ButtonProperties: Codable, Sendable {
 
 public struct ImageProperties: Codable, Sendable {
     public let url: BoundValue<String>
-    public let fit: String? // contain, cover, fill, none, scaleDown
-    public let variant: String? // icon, avatar, smallFeature, mediumFeature, largeFeature, header
+    public let fit: A2UIImageFit? // contain, cover, fill, none, scaleDown
+    public let variant: A2UIImageVariant? // icon, avatar, smallFeature, mediumFeature, largeFeature, header
 }
 
 public struct IconProperties: Codable, Sendable {
@@ -438,6 +438,25 @@ public enum A2UITextVariant: String, Codable, Sendable, CaseIterable, Identifiab
 	case h5 = "h5"
 	case caption = "caption"
 	case body = "body"
+}
+
+public enum A2UIImageVariant: String, Codable, Sendable, CaseIterable, Identifiable {
+	public var id: String { self.rawValue }
+	case icon = "icon"
+	case avatar = "avatar"
+	case smallFeature = "smallFeature"
+	case mediumFeature = "mediumFeature"
+	case largeFeature = "largeFeature"
+	case header = "header"
+}
+
+public enum A2UIImageFit: String, Codable, Sendable, CaseIterable, Identifiable {
+	public var id: String { self.rawValue }
+	case contain = "contain"
+	case cover = "cover"
+	case fill = "fill"
+	case none = "none"
+	case scaleDown = "scaleDown"
 }
 
 public struct ContainerProperties: Codable, Sendable {

@@ -22,14 +22,15 @@ struct A2UIImageView: View {
                     EmptyView()
                 }
             }
-            .accessibilityLabel(properties.variant ?? "Image")
+			.accessibilityLabel(properties.variant?.rawValue ?? "Image")
+			.mask(RoundedRectangle(cornerRadius: properties.variant == .avatar ? .infinity : 0))
         }
     }
 
     private var contentMode: ContentMode {
         switch properties.fit {
-        case "cover", "fill": return .fill
-        default: return .fit
+			case .cover, .fill: return .fill
+			default: return .fit
         }
     }
 }
