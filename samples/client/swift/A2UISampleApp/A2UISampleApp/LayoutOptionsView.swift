@@ -4,8 +4,12 @@ import A2UI
 struct LayoutOptionsView: View {
     var body: some View {
 		List(LayoutComponents.allCases, id: \.self) { component in
-			if let component = GalleryData.all[.layout]?[component.rawValue] {
-				ComponentView(component: component)
+			if let galleryComponent = GalleryData.all[.layout]?[component.rawValue] {
+				NavigationLink {
+					ComponentView(component: galleryComponent)
+				} label: {
+					Text(component.rawValue)
+				}
 			}
         }
         .navigationTitle("Layout")

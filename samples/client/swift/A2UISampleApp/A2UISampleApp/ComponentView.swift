@@ -3,6 +3,7 @@ import A2UI
 
 struct ComponentView: View {
 	@Environment(A2UIDataStore.self) var dataStore
+	@State private var jsonToShow: String?
 	@State private var component: GalleryComponent
 	
 	init(component: GalleryComponent) {
@@ -41,10 +42,44 @@ struct ComponentView: View {
 				.background(Color(.secondarySystemBackground))
 				.cornerRadius(10)
 			}
+			
+			
+			Button(action: {
+				jsonToShow = component.prettyJson
+			}) {
+				Label("Show JSON", systemImage: "doc.text")
+					.font(.footnote)
+			}
+			.buttonStyle(PlainButtonStyle())
+			.padding(.horizontal, 12)
+			.padding(.vertical, 8)
+			.background(Color.accentColor.opacity(0.1))
+			.cornerRadius(8)
 		}
 		.onAppear {
 			dataStore.process(chunk: component.a2ui)
 			dataStore.flush()
+		}
+		.sheet(isPresented: Binding(
+			get: { jsonToShow != nil },
+			set: { if !$0 { jsonToShow = nil } }
+		)) {
+			NavigationView {
+				ScrollView {
+					Text(jsonToShow ?? "")
+						.font(.system(.body, design: .monospaced))
+						.padding()
+						.frame(maxWidth: .infinity, alignment: .leading)
+				}
+				.navigationTitle("A2UI JSON")
+				.toolbar {
+					ToolbarItem(placement: .navigationBarTrailing) {
+						Button("Done") {
+							jsonToShow = nil
+						}
+					}
+				}
+			}
 		}
 		.navigationTitle(component.id)
 	}
