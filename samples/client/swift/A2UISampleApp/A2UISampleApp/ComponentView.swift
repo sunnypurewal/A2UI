@@ -171,8 +171,8 @@ struct ComponentView: View {
 			return numberValue
 		case .bool(let boolValue):
 			return boolValue
-		case .listObjects(let jsonArrayValue):
-			return jsonArrayObjects(from: jsonArrayValue) ?? []
+		case .listObjects(let listValue):
+			return listValue
 		}
 	}
 
@@ -246,12 +246,13 @@ struct ComponentView: View {
 		Binding(
 			get: {
 				if case .listObjects(let value) = field.wrappedValue.value {
-					return value
+					return jsonArrayLiteral(from: value)
 				}
 				return ""
 			},
 			set: { newValue in
-				field.wrappedValue.value = .listObjects(newValue)
+				let parsed = jsonArrayObjects(from: newValue) ?? []
+				field.wrappedValue.value = .listObjects(parsed)
 				updateDataModel(for: field.wrappedValue)
 			}
 		)
@@ -264,6 +265,15 @@ struct ComponentView: View {
 			return nil
 		}
 		return array
+	}
+
+	private func jsonArrayLiteral(from listValue: [[String: Any]]) -> String {
+		guard JSONSerialization.isValidJSONObject(listValue),
+			  let data = try? JSONSerialization.data(withJSONObject: listValue),
+			  let jsonString = String(data: data, encoding: .utf8) else {
+			return "[]"
+		}
+		return jsonString
 	}
 }
 

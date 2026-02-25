@@ -6,7 +6,7 @@ struct DataModelField: Identifiable {
 		case string(String)
 		case number(Double)
 		case bool(Bool)
-		case listObjects(String)
+		case listObjects([[String: Any]])
 	}
 	
 	let id = UUID()
@@ -23,8 +23,8 @@ struct DataModelField: Identifiable {
 			valueJson = "\(numberValue)"
 		case .bool(let boolValue):
 			valueJson = boolValue ? "true" : "false"
-		case .listObjects(let jsonArrayValue):
-			valueJson = jsonArrayLiteral(from: jsonArrayValue)
+		case .listObjects(let listValue):
+			valueJson = jsonArrayLiteral(from: listValue)
 		}
 		return #"{"version":"v0.10","updateDataModel":{"surfaceId":"\#(surfaceId)","path":"\#(path)","value":\#(valueJson)}}"#
 	}
@@ -47,12 +47,9 @@ struct DataModelField: Identifiable {
 		return String(wrapped.dropFirst().dropLast())
 	}
 
-	private func jsonArrayLiteral(from jsonArrayValue: String) -> String {
-		guard let data = jsonArrayValue.data(using: .utf8),
-			  let object = try? JSONSerialization.jsonObject(with: data),
-			  let array = object as? [[String: Any]],
-			  JSONSerialization.isValidJSONObject(array),
-			  let jsonData = try? JSONSerialization.data(withJSONObject: array),
+	private func jsonArrayLiteral(from listValue: [[String: Any]]) -> String {
+		guard JSONSerialization.isValidJSONObject(listValue),
+			  let jsonData = try? JSONSerialization.data(withJSONObject: listValue),
 			  let jsonString = String(data: jsonData, encoding: .utf8) else {
 			return "[]"
 		}
@@ -171,7 +168,7 @@ extension GalleryComponent {
 				template: #"{"id":"gallery_component","component":{"List":{"children":{"template":{"componentId":"card_content_container","path":"/items"}}}}}"#,
 				staticComponents: [.root, .cardContentContainer, .cardContentTop, .cardContentBottom, .listH2, .listBody, .listCaption],
 				dataModelFields: [
-					.init(path: "/items", label: "Items (JSON array)", value: .listObjects("[]"))
+					.init(path: "/items", label: "Items (JSON array)", value: .listObjects([]))
 				],
 				properties: []
 			)
