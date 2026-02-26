@@ -83,7 +83,7 @@ public enum A2UIFunctionEvaluator {
         if let s = value as? String {
             return !s.isEmpty
         }
-        if value is NSNull {
+        if value is NSNull || value is JSONNull {
             return false
         }
         return true
@@ -93,7 +93,7 @@ public enum A2UIFunctionEvaluator {
         guard let value = args["value"] as? String,
               let pattern = args["pattern"] as? String else { return false }
         do {
-            let regex = try NSRegularExpression(pattern: pattern)
+            let regex = try NSRegularExpression(pattern: pattern, options: [])
             let range = NSRange(location: 0, length: value.utf16.count)
             return regex.firstMatch(in: value, options: [], range: range) != nil
         } catch {
@@ -106,17 +106,19 @@ public enum A2UIFunctionEvaluator {
         guard let value = args["value"] as? String else { return false }
         let length = value.count
         
-        if let min = args["min"] as? Int, length < min {
-            return false
+        if let minVal = args["min"] {
+            let min = (minVal as? Int) ?? Int(minVal as? Double ?? 0)
+            if length < min { return false }
         }
-        if let max = args["max"] as? Int, length > max {
-            return false
+        if let maxVal = args["max"] {
+            let max = (maxVal as? Int) ?? Int(maxVal as? Double ?? Double.greatestFiniteMagnitude)
+            if length > max { return false }
         }
         return true
     }
 
     private static func checkNumeric(args: [String: Any]) -> Bool {
-        guard let value = args["value"] as? Double else {
+        guard let value = (args["value"] as? Double) ?? (args["value"] as? Int).map(Double.init) else {
             // Try to parse from string if it's a string
             if let s = args["value"] as? String, let d = Double(s) {
                 return checkNumeric(value: d, args: args)
@@ -127,18 +129,20 @@ public enum A2UIFunctionEvaluator {
     }
 
     private static func checkNumeric(value: Double, args: [String: Any]) -> Bool {
-        if let min = args["min"] as? Double, value < min {
-            return false
+        if let minVal = args["min"] {
+            let min = (minVal as? Double) ?? (minVal as? Int).map(Double.init) ?? -Double.greatestFiniteMagnitude
+            if value < min { return false }
         }
-        if let max = args["max"] as? Double, value > max {
-            return false
+        if let maxVal = args["max"] {
+            let max = (maxVal as? Double) ?? (maxVal as? Int).map(Double.init) ?? Double.greatestFiniteMagnitude
+            if value > max { return false }
         }
         return true
     }
 
     private static func isEmail(args: [String: Any]) -> Bool {
         guard let value = args["value"] as? String else { return false }
-        let pattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}"
+        let pattern = #"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}"#
         let regex = try? NSRegularExpression(pattern: pattern)
         let range = NSRange(location: 0, length: value.utf16.count)
         return regex?.firstMatch(in: value, options: [], range: range) != nil
@@ -152,7 +156,7 @@ public enum A2UIFunctionEvaluator {
         // Simple interpolation for ${/path} or ${expression}
         // This is a basic implementation of the description in basic_catalog.json
         var result = format
-        let pattern = "\$\{([^}]+)\}"
+        let pattern = #"\$\{([^}]+)\}"#
         let regex = try? NSRegularExpression(pattern: pattern)
         let matches = regex?.matches(in: format, options: [], range: NSRange(location: 0, length: format.utf16.count))
         
@@ -173,7 +177,7 @@ public enum A2UIFunctionEvaluator {
                 } else {
                     // For now, only simple paths are supported in formatString interpolation
                     // In a full implementation, we'd parse and evaluate expressions here
-                    replacement = "$\{\(expression)\}"
+                    replacement = "${\(expression)}"
                 }
                 
                 if let fullR = Range(fullRange, in: result) {
@@ -186,11 +190,12 @@ public enum A2UIFunctionEvaluator {
     }
 
     private static func formatNumber(args: [String: Any]) -> String {
-        guard let value = args["value"] as? Double else { return "" }
+        guard let value = (args["value"] as? Double) ?? (args["value"] as? Int).map(Double.init) else { return "" }
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         
-        if let decimals = args["decimals"] as? Int {
+        if let decimalsVal = args["decimals"] {
+            let decimals = (decimalsVal as? Int) ?? Int(decimalsVal as? Double ?? 0)
             formatter.minimumFractionDigits = decimals
             formatter.maximumFractionDigits = decimals
         }
@@ -205,14 +210,15 @@ public enum A2UIFunctionEvaluator {
     }
 
     private static func formatCurrency(args: [String: Any]) -> String {
-        guard let value = args["value"] as? Double,
+        guard let value = (args["value"] as? Double) ?? (args["value"] as? Int).map(Double.init),
               let currencyCode = args["currency"] as? String else { return "" }
         
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencyCode = currencyCode
         
-        if let decimals = args["decimals"] as? Int {
+        if let decimalsVal = args["decimals"] {
+            let decimals = (decimalsVal as? Int) ?? Int(decimalsVal as? Double ?? 0)
             formatter.minimumFractionDigits = decimals
             formatter.maximumFractionDigits = decimals
         }
@@ -253,7 +259,7 @@ public enum A2UIFunctionEvaluator {
     }
 
     private static func pluralize(args: [String: Any]) -> String {
-        guard let value = args["value"] as? Double else { return "" }
+        guard let value = (args["value"] as? Double) ?? (args["value"] as? Int).map(Double.init) else { return "" }
         
         // This is a simplified version of CLDR pluralization
         // For English: 1 -> one, everything else -> other

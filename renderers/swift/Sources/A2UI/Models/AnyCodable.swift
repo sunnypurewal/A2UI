@@ -11,7 +11,7 @@ public struct JSONNull: Codable, Sendable, Hashable {
     }
 }
 
-public struct AnyCodable: Codable, Sendable {
+public struct AnyCodable: Codable, Sendable, Equatable {
     public let value: Sendable
     public init(_ value: Sendable) { self.value = value }
     public init(from decoder: Decoder) throws {
@@ -32,5 +32,19 @@ public struct AnyCodable: Codable, Sendable {
         else if let x = value as? Double { try container.encode(x) }
         else if let x = value as? [String: Sendable] { try container.encode(x.mapValues { AnyCodable($0) }) }
         else if let x = value as? [Sendable] { try container.encode(x.map { AnyCodable($0) }) }
+    }
+
+    public static func == (lhs: AnyCodable, rhs: AnyCodable) -> Bool {
+        switch (lhs.value, rhs.value) {
+        case is (JSONNull, JSONNull): return true
+        case let (l as String, r as String): return l == r
+        case let (l as Bool, r as Bool): return l == r
+        case let (l as Double, r as Double): return l == r
+        case let (l as [String: Sendable], r as [String: Sendable]):
+            return (l as NSDictionary).isEqual(to: r)
+        case let (l as [Sendable], r as [Sendable]):
+            return (l as NSArray).isEqual(to: r)
+        default: return false
+        }
     }
 }

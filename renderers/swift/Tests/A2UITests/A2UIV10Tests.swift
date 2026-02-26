@@ -142,7 +142,7 @@ final class A2UIV10Tests: XCTestCase {
         }
         if case .choicePicker(let props) = update.components[0].component {
             XCTAssertEqual(props.options.count, 2)
-            XCTAssertEqual(props.variant, "mutuallyExclusive")
+            XCTAssertEqual(props.variant, .mutuallyExclusive)
         } else {
             XCTFail("Component is not ChoicePicker")
         }

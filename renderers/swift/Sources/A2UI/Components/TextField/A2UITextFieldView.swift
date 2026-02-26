@@ -17,8 +17,11 @@ struct A2UITextFieldView: View {
 					.foregroundColor(.secondary)
 				TextEditor(text: $text)
 			} else {
-				TextField(label, text: $text)
-					.keyboardType(variant == .number ? .decimalPad : .default)
+				                            TextField(label, text: $text)
+				#if os(iOS)
+				                                    .keyboardType(variant == .number ? .decimalPad : .default)
+				#endif
+				
 			}
         }
 		.textFieldStyle(.roundedBorder)

@@ -68,7 +68,9 @@ struct A2UIChoicePickerView: View {
                     .background(Color.secondary.opacity(0.1))
                     .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
+#if os(iOS)
                 .menuActionDismissBehavior(.disabled)
+#endif
             }
         }
         .onChange(of: selections) { _, newValue in

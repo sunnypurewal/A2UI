@@ -283,7 +283,7 @@ final class A2UIParserTests: XCTestCase {
 
         let components: [ComponentType] = [
             .text(.init(text: boundStr, variant: .h1)),
-            .button(.init(child: "C", action: action, variant: "primary")),
+            .button(.init(child: "C", action: action, variant: .primary)),
             .row(.init(children: children, justify: .stretch, align: .center)),
             .column(.init(children: children, justify: .start, align: .start)),
             .card(.init(child: "C")),
@@ -291,10 +291,10 @@ final class A2UIParserTests: XCTestCase {
             .icon(.init(name: boundStr)),
             .video(.init(url: boundStr)),
             .audioPlayer(.init(url: boundStr, description: nil)),
-            .divider(.init(axis: "horizontal")),
+            .divider(.init(axis: .horizontal)),
             .list(.init(children: children, direction: "vertical", align: nil)),
             .tabs(.init(tabs: [TabItem(title: boundStr, child: "c1")])),
-            .textField(.init(label: boundStr, value: boundStr, variant: "shortText")),
+            .textField(.init(label: boundStr, value: boundStr, variant: .shortText)),
             .checkBox(.init(label: boundStr, value: boundBool)),
             .slider(.init(label: boundStr, min: 0, max: 100, value: boundNum)),
             .custom("CustomComp", ["key": AnyCodable("val")])

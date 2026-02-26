@@ -35,7 +35,7 @@ final class A2UIRendererTests: XCTestCase {
     func testButtonActionTrigger() {
         let expectation = XCTestExpectation(description: "Button clicked")
         let action = Action.custom(name: "test", context: nil)
-        let props = ButtonProperties(child: "t1", action: action, variant: "primary")
+        let props = ButtonProperties(child: "t1", action: action, variant: .primary)
         
         surface.actionHandler = { userAction in
             if case .custom(let name, _) = userAction.action {
@@ -51,7 +51,7 @@ final class A2UIRendererTests: XCTestCase {
     }
 
     func testTextFieldUpdate() {
-        let props = TextFieldProperties(label: .init(literal: "L"), value: .init(literal: "initial"), variant: "shortText")
+        let props = TextFieldProperties(label: .init(literal: "L"), value: .init(literal: "initial"), variant: .shortText)
         let view = A2UITextFieldView(properties: props).environment(surface).environment(dataStore)
         render(view)
     }
@@ -103,7 +103,7 @@ final class A2UIRendererTests: XCTestCase {
         render(A2UITextView(properties: TextProperties(text: .init(literal: "Text"), variant: nil)).environment(surface).environment(dataStore))
         
         // Button
-        let buttonProps = ButtonProperties(child: "t1", action: Action.custom(name: "test", context: nil), variant: "primary")
+        let buttonProps = ButtonProperties(child: "t1", action: Action.custom(name: "test", context: nil), variant: .primary)
         render(A2UIButtonView(properties: buttonProps).environment(surface).environment(dataStore))
         
         // Containers
@@ -115,11 +115,11 @@ final class A2UIRendererTests: XCTestCase {
         render(A2UIListView(properties: listProps).environment(surface).environment(dataStore))
         
         // Layout
-        render(A2UIDividerView().environment(surface).environment(dataStore))
+        render(A2UIDividerView(properties: .init(axis: .horizontal)).environment(surface).environment(dataStore))
         render(A2UIIconView(properties: .init(name: .init(literal: "star"))).environment(surface).environment(dataStore))
         
         // More Inputs
-        let cpProps = ChoicePickerProperties(label: .init(literal: "Pick"), options: [SelectionOption(label: .init(literal: "O1"), value: "v1")], variant: "mutuallyExclusive", value: .init(literal: ["v1"]))
+        let cpProps = ChoicePickerProperties(label: .init(literal: "Pick"), options: [SelectionOption(label: .init(literal: "O1"), value: "v1")], variant: .mutuallyExclusive, value: .init(literal: ["v1"]))
         render(A2UIChoicePickerView(properties: cpProps).environment(surface).environment(dataStore))
 
         let dtProps = DateTimeInputProperties(label: .init(literal: "Date"), value: .init(literal: "2024-01-01"), enableDate: true, enableTime: false, min: nil, max: nil)

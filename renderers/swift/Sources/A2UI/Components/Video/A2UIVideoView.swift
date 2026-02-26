@@ -21,9 +21,12 @@ struct A2UIVideoView: View {
                 player?.pause()
                 player = nil
             }
-			.fullScreenCover(isPresented: $showFullscreen) {
-				videoView
-			}
+			#if os(iOS)
+			                    .fullScreenCover(isPresented: $showFullscreen) {
+			                            videoView
+			                    }
+			#endif
+			
     }
 	
 	@ViewBuilder
