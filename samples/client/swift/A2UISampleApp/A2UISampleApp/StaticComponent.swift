@@ -43,4 +43,9 @@ enum StaticComponent: String {
 	case dividerContainer = #"{"id":"divider_preview","component":{"Column":{"children":["divider_row","divider_column"],"justify":"spaceBetween","align":"center"}}}"#
 	case dividerColumn = #"{"id":"divider_column","component":{"Column":{"children":["t_body","gallery_component","t_body"],"justify":"spaceAround","align":"center"}}}"#
 	case dividerRow = #"{"id":"divider_row","component":{"Row":{"children":["t_body","gallery_component","t_body"],"justify":"spaceAround","align":"center"}}}"#
+	
+	case formatDateText = #"{"id":"t_body","component":{"Text":{"text":{"call":"formatDate","args":{"value":{"path":"/date"},"format":"{{dateFormat}}"}},"variant":"h2"}}}"#
+	case formatCurrencyText = #"{"id":"t_body","component":{"Text":{"text":{"call":"formatCurrency","args":{"value":{"path":"/amount"},"currency":"{{currencyCode}}"}},"variant":"h2"}}}"#
+	case pluralizeText = #"{"id":"t_body","component":{"Text":{"text":{"call":"pluralize","args":{"value":{"path":"/count"},"one":"One item","other":"Multiple items"}},"variant":"h2"}}}"#
+	case pluralizeInput = #"{"id":"gallery_input","component":{"Slider":{"value":{"path":"/count"},"min":0,"max":10,"label":"Count"}}}"#
 }

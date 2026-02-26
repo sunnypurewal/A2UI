@@ -14,7 +14,8 @@ struct GalleryData {
 				return [.button, .modal, .tabs]
 			case .decoration:
 				return [.divider]
+			case .functions:
+				return [.emailFunction, .requiredFunction, .lengthFunction, .regexFunction, .numericFunction, .formatDateFunction, .formatCurrencyFunction, .pluralizeFunction]
 		}
 	}
 }
-

@@ -33,6 +33,7 @@ enum ComponentCategory: String, CaseIterable {
 	case input = "Input"
 	case navigation = "Navigation"
 	case decoration = "Decoration"
+	case functions = "Functions"
 }
 
 enum ComponentType: String {
