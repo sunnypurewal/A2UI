@@ -202,7 +202,10 @@ struct ComponentView: View {
 	private func propertyDateBinding(for prop: Binding<PropertyDefinition>) -> Binding<Date> {
 		Binding(
 			get: {
-				iso8601Formatter.date(from: prop.wrappedValue.value) ?? Date()
+				guard let value = prop.wrappedValue.value else {
+					return Date()
+				}
+				return iso8601Formatter.date(from: value) ?? Date()
 			},
 			set: { newValue in
 				prop.wrappedValue.value = iso8601Formatter.string(from: newValue)

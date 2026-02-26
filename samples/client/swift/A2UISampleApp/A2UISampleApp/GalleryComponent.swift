@@ -7,7 +7,7 @@ struct GalleryComponent: Identifiable {
 	let staticComponents: [StaticComponent]
 	var dataModelFields: [DataModelField]
 	var canEditDataModel: Bool {
-		return !dataModelFields.isEmpty && id != "List"
+		return !dataModelFields.isEmpty
 	}
 	var properties: [PropertyDefinition]
 	var canEditProperties: Bool {
