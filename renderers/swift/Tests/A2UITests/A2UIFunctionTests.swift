@@ -133,4 +133,17 @@ final class A2UIFunctionTests: XCTestCase {
         let call = FunctionCall(call: "required", args: ["value": AnyCodable(binding)])
         XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool, true)
     }
+
+    func testCheckableLogic() async {
+        surface.setValue(at: "/email", value: "invalid")
+        let condition = BoundValue<Bool>(functionCall: FunctionCall(call: "email", args: ["value": AnyCodable(["path": "/email"])]))
+        let check = CheckRule(condition: condition, message: "Invalid email")
+        
+        let error = errorMessage(surface: surface, checks: [check])
+        XCTAssertEqual(error, "Invalid email")
+        
+        surface.setValue(at: "/email", value: "test@example.com")
+        let noError = errorMessage(surface: surface, checks: [check])
+        XCTAssertNil(noError)
+    }
 }

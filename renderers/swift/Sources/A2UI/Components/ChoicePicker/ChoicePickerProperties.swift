@@ -6,6 +6,14 @@ public struct ChoicePickerProperties: Codable, Sendable {
     public let variant: ChoicePickerVariant?
     public let value: BoundValue<[String]>
     public let checks: [CheckRule]?
+
+    public init(label: BoundValue<String>? = nil, options: [SelectionOption], variant: ChoicePickerVariant? = nil, value: BoundValue<[String]>, checks: [CheckRule]? = nil) {
+        self.label = label
+        self.options = options
+        self.variant = variant
+        self.value = value
+        self.checks = checks
+    }
 }
 
 public struct SelectionOption: Codable, Sendable {
