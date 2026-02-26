@@ -99,4 +99,83 @@ struct A2UIDataStoreTests {
         store.flush()
         #expect(store.surfaces["s-flush"] != nil)
     }
+
+    // MARK: - SurfaceState Deep Dive
+
+    @Test func surfaceStateResolve() {
+        let surface = SurfaceState(id: "s1")
+        surface.dataModel = [
+            "str": "hello",
+            "int": 42,
+            "double": 3.14,
+            "bool": true,
+            "null": NSNull(),
+            "nested": ["key": "val"]
+        ]
+        
+        // Literal
+        #expect(surface.resolve(BoundValue<String>(literal: "lit")) == "lit")
+        
+        // Path resolution and conversion
+        #expect(surface.resolve(BoundValue<String>(path: "str")) == "hello")
+        #expect(surface.resolve(BoundValue<String>(path: "int")) == "42")
+        #expect(surface.resolve(BoundValue<String>(path: "double")) == "3.14")
+        #expect(surface.resolve(BoundValue<String>(path: "bool")) == "true")
+        
+        #expect(surface.resolve(BoundValue<Int>(path: "int")) == 42)
+        #expect(surface.resolve(BoundValue<Double>(path: "int")) == 42.0)
+        #expect(surface.resolve(BoundValue<Int>(path: "double")) == 3)
+        #expect(surface.resolve(BoundValue<Double>(path: "double")) == 3.14)
+        
+        #expect(surface.resolve(BoundValue<String>(path: "null")) == nil)
+        #expect(surface.resolve(BoundValue<String>(path: "missing")) == nil)
+        
+        // Function Call (minimal test here, A2UIFunctionTests covers more)
+        let call = FunctionCall(call: "pluralize", args: ["value": AnyCodable(1), "one": AnyCodable("1 apple"), "other": AnyCodable("apples")])
+        #expect(surface.resolve(BoundValue<String>(functionCall: call)) == "1 apple")
+    }
+
+    @Test func surfaceStateValidationPaths() {
+        let surface = SurfaceState(id: "s1")
+        surface.components["c1"] = ComponentInstance(id: "c1", component: .text(.init(text: .init(literal: ""), variant: nil)))
+        surface.validationErrors["c1"] = "Required"
+        
+        #expect(surface.getValue(at: "/_validation/c1") as? String == "Required")
+        
+        surface.components["c2"] = ComponentInstance(id: "c2", checks: [CheckRule(condition: .init(literal: true), message: "err")], component: .text(.init(text: .init(literal: ""), variant: nil)))
+        #expect(surface.getValue(at: "/_validationStatus/c2") as? String == "Passed Checks")
+        
+        surface.validationErrors["c2"] = "Failed"
+        #expect((surface.getValue(at: "/_validationStatus/c2") as? String)?.contains("Failed Checks") == true)
+        
+        #expect(surface.getValue(at: "/_validationStatus/missing") == nil)
+    }
+
+    @Test func surfaceStateRunChecks() {
+        let surface = SurfaceState(id: "s1")
+        let check = CheckRule(condition: BoundValue<Bool>(path: "isValid"), message: "Invalid Value")
+        surface.components["c1"] = ComponentInstance(id: "c1", checks: [check], component: .text(.init(text: .init(literal: ""), variant: nil)))
+        
+        surface.dataModel["isValid"] = false
+        surface.runChecks(for: "c1")
+        #expect(surface.validationErrors["c1"] == "Invalid Value")
+        
+        surface.dataModel["isValid"] = true
+        surface.runChecks(for: "c1")
+        #expect(surface.validationErrors["c1"] == nil)
+        
+        surface.runChecks(for: "missing") // Should not crash
+    }
+
+    @Test func surfaceStateExpandTemplate() {
+        let surface = SurfaceState(id: "s1")
+        surface.dataModel["items"] = ["a", "b", "c"]
+        
+        let template = Template(componentId: "row", path: "items")
+        let ids = surface.expandTemplate(template: template)
+        #expect(ids.count == 3)
+        #expect(ids[0] == "row:items:0")
+        
+        #expect(surface.expandTemplate(template: Template(componentId: "row", path: "missing")).isEmpty)
+    }
 }

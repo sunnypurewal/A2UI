@@ -7,6 +7,11 @@ struct A2UIIconView: View {
     
     private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 
+    init(properties: IconProperties, surface: SurfaceState? = nil) {
+        self.properties = properties
+        self.surface = surface
+    }
+
     var body: some View {
         if let name = activeSurface?.resolve(properties.name) {
 			Image(systemName: A2UIIconName(rawValue: name)?.sfSymbolName ?? "questionmark.square.dashed")

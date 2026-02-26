@@ -19,6 +19,14 @@ final class A2UIDateTimeInputViewTests: XCTestCase {
         
         surface.setValue(at: "/date", value: "2024-06-01T12:00:00Z")
         
+        var capturedAction: UserAction?
+        surface.actionHandler = { action in
+            capturedAction = action
+            if case .dataUpdate(let dataUpdate) = action.action {
+                surface.setValue(at: dataUpdate.path, value: dataUpdate.contents.value)
+            }
+        }
+        
         let view = A2UIDateTimeInputView(id: "dt1", properties: props, surface: surface)
         let datePicker = try view.inspect().datePicker()
         
@@ -56,4 +64,3 @@ final class A2UIDateTimeInputViewTests: XCTestCase {
     }
 }
 
-extension A2UIDateTimeInputView: Inspectable {}

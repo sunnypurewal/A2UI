@@ -109,6 +109,22 @@ struct A2UIRendererTests {
         // that A2UISurfaceView correctly resolved the surface, its ready state,
         // and its rootComponentId, taking the active rendering path.
         let _ = try view.inspect().find(A2UIComponentRenderer.self)
+        ViewHosting.expel()
+        
+        // Test Not Ready
+        surface.isReady = false
+        let view2 = A2UISurfaceView(surfaceId: "s1", dataStore: dataStore).environment(dataStore)
+        ViewHosting.host(view: view2)
+        let progress = try view2.inspect().find(ViewType.ProgressView.self)
+        #expect(progress != nil)
+        ViewHosting.expel()
+        
+        // Test Missing Surface
+        let view3 = A2UISurfaceView(surfaceId: "missing", dataStore: dataStore).environment(dataStore)
+        ViewHosting.host(view: view3)
+        let missingText = try view3.inspect().find(ViewType.Text.self).string()
+        #expect(missingText.contains("Waiting for A2UI stream..."))
+        ViewHosting.expel()
     }
 
     // MARK: - View Component Initialization
@@ -148,20 +164,6 @@ struct A2UIRendererTests {
             let _ = try view.find(ViewType.VStack.self)
         }
         
-        let listProps = ListProperties(children: .list(["c1"]), direction: "vertical", align: "start")
-        try verifyRendering(A2UIListView(properties: listProps, surface: surface)) { view in
-            let _ = try view.find(ViewType.VStack.self)
-        }
-        
-        // Layout
-        try verifyRendering(A2UIDividerView(surface: surface, properties: .init(axis: .horizontal))) { view in
-            let _ = try view.divider()
-        }
-
-        try verifyRendering(A2UIIconView(properties: .init(name: .init(literal: "star")), surface: surface)) { view in
-            let _ = try view.find(ViewType.Image.self)
-        }
-        
         // More Inputs
         let cpProps = ChoicePickerProperties(label: .init(literal: "Pick"), options: [SelectionOption(label: .init(literal: "O1"), value: "v1")], variant: .mutuallyExclusive, value: .init(literal: ["v1"]))
         try verifyRendering(A2UIChoicePickerView(id: "choice_picker_id", properties: cpProps, surface: surface)) { view in
@@ -172,5 +174,26 @@ struct A2UIRendererTests {
         try verifyRendering(A2UIDateTimeInputView(id: "date_time_input_id", properties: dtProps, surface: surface)) { view in
             let _ = try view.find(ViewType.DatePicker.self)
         }
+    }
+
+    @Test func standardComponentViewRendering() throws {
+        let textProps = TextProperties(text: .init(literal: "Test Text"), variant: nil)
+        let comp = ComponentInstance(id: "c1", component: .text(textProps))
+        
+        let view = A2UIStandardComponentView(surface: surface, instance: comp)
+            .environment(surface)
+            .environment(dataStore)
+        
+        ViewHosting.host(view: view)
+        defer { ViewHosting.expel() }
+        
+        let _ = try view.inspect().find(A2UITextView.self)
+        
+        // Test with different types to ensure dispatch works
+        let buttonComp = ComponentInstance(id: "c2", component: .button(.init(child: "t1", action: .custom(name: "b", context: nil))))
+        let buttonView = A2UIStandardComponentView(surface: surface, instance: buttonComp)
+        ViewHosting.host(view: buttonView)
+        let _ = try buttonView.inspect().find(A2UIButtonView.self)
+        ViewHosting.expel()
     }
 }

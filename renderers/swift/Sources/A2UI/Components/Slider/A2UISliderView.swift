@@ -3,26 +3,30 @@ import SwiftUI
 struct A2UISliderView: View {
     let id: String
     let properties: SliderProperties
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 
-    init(id: String, properties: SliderProperties) {
+    init(id: String, properties: SliderProperties, surface: SurfaceState? = nil) {
         self.id = id
         self.properties = properties
+        self.surface = surface
     }
 
     var body: some View {
         let valueBinding = Binding<Double>(
             get: {
-                resolveValue(surface, binding: properties.value) ?? properties.min
+                resolveValue(activeSurface, binding: properties.value) ?? properties.min
             },
             set: { newValue in
-                updateBinding(surface: surface, binding: properties.value, newValue: newValue)
-                surface.runChecks(for: id)
+                updateBinding(surface: activeSurface, binding: properties.value, newValue: newValue)
+                activeSurface?.runChecks(for: id)
             }
         )
 
         VStack(alignment: .leading) {
-            if let label = properties.label, let labelText = surface.resolve(label) {
+            if let label = properties.label, let labelText = activeSurface?.resolve(label) {
                 Text(labelText)
                     .font(.caption)
             }
@@ -36,7 +40,7 @@ struct A2UISliderView: View {
             }
         }
         .onAppear {
-            surface.runChecks(for: id)
+            activeSurface?.runChecks(for: id)
         }
     }
 }

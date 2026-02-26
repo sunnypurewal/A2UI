@@ -3,29 +3,33 @@ import SwiftUI
 struct A2UICheckBoxView: View {
     let id: String
     let properties: CheckBoxProperties
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 
-    init(id: String, properties: CheckBoxProperties) {
+    init(id: String, properties: CheckBoxProperties, surface: SurfaceState? = nil) {
         self.id = id
         self.properties = properties
+        self.surface = surface
     }
 
     var body: some View {
         let isOnBinding = Binding<Bool>(
             get: {
-                resolveValue(surface, binding: properties.value) ?? false
+                resolveValue(activeSurface, binding: properties.value) ?? false
             },
             set: { newValue in
-                updateBinding(surface: surface, binding: properties.value, newValue: newValue)
-                surface.runChecks(for: id)
+                updateBinding(surface: activeSurface, binding: properties.value, newValue: newValue)
+                activeSurface?.runChecks(for: id)
             }
         )
 
         Toggle(isOn: isOnBinding) {
-            Text(resolveValue(surface, binding: properties.label) ?? "")
+            Text(resolveValue(activeSurface, binding: properties.label) ?? "")
         }
         .onAppear {
-            surface.runChecks(for: id)
+            activeSurface?.runChecks(for: id)
         }
     }
 }

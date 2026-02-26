@@ -148,10 +148,83 @@ final class A2UIModelsTests: XCTestCase {
             XCTFail("Expected appMessage")
         }
     }
+
+    func testA2UIMessageAppMessageMultipleKeys() throws {
+        let json = """
+        {
+            "event1": {"a": 1},
+            "event2": {"b": 2}
+        }
+        """.data(using: .utf8)!
+        
+        let message = try JSONDecoder().decode(A2UIMessage.self, from: json)
+        if case let .appMessage(name, data) = message {
+            XCTAssertTrue(name == "event1" || name == "event2")
+            XCTAssertEqual(data.count, 2)
+        } else {
+            XCTFail("Expected appMessage")
+        }
+    }
     
     func testA2UIMessageDecodeError() {
         let json = "{}".data(using: .utf8)!
         XCTAssertThrowsError(try JSONDecoder().decode(A2UIMessage.self, from: json))
+    }
+
+    func testA2UIMessageDeleteAndDataUpdate() throws {
+        // Delete
+        let deleteJson = """
+        {
+            "version": "v0.10",
+            "deleteSurface": {"surfaceId": "s1"}
+        }
+        """.data(using: .utf8)!
+        let deleteMsg = try JSONDecoder().decode(A2UIMessage.self, from: deleteJson)
+        if case .deleteSurface(let ds) = deleteMsg {
+            XCTAssertEqual(ds.surfaceId, "s1")
+        } else { XCTFail() }
+        
+        let encodedDelete = try JSONEncoder().encode(deleteMsg)
+        XCTAssertTrue(String(data: encodedDelete, encoding: .utf8)!.contains("deleteSurface"))
+
+        // Data Model Update
+        let updateJson = """
+        {
+            "version": "v0.10",
+            "updateDataModel": {"surfaceId": "s1", "value": {"key": "value"}}
+        }
+        """.data(using: .utf8)!
+        let updateMsg = try JSONDecoder().decode(A2UIMessage.self, from: updateJson)
+        if case .dataModelUpdate(let dmu) = updateMsg {
+            XCTAssertEqual(dmu.surfaceId, "s1")
+            XCTAssertEqual(dmu.value, AnyCodable(["key": "value"] as [String: Sendable]))
+        } else { XCTFail() }
+    }
+
+    func testComponentTypeNames() {
+        let cases: [(ComponentType, String)] = [
+            (.text(TextProperties(text: .init(literal: ""), variant: nil)), "Text"),
+            (.button(ButtonProperties(child: "c1", action: .custom(name: "", context: nil))), "Button"),
+            (.column(ContainerProperties(children: .list([]), justify: nil, align: nil)), "Column"),
+            (.row(ContainerProperties(children: .list([]), justify: nil, align: nil)), "Row"),
+            (.card(CardProperties(child: "c1")), "Card"),
+            (.divider(DividerProperties(axis: .horizontal)), "Divider"),
+            (.image(ImageProperties(url: .init(literal: ""), fit: nil, variant: nil)), "Image"),
+            (.list(ListProperties(children: .list([]), direction: nil, align: nil)), "List"),
+            (.textField(TextFieldProperties(label: .init(literal: ""), value: .init(path: "p"))), "TextField"),
+            (.choicePicker(ChoicePickerProperties(label: .init(literal: ""), options: [], value: .init(path: "p"))), "ChoicePicker"),
+            (.dateTimeInput(DateTimeInputProperties(label: .init(literal: ""), value: .init(path: "p"))), "DateTimeInput"),
+            (.slider(SliderProperties(label: .init(literal: ""), min: 0, max: 100, value: .init(path: "p"))), "Slider"),
+            (.checkBox(CheckBoxProperties(label: .init(literal: ""), value: .init(path: "p"))), "CheckBox"),
+            (.tabs(TabsProperties(tabs: [])), "Tabs"),
+            (.icon(IconProperties(name: .init(literal: "star"))), "Icon"),
+            (.modal(ModalProperties(trigger: "t1", content: "c1")), "Modal"),
+            (.custom("MyComp", [:]), "MyComp")
+        ]
+        
+        for (type, expectedName) in cases {
+            XCTAssertEqual(type.typeName, expectedName)
+        }
     }
 
     // MARK: - Action Tests
