@@ -43,15 +43,21 @@ struct A2UIFunctionTests {
     @Test func numeric() async {
         var call = FunctionCall(call: "numeric", args: ["value": AnyCodable(10.0), "min": AnyCodable(5.0), "max": AnyCodable(15.0)])
         #expect(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool == true)
+		
+		call = FunctionCall(call: "numeric", args: ["value": AnyCodable(20.0), "min": AnyCodable(5.0), "max": AnyCodable(15.0)])
+		#expect(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool == false)
 
 		call = FunctionCall(call: "numeric", args: ["value": AnyCodable(20.0), "max": AnyCodable(15.0)])
         #expect(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool == false)
+		
+		call = FunctionCall(call: "numeric", args: ["value": AnyCodable(10.0), "max": AnyCodable(15.0)])
+		#expect(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool == true)
         
-		call = FunctionCall(call: "numeric", args: ["value": AnyCodable("10"), "min": AnyCodable(5.0)])
+		call = FunctionCall(call: "numeric", args: ["value": AnyCodable(10), "min": AnyCodable(5.0)])
         #expect(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool == true)
 		
-		call = FunctionCall(call: "numeric", args: ["value": AnyCodable("1"), "min": AnyCodable(5.0)])
-		#expect(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool == true)
+		call = FunctionCall(call: "numeric", args: ["value": AnyCodable(1), "min": AnyCodable(5.0)])
+		#expect(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool == false)
 
         // Missing both min and max should fail according to anyOf spec
 		call = FunctionCall(call: "numeric", args: ["value": AnyCodable(10.0)])
