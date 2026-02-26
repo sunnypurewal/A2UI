@@ -70,16 +70,6 @@ public class A2UIParser {
             }
         }
 
-        if !remainder.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            do {
-                let parsedMessages = try parse(line: remainder)
-                messages.append(contentsOf: parsedMessages)
-                remainder = ""
-            } catch {
-                // Keep remainder for next chunk
-            }
-        }
-
         let end = DispatchTime.now()
         let diff = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
         if !messages.isEmpty {
