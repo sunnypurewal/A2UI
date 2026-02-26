@@ -219,7 +219,25 @@ struct ComponentView: View {
 	}
 
 	private func dataModelJson() -> String {
-		let dataModel = dataStore.surfaces[component.id]?.dataModel ?? buildDataModel()
+		var dataModel = dataStore.surfaces[component.id]?.dataModel ?? buildDataModel()
+		
+		// Inject virtual validation paths if available
+		if let surface = dataStore.surfaces[component.id] {
+			if !surface.validationErrors.isEmpty {
+				dataModel["_validation"] = surface.validationErrors
+			}
+			
+			var statuses: [String: String] = [:]
+			for cid in surface.components.keys {
+				if let status = surface.getValue(at: "/_validationStatus/\(cid)") as? String {
+					statuses[cid] = status
+				}
+			}
+			if !statuses.isEmpty {
+				dataModel["_validationStatus"] = statuses
+			}
+		}
+		
 		guard JSONSerialization.isValidJSONObject(dataModel),
 			  let data = try? JSONSerialization.data(withJSONObject: dataModel, options: [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]),
 			  let pretty = String(data: data, encoding: .utf8) else {
