@@ -5,4 +5,5 @@ public struct SliderProperties: Codable, Sendable {
     public let min: Double
     public let max: Double
     public let value: BoundValue<Double>
+    public let checks: [CheckRule]?
 }

@@ -4,6 +4,7 @@ public struct TextFieldProperties: Codable, Sendable {
     public let label: BoundValue<String>
     public let value: BoundValue<String>?
     public let variant: TextFieldVariant? // longText, number, shortText, obscured
+    public let checks: [CheckRule]?
 }
 
 public enum TextFieldVariant: String, Codable, Sendable, CaseIterable, Identifiable {

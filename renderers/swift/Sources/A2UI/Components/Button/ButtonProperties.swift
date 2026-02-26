@@ -4,6 +4,7 @@ public struct ButtonProperties: Codable, Sendable {
     public let child: String
     public let action: Action
     public let variant: ButtonVariant?
+    public let checks: [CheckRule]?
 }
 
 public enum ButtonVariant: String, Codable, Sendable, CaseIterable, Identifiable {

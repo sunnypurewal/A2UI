@@ -5,6 +5,7 @@ public struct ChoicePickerProperties: Codable, Sendable {
     public let options: [SelectionOption]
     public let variant: ChoicePickerVariant?
     public let value: BoundValue<[String]>
+    public let checks: [CheckRule]?
 }
 
 public struct SelectionOption: Codable, Sendable {

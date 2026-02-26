@@ -10,6 +10,17 @@ import SwiftUI
     return surface.resolve(binding)
 }
 
+@MainActor func errorMessage(surface: SurfaceState, checks: [CheckRule]?) -> String? {
+    guard let checks = checks, !checks.isEmpty else { return nil }
+    for check in checks {
+        let isValid = surface.resolve(check.condition) ?? true
+        if !isValid {
+            return check.message
+        }
+    }
+    return nil
+}
+
 struct CheckBoxToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         HStack {
