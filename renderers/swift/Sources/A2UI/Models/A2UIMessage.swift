@@ -40,9 +40,17 @@ public enum A2UIMessage: Codable {
             let knownKeys = Set(CodingKeys.allCases.map { $0.stringValue })
             let unknownKeys = anyContainer.allKeys.filter { !knownKeys.contains($0.stringValue) && $0.stringValue != "version" }
             
-            if let key = unknownKeys.first {
-                let dataValue = try anyContainer.decode(AnyCodable.self, forKey: key)
-                self = .appMessage(name: key.stringValue, data: [key.stringValue: dataValue])
+            if !unknownKeys.isEmpty {
+                var allData: [String: AnyCodable] = [:]
+                for key in unknownKeys {
+                    let dataValue = try anyContainer.decode(AnyCodable.self, forKey: key)
+                    allData[key.stringValue] = dataValue
+                }
+                if unknownKeys.count > 1 {
+                    print("Warning: A2UI message contains multiple unknown keys (\(unknownKeys.map { $0.stringValue }.joined(separator: ", "))). All keys will be included in the data dictionary, but only the first will be used as the message name.")
+                }
+                let primaryName = unknownKeys.first!.stringValue
+                self = .appMessage(name: primaryName, data: allData)
             } else {
                 throw DecodingError.dataCorrupted(
                     DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Missing or unknown A2UI v0.10 Message")
@@ -63,10 +71,12 @@ public enum A2UIMessage: Codable {
             try container.encode(update, forKey: .updateDataModel)
         case .deleteSurface(let value):
             try container.encode(value, forKey: .deleteSurface)
-        case .appMessage(let name, let data):
+        case .appMessage(_, let data):
             var anyContainer = encoder.container(keyedBy: AnyCodingKey.self)
-            if let key = AnyCodingKey(stringValue: name), let val = data[name] {
-                try anyContainer.encode(val, forKey: key)
+            for (keyStr, val) in data {
+                if let key = AnyCodingKey(stringValue: keyStr) {
+                    try anyContainer.encode(val, forKey: key)
+                }
             }
         }
     }
