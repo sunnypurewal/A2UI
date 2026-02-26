@@ -5,6 +5,7 @@ struct A2UIImageView: View {
     @Environment(SurfaceState.self) var surface
 
     var body: some View {
+		let variant = properties.variant ?? .icon
         if let urlString = surface.resolve(properties.url), let url = URL(string: urlString) {
             AsyncImage(url: url) { phase in
                 switch phase {
@@ -22,7 +23,13 @@ struct A2UIImageView: View {
                 }
             }
 			.accessibilityLabel(properties.variant?.rawValue ?? "Image")
-			.mask(RoundedRectangle(cornerRadius: properties.variant == .avatar ? .infinity : 0))
+			.mask({
+				if variant == .avatar {
+					Circle()
+				} else {
+					Rectangle()
+				}
+			})
         }
     }
 
@@ -32,4 +39,19 @@ struct A2UIImageView: View {
 			default: return .fit
         }
     }
+}
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    A2UIImageView(properties: ImageProperties(
+        url: .init(literal: "https://picsum.photos/200/300"),
+        fit: .cover,
+        variant: .avatar
+    ))
+    .frame(width: 100, height: 100)
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
 }

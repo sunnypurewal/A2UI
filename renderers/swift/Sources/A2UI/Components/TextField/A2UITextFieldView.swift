@@ -12,7 +12,7 @@ struct A2UITextFieldView: View {
 			if variant == .obscured {
 				SecureField(label, text: $text)
 			} else if variant == .longText {
-				Text(label ?? "")
+				Text(label)
 					.font(.caption)
 					.foregroundColor(.secondary)
 				TextEditor(text: $text)
@@ -29,4 +29,32 @@ struct A2UITextFieldView: View {
             text = resolveValue(surface, binding: properties.value) ?? ""
         }
     }
+}
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    VStack(spacing: 20) {
+        A2UITextFieldView(properties: TextFieldProperties(
+            label: .init(literal: "Short Text"),
+            value: .init(literal: ""),
+            variant: .shortText
+        ))
+        
+        A2UITextFieldView(properties: TextFieldProperties(
+            label: .init(literal: "Number Input"),
+            value: .init(literal: ""),
+            variant: .number
+        ))
+        
+        A2UITextFieldView(properties: TextFieldProperties(
+            label: .init(literal: "Obscured Input"),
+            value: .init(literal: ""),
+            variant: .obscured
+        ))
+    }
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
 }

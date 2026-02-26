@@ -26,3 +26,21 @@ struct A2UITextView: View {
         }
     }
 }
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    ScrollView {
+        VStack(alignment: .leading, spacing: 10) {
+            A2UITextView(properties: TextProperties(text: .init(literal: "Heading 1"), variant: .h1))
+            A2UITextView(properties: TextProperties(text: .init(literal: "Heading 2"), variant: .h2))
+            A2UITextView(properties: TextProperties(text: .init(literal: "Heading 3"), variant: .h3))
+            A2UITextView(properties: TextProperties(text: .init(literal: "Body Text"), variant: .body))
+            A2UITextView(properties: TextProperties(text: .init(literal: "Caption Text"), variant: .caption))
+        }
+        .padding()
+    }
+    .environment(surface)
+    .environment(dataStore)
+}

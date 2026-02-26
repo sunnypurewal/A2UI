@@ -28,3 +28,18 @@ struct A2UISliderView: View {
         }
     }
 }
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    A2UISliderView(properties: SliderProperties(
+        label: .init(literal: "Adjust Value"),
+        min: 0,
+        max: 100,
+        value: .init(literal: 50.0)
+    ))
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
+}

@@ -22,3 +22,21 @@ struct A2UITabsView: View {
         }
     }
 }
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    surface.components["t1"] = ComponentInstance(id: "t1", component: .text(TextProperties(text: .init(literal: "Content for Tab 1"), variant: nil)))
+    surface.components["t2"] = ComponentInstance(id: "t2", component: .text(TextProperties(text: .init(literal: "Content for Tab 2"), variant: nil)))
+    
+    return A2UITabsView(properties: TabsProperties(
+        tabs: [
+            TabItem(title: .init(literal: "Tab 1"), child: "t1"),
+            TabItem(title: .init(literal: "Tab 2"), child: "t2")
+        ]
+    ))
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
+}

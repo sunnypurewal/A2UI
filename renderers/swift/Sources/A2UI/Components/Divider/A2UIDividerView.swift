@@ -6,3 +6,12 @@ struct A2UIDividerView: View {
             .padding(.vertical, 4)
     }
 }
+
+#Preview {
+    VStack {
+        Text("Above")
+        A2UIDividerView()
+        Text("Below")
+    }
+    .padding()
+}

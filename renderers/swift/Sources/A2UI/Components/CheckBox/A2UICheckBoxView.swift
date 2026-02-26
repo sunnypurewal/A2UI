@@ -17,3 +17,16 @@ struct A2UICheckBoxView: View {
         }
     }
 }
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    A2UICheckBoxView(properties: CheckBoxProperties(
+        label: .init(literal: "Check this box"),
+        value: .init(literal: true)
+    ))
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
+}

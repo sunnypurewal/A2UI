@@ -27,3 +27,20 @@ struct A2UIColumnView: View {
         }
     }
 }
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    surface.components["t1"] = ComponentInstance(id: "t1", component: .text(TextProperties(text: .init(literal: "Top"), variant: nil)))
+    surface.components["t2"] = ComponentInstance(id: "t2", component: .text(TextProperties(text: .init(literal: "Bottom"), variant: nil)))
+    
+    return A2UIColumnView(properties: ContainerProperties(
+        children: .list(["t1", "t2"]),
+        justify: .start,
+        align: .center
+    ))
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
+}

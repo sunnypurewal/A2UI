@@ -46,3 +46,15 @@ struct A2UIVideoView: View {
 		}
 	}
 }
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    A2UIVideoView(properties: VideoProperties(
+        url: .init(literal: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+    ))
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
+}

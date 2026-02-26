@@ -31,3 +31,20 @@ struct A2UIRowView: View {
         }
     }
 }
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    surface.components["t1"] = ComponentInstance(id: "t1", component: .text(TextProperties(text: .init(literal: "Left"), variant: nil)))
+    surface.components["t2"] = ComponentInstance(id: "t2", component: .text(TextProperties(text: .init(literal: "Right"), variant: nil)))
+    
+    return A2UIRowView(properties: ContainerProperties(
+        children: .list(["t1", "t2"]),
+        justify: .spaceBetween,
+        align: .center
+    ))
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
+}

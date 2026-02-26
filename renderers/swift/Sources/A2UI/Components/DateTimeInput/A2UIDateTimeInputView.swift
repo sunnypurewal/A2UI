@@ -60,3 +60,31 @@ struct A2UIDateTimeInputView: View {
         surface.trigger(action: .dataUpdate(DataUpdateAction(path: path, contents: AnyCodable(dateString))))
     }
 }
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    VStack(spacing: 20) {
+        A2UIDateTimeInputView(properties: DateTimeInputProperties(
+            label: .init(literal: "Date and Time"),
+            value: .init(literal: "2024-01-01T12:00:00Z"),
+            enableDate: true,
+            enableTime: true,
+            min: nil,
+            max: nil
+        ))
+        
+        A2UIDateTimeInputView(properties: DateTimeInputProperties(
+            label: .init(literal: "Date Only"),
+            value: .init(literal: "2024-01-01T12:00:00Z"),
+            enableDate: true,
+            enableTime: false,
+            min: nil,
+            max: nil
+        ))
+    }
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
+}

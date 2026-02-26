@@ -16,3 +16,17 @@ struct A2UIIconView: View {
         return name
     }
 }
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    HStack(spacing: 20) {
+        A2UIIconView(properties: IconProperties(name: .init(literal: "star")))
+        A2UIIconView(properties: IconProperties(name: .init(literal: "heart")))
+        A2UIIconView(properties: IconProperties(name: .init(literal: "person")))
+    }
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
+}

@@ -33,3 +33,34 @@ extension View {
         }
     }
 }
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    // Add a text component for the button child
+    surface.components["t1"] = ComponentInstance(id: "t1", component: .text(TextProperties(text: .init(literal: "Click Me"), variant: nil)))
+    
+    return VStack(spacing: 20) {
+        A2UIButtonView(properties: ButtonProperties(
+            child: "t1",
+            action: .custom(name: "primary_action", context: nil),
+            variant: "primary"
+        ))
+        
+        A2UIButtonView(properties: ButtonProperties(
+            child: "t1",
+            action: .custom(name: "secondary_action", context: nil),
+            variant: "secondary"
+        ))
+        
+        A2UIButtonView(properties: ButtonProperties(
+            child: "t1",
+            action: .custom(name: "borderless_action", context: nil),
+            variant: "borderless"
+        ))
+    }
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
+}

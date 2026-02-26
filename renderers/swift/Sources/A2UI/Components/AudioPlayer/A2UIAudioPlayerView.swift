@@ -112,3 +112,16 @@ struct A2UIAudioPlayerView: View {
         return String(format: "%d:%02d", minutes, seconds)
     }
 }
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    A2UIAudioPlayerView(properties: AudioPlayerProperties(
+        url: .init(literal: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"),
+        description: .init(literal: "Sample Audio")
+    ))
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
+}
