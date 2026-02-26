@@ -7,17 +7,18 @@ struct A2UITextFieldView: View {
 
     var body: some View {
 		let label = resolveValue(surface, binding: properties.label) ?? ""
+		let variant = properties.variant ?? .shortText
         VStack(alignment: .leading, spacing: 4) {
-			if properties.variant == .obscured {
+			if variant == .obscured {
 				SecureField(label, text: $text)
-			} else if properties.variant == .longText {
+			} else if variant == .longText {
 				Text(label ?? "")
 					.font(.caption)
 					.foregroundColor(.secondary)
 				TextEditor(text: $text)
 			} else {
 				TextField(label, text: $text)
-					.keyboardType(properties.variant == .number ? .decimalPad : .default)
+					.keyboardType(variant == .number ? .decimalPad : .default)
 			}
         }
 		.textFieldStyle(.roundedBorder)

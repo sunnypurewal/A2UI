@@ -6,13 +6,14 @@ struct A2UIChoicePickerView: View {
     @State private var selections: Set<String> = []
 
     var body: some View {
+		let variant = properties.variant ?? .mutuallyExclusive
         VStack(alignment: .leading) {
             if let label = properties.label, let labelText = surface.resolve(label) {
                 Text(labelText)
                     .font(.caption)
             }
 
-            if properties.variant == "mutuallyExclusive" {
+			if variant == .mutuallyExclusive {
                 Picker("", selection: Binding(
                     get: { selections.first ?? "" },
                     set: { newValue in
