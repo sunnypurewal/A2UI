@@ -1,12 +1,18 @@
 import Foundation
 
-public struct FunctionCall: Codable, Sendable {
+public struct FunctionCall: Codable, Sendable, Equatable {
     public let call: String
     public let args: [String: AnyCodable]
     public let returnType: String?
 
     enum CodingKeys: String, CodingKey {
         case call, args, returnType
+    }
+
+    public init(call: String, args: [String: AnyCodable] = [:], returnType: String? = nil) {
+        self.call = call
+        self.args = args
+        self.returnType = returnType
     }
 
     public init(from decoder: Decoder) throws {
@@ -23,5 +29,9 @@ public struct FunctionCall: Codable, Sendable {
             try container.encode(args, forKey: .args)
         }
         try container.encodeIfPresent(returnType, forKey: .returnType)
+    }
+
+    public static func == (lhs: FunctionCall, rhs: FunctionCall) -> Bool {
+        return lhs.call == rhs.call && lhs.args == rhs.args && lhs.returnType == rhs.returnType
     }
 }

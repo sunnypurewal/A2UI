@@ -3,29 +3,44 @@ import Foundation
 public struct BoundValue<T: Codable & Sendable & Equatable>: Codable, Sendable, Equatable {
     public let literal: T?
     public let path: String?
+    public let functionCall: FunctionCall?
 
     enum CodingKeys: String, CodingKey {
         case path
+        case call
+        case args
+        case returnType
     }
 
-    public init(literal: T? = nil, path: String? = nil) {
+    public init(literal: T? = nil, path: String? = nil, functionCall: FunctionCall? = nil) {
         self.literal = literal
         self.path = path
+        self.functionCall = functionCall
     }
 
     public init(from decoder: Decoder) throws {
         if let container = try? decoder.singleValueContainer(), let val = try? container.decode(T.self) {
             self.literal = val
             self.path = nil
+            self.functionCall = nil
         } else {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             self.path = try container.decodeIfPresent(String.self, forKey: .path)
+            
+            if container.contains(.call) {
+                self.functionCall = try FunctionCall(from: decoder)
+            } else {
+                self.functionCall = nil
+            }
+            
             self.literal = nil
         }
     }
 
     public func encode(to encoder: Encoder) throws {
-        if let path = path {
+        if let functionCall = functionCall {
+            try functionCall.encode(to: encoder)
+        } else if let path = path {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(path, forKey: .path)
         } else if let literal = literal {
