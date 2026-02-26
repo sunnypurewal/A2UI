@@ -7,7 +7,7 @@ struct GalleryData {
 			case .layout:
 				return [.row, .column, .list]
 			case .content:
-				return [.text, .image, .icon]
+				return [.text, .image, .icon, .video, .audioPlayer]
 			default:
 				return []
 		}

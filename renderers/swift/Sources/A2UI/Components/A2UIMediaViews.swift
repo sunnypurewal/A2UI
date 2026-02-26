@@ -52,31 +52,44 @@ struct A2UIAudioPlayerView: View {
     let properties: AudioPlayerProperties
     @Environment(SurfaceState.self) var surface
     @State private var player: AVPlayer?
+    @State private var isPlaying: Bool = false
+    @State private var volume: Double = 1.0
 
     var body: some View {
-        HStack {
-            Button(action: {
-                togglePlay()
-            }) {
-                Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                    .font(.title)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Button(action: {
+                    togglePlay()
+                }) {
+                    Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                        .font(.title)
+                }
+                
+                Text("Audio Player")
+                    .font(.caption)
             }
             
-            Text("Audio Player")
-                .font(.caption)
+            HStack {
+                Image(systemName: "speaker.fill")
+                    .foregroundColor(.secondary)
+                Slider(value: $volume, in: 0...1)
+                    .onChange(of: volume) { _, newValue in
+                        player?.volume = Float(newValue)
+                    }
+                Image(systemName: "speaker.wave.3.fill")
+                    .foregroundColor(.secondary)
+            }
         }
         .padding()
         .background(Color.secondary.opacity(0.1))
         .cornerRadius(8)
         .onAppear {
             if let urlString = surface.resolve(properties.url), let url = URL(string: urlString) {
-                player = AVPlayer(url: url)
+                let avPlayer = AVPlayer(url: url)
+                player = avPlayer
+                volume = Double(avPlayer.volume)
             }
         }
-    }
-
-    private var isPlaying: Bool {
-        player?.rate != 0 && player?.error == nil
     }
 
     private func togglePlay() {
@@ -85,6 +98,7 @@ struct A2UIAudioPlayerView: View {
         } else {
             player?.play()
         }
+        isPlaying.toggle()
     }
 }
 

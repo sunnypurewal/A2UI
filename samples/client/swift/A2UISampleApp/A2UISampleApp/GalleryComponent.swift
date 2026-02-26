@@ -131,6 +131,28 @@ extension GalleryComponent {
 			]
 		)
 	}()
+	static let video: Self = {
+		return .init(
+			id: "Video",
+			template: #"{"id":"gallery_component","component":{"Video":{"url":{"path":"/url"}}}}"#,
+			staticComponents: [.root],
+			dataModelFields: [
+				.init(path: "/url", label: "Video URL", value: .string("https://lorem.video/720p"))
+			],
+			properties: []
+		)
+	}()
+	static let audioPlayer: Self = {
+		return .init(
+			id: "AudioPlayer",
+			template: #"{"id":"gallery_component","component":{"AudioPlayer":{"url":{"path":"/url"}}}}"#,
+			staticComponents: [.root],
+			dataModelFields: [
+				.init(path: "/url", label: "Video URL", value: .string("https://diviextended.com/wp-content/uploads/2021/10/sound-of-waves-marine-drive-mumbai.mp3"))
+			],
+			properties: []
+		)
+	}()
 	static let icon: Self = {
 		let nameKey = "name"
 		let allIconNames = A2UIIconName.allCases.map { $0.rawValue }
