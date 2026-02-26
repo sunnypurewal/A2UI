@@ -2,8 +2,14 @@ import SwiftUI
 
 struct A2UITextFieldView: View {
     let properties: TextFieldProperties
+    let checks: [CheckRule]?
     @Environment(SurfaceState.self) var surface
     @State private var text: String = ""
+
+    init(properties: TextFieldProperties, checks: [CheckRule]? = nil) {
+        self.properties = properties
+        self.checks = checks
+    }
 
     var body: some View {
 		let label = resolveValue(surface, binding: properties.label) ?? ""
@@ -24,7 +30,7 @@ struct A2UITextFieldView: View {
 				
 			}
 			
-			A2UIValidationErrorView(surface: surface, checks: properties.checks)
+			A2UIValidationErrorView(surface: surface, checks: checks)
         }
 		.textFieldStyle(.roundedBorder)
 		.onChange(of: text) { _, newValue in
@@ -40,7 +46,7 @@ struct A2UITextFieldView: View {
     let surface = SurfaceState(id: "test")
     let dataStore = A2UIDataStore()
     
-    VStack(spacing: 20) {
+    return VStack(spacing: 20) {
         A2UITextFieldView(properties: TextFieldProperties(
             label: .init(literal: "Short Text"),
             value: .init(literal: ""),

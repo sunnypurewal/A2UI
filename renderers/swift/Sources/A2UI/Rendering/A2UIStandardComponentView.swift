@@ -33,7 +33,7 @@ struct A2UIStandardComponentView: View {
         case .modal(let props):
             A2UIModalView(properties: props)
         case .textField(let props):
-            A2UITextFieldView(properties: props)
+            A2UITextFieldView(properties: props, checks: instance.checks)
         case .checkBox(let props):
             A2UICheckBoxView(properties: props)
         case .dateTimeInput(let props):

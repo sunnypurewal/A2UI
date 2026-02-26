@@ -7,15 +7,13 @@ public struct DateTimeInputProperties: Codable, Sendable {
     public let enableTime: Bool?
     public let min: BoundValue<String>?
     public let max: BoundValue<String>?
-    public let checks: [CheckRule]?
 
-    public init(label: BoundValue<String>? = nil, value: BoundValue<String>, enableDate: Bool? = nil, enableTime: Bool? = nil, min: BoundValue<String>? = nil, max: BoundValue<String>? = nil, checks: [CheckRule]? = nil) {
+    public init(label: BoundValue<String>? = nil, value: BoundValue<String>, enableDate: Bool? = nil, enableTime: Bool? = nil, min: BoundValue<String>? = nil, max: BoundValue<String>? = nil) {
         self.label = label
         self.value = value
         self.enableDate = enableDate
         self.enableTime = enableTime
         self.min = min
         self.max = max
-        self.checks = checks
     }
 }

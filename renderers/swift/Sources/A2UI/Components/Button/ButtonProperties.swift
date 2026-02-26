@@ -4,13 +4,11 @@ public struct ButtonProperties: Codable, Sendable {
     public let child: String
     public let action: Action
     public let variant: ButtonVariant?
-    public let checks: [CheckRule]?
 
-    public init(child: String, action: Action, variant: ButtonVariant? = nil, checks: [CheckRule]? = nil) {
+    public init(child: String, action: Action, variant: ButtonVariant? = nil) {
         self.child = child
         self.action = action
         self.variant = variant
-        self.checks = checks
     }
 }
 
