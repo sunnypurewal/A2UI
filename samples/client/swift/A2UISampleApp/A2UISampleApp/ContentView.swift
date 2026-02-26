@@ -44,4 +44,13 @@ enum ComponentType: String {
 	case icon = "Icon"
 	case video = "Video"
 	case audioPlayer = "AudioPlayer"
+	case textField = "TextField"
+	case checkbox = "CheckBox"
+	case slider = "Slider"
+	case dateTimeInput = "DateTimeInput"
+	case choicePicker = "ChoicePicker"
+	case button = "Button"
+	case tabs = "Tabs"
+	case modal = "Modal"
+	case divider = "Divider"
 }

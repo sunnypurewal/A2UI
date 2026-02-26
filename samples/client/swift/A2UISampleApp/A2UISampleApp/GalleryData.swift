@@ -8,7 +8,11 @@ struct GalleryData {
 				return [.row, .column, .list]
 			case .content:
 				return [.text, .image, .icon, .video, .audioPlayer]
-			default:
+			case .input:
+				return []
+			case .navigation:
+				return []
+			case .decoration:
 				return []
 		}
 	}
