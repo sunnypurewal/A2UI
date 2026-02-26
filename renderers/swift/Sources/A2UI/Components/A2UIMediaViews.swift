@@ -54,6 +54,9 @@ struct A2UIAudioPlayerView: View {
     @State private var player: AVPlayer?
     @State private var isPlaying: Bool = false
     @State private var volume: Double = 1.0
+    @State private var currentTime: Double = 0
+    @State private var duration: Double = 0
+    @State private var isEditing: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -65,8 +68,25 @@ struct A2UIAudioPlayerView: View {
                         .font(.title)
                 }
                 
-                Text("Audio Player")
-                    .font(.caption)
+                VStack(alignment: .leading) {
+                    Text("Audio Player")
+                        .font(.caption)
+                    
+                    Slider(value: $currentTime, in: 0...max(duration, 0.01)) { editing in
+                        isEditing = editing
+                        if !editing {
+                            player?.seek(to: CMTime(seconds: currentTime, preferredTimescale: 600))
+                        }
+                    }
+                    
+                    HStack {
+                        Text(formatTime(currentTime))
+                        Spacer()
+                        Text(formatTime(duration))
+                    }
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundColor(.secondary)
+                }
             }
             
             HStack {
@@ -88,6 +108,22 @@ struct A2UIAudioPlayerView: View {
                 let avPlayer = AVPlayer(url: url)
                 player = avPlayer
                 volume = Double(avPlayer.volume)
+                
+                // Observe time
+                avPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: 600), queue: .main) { time in
+                    Task { @MainActor in
+                        if !isEditing {
+                            currentTime = time.seconds
+                        }
+                    }
+                }
+                
+                // Observe duration
+                Task {
+                    if let duration = try? await avPlayer.currentItem?.asset.load(.duration) {
+                        self.duration = duration.seconds
+                    }
+                }
             }
         }
     }
@@ -99,6 +135,12 @@ struct A2UIAudioPlayerView: View {
             player?.play()
         }
         isPlaying.toggle()
+    }
+    
+    private func formatTime(_ seconds: Double) -> String {
+        let minutes = Int(seconds) / 60
+        let seconds = Int(seconds) % 60
+        return String(format: "%d:%02d", minutes, seconds)
     }
 }
 
