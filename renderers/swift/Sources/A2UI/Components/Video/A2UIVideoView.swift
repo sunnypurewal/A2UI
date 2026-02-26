@@ -19,6 +19,7 @@ struct A2UIVideoView: View {
 			}
             .onDisappear {
                 player?.pause()
+                player = nil
             }
 			.fullScreenCover(isPresented: $showFullscreen) {
 				videoView

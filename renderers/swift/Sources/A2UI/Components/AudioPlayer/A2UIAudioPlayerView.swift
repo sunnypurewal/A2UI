@@ -66,6 +66,7 @@ struct A2UIAudioPlayerView: View {
                 timeObserverToken = nil
             }
             player?.pause()
+            player = nil
         }
     }
 
