@@ -6,9 +6,8 @@ import AppKit
 #endif
 
 extension A2UIFunctionEvaluator {
-    internal static func openUrl(url: String?) {
-        guard let urlString = url,
-              let url = URL(string: urlString) else { return }
+    internal static func openUrl(url: String) {
+        guard let url = URL(string: url) else { return }
         
         #if os(iOS)
         UIApplication.shared.open(url)

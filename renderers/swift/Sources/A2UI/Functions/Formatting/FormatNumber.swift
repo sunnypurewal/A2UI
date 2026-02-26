@@ -1,8 +1,7 @@
 import Foundation
 
 extension A2UIFunctionEvaluator {
-    internal static func formatNumber(value: Double?, decimals: Int?, grouping: Bool?) -> String {
-        guard let value = value else { return "" }
+    internal static func formatNumber(value: Double, decimals: Int?, grouping: Bool?) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         

@@ -14,56 +14,73 @@ public enum A2UIFunctionEvaluator {
 
         switch call.call {
         case "required":
-            return isRequired(value: resolvedArgs["value"])
+            guard let val = resolvedArgs["value"] else { return false }
+            return isRequired(value: val)
         case "regex":
-            return matchesRegex(value: resolvedArgs["value"] as? String, pattern: resolvedArgs["pattern"] as? String)
+            guard let val = resolvedArgs["value"] as? String,
+                  let pattern = resolvedArgs["pattern"] as? String else { return false }
+            return matchesRegex(value: val, pattern: pattern)
         case "length":
+            guard let val = resolvedArgs["value"] as? String else { return false }
             return checkLength(
-                value: resolvedArgs["value"] as? String,
+                value: val,
                 min: asInt(resolvedArgs["min"]),
                 max: asInt(resolvedArgs["max"])
             )
         case "numeric":
+            guard let val = asDouble(resolvedArgs["value"]) else { return false }
             return checkNumeric(
-                value: resolvedArgs["value"],
+                value: val,
                 min: asDouble(resolvedArgs["min"]),
                 max: asDouble(resolvedArgs["max"])
             )
         case "email":
-            return isEmail(value: resolvedArgs["value"] as? String)
+            guard let val = resolvedArgs["value"] as? String else { return false }
+            return isEmail(value: val)
         case "formatString":
-            return formatString(format: resolvedArgs["value"] as? String, surface: surface)
+            guard let format = resolvedArgs["value"] as? String else { return "" }
+            return formatString(format: format, surface: surface)
         case "formatNumber":
+            guard let val = asDouble(resolvedArgs["value"]) else { return "" }
             return formatNumber(
-                value: asDouble(resolvedArgs["value"]),
+                value: val,
                 decimals: asInt(resolvedArgs["decimals"]),
                 grouping: resolvedArgs["grouping"] as? Bool
             )
         case "formatCurrency":
+            guard let val = asDouble(resolvedArgs["value"]),
+                  let currency = resolvedArgs["currency"] as? String else { return "" }
             return formatCurrency(
-                value: asDouble(resolvedArgs["value"]),
-                currency: resolvedArgs["currency"] as? String,
+                value: val,
+                currency: currency,
                 decimals: asInt(resolvedArgs["decimals"]),
                 grouping: resolvedArgs["grouping"] as? Bool
             )
         case "formatDate":
-            return formatDate(value: resolvedArgs["value"], format: resolvedArgs["format"] as? String)
+            guard let val = resolvedArgs["value"],
+                  let format = resolvedArgs["format"] as? String else { return "" }
+            return formatDate(value: val, format: format)
         case "pluralize":
+            guard let val = asDouble(resolvedArgs["value"]) else { return "" }
             return pluralize(
-                value: asDouble(resolvedArgs["value"]),
+                value: val,
                 zero: resolvedArgs["zero"] as? String,
                 one: resolvedArgs["one"] as? String,
                 other: resolvedArgs["other"] as? String
             )
         case "openUrl":
-            openUrl(url: resolvedArgs["url"] as? String)
+            guard let url = resolvedArgs["url"] as? String else { return nil }
+            openUrl(url: url)
             return nil
         case "and":
-            return performAnd(values: resolvedArgs["values"] as? [Bool])
+            guard let values = resolvedArgs["values"] as? [Bool] else { return false }
+            return performAnd(values: values)
         case "or":
-            return performOr(values: resolvedArgs["values"] as? [Bool])
+            guard let values = resolvedArgs["values"] as? [Bool] else { return false }
+            return performOr(values: values)
         case "not":
-            return performNot(value: resolvedArgs["value"] as? Bool)
+            guard let value = resolvedArgs["value"] as? Bool else { return false }
+            return performNot(value: value)
         default:
             os_log("Unknown function call: %{public}@", log: log, type: .error, call.call)
             return nil

@@ -1,9 +1,7 @@
 import Foundation
 
 extension A2UIFunctionEvaluator {
-    internal static func formatCurrency(value: Double?, currency: String?, decimals: Int?, grouping: Bool?) -> String {
-        guard let value = value, let currency = currency else { return "" }
-        
+    internal static func formatCurrency(value: Double, currency: String, decimals: Int?, grouping: Bool?) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencyCode = currency
