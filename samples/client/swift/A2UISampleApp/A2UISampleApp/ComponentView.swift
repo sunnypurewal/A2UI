@@ -4,6 +4,7 @@ import A2UI
 struct ComponentView: View {
 	@Environment(A2UIDataStore.self) var dataStore
 	@State private var jsonToShow: String?
+	@State private var jsonTitle: String?
 	@State private var component: GalleryComponent
 	private let numberFormatter: NumberFormatter = {
 		let formatter = NumberFormatter()
@@ -51,6 +52,7 @@ struct ComponentView: View {
 			}
 			
 			Button(action: {
+				jsonTitle = "A2UI"
 				jsonToShow = component.prettyJson
 			}) {
 				Label("A2UI JSON", systemImage: "doc.text")
@@ -80,6 +82,7 @@ struct ComponentView: View {
 			}
 			
 			Button(action: {
+				jsonTitle = "Data Model"
 				jsonToShow = dataModelJson()
 			}) {
 				Label("Data Model JSON", systemImage: "doc.text")
@@ -106,7 +109,7 @@ struct ComponentView: View {
 						.padding()
 						.frame(maxWidth: .infinity, alignment: .leading)
 				}
-				.navigationTitle("A2UI JSON")
+				.navigationTitle(jsonTitle ?? "JSON")
 				.toolbar {
 					ToolbarItem(placement: .navigationBarTrailing) {
 						Button("Done") {
