@@ -38,4 +38,9 @@ enum StaticComponent: String {
 	case datetimePreview = #"{"id":"datetime_preview","component":{"Column":{"children":["value_text","gallery_component"],"justify":"spaceAround","align":"center"}}}"#
 	
 	case buttonChild = #"{"id":"button_child","component":{"Text":{"text":"Tap Me"}}}"#
+	
+	case dividerRoot = #"{"id":"root","component":{"Card":{"child":"divider_preview"}}}"#
+	case dividerContainer = #"{"id":"divider_preview","component":{"Column":{"children":["divider_row","divider_column"],"justify":"spaceBetween","align":"center"}}}"#
+	case dividerColumn = #"{"id":"divider_column","component":{"Column":{"children":["t_body","gallery_component","t_body"],"justify":"spaceAround","align":"center"}}}"#
+	case dividerRow = #"{"id":"divider_row","component":{"Row":{"children":["t_body","gallery_component","t_body"],"justify":"spaceAround","align":"center"}}}"#
 }

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct A2UIDividerView: View {
+	let properties: DividerProperties
     var body: some View {
         Divider()
             .padding(.vertical, 4)
@@ -8,10 +9,19 @@ struct A2UIDividerView: View {
 }
 
 #Preview {
-    VStack {
-        Text("Above")
-        A2UIDividerView()
-        Text("Below")
-    }
-    .padding()
+	VStack {
+		VStack {
+			Text("Above")
+			A2UIDividerView(properties: .init(axis: .horizontal))
+			Text("Below")
+		}
+		.padding()
+		
+		HStack {
+			Text("Left")
+			A2UIDividerView(properties: .init(axis: .horizontal))
+			Text("Right")
+		}
+		.padding()
+	}
 }

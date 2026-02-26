@@ -24,8 +24,8 @@ struct A2UIStandardComponentView: View {
             A2UIVideoView(properties: props)
         case .audioPlayer(let props):
             A2UIAudioPlayerView(properties: props)
-        case .divider:
-            A2UIDividerView()
+        case .divider(let props):
+            A2UIDividerView(properties: props)
         case .list(let props):
             A2UIListView(properties: props)
         case .tabs(let props):
