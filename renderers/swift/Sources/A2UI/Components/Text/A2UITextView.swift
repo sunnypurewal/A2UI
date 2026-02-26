@@ -1,13 +1,16 @@
 import SwiftUI
 
 struct A2UITextView: View {
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
     let properties: TextProperties
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 	
 	private var variant: A2UITextVariant { properties.variant ?? .body }
 
     var body: some View {
-        let content = surface.resolve(properties.text) ?? ""
+        let content = activeSurface?.resolve(properties.text) ?? ""
         
         Text(content)
             .font(fontFor(variant: variant))

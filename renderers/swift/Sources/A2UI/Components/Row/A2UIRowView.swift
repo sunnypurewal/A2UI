@@ -2,7 +2,10 @@ import SwiftUI
 
 struct A2UIRowView: View {
     let properties: ContainerProperties
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 	
 	private var justify: A2UIJustify {
 		properties.justify ?? .spaceBetween
@@ -12,12 +15,13 @@ struct A2UIRowView: View {
         let childIds: [String] = {
             switch properties.children {
             case .list(let list): return list
-            case .template(let template): return surface.expandTemplate(template: template)
+            case .template(let template): return activeSurface?.expandTemplate(template: template) ?? []
             }
         }()
 
         HStack(alignment: verticalAlignment, spacing: 0) {
 			A2UIJustifiedContainer(childIds: childIds, justify: justify)
+                .environment(activeSurface)
         }
         .frame(maxWidth: .infinity)
     }

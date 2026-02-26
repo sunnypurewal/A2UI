@@ -2,10 +2,13 @@ import SwiftUI
 
 struct A2UIIconView: View {
     let properties: IconProperties
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 
     var body: some View {
-        if let name = surface.resolve(properties.name) {
+        if let name = activeSurface?.resolve(properties.name) {
 			Image(systemName: A2UIIconName(rawValue: name)!.sfSymbolName)
                 .font(.system(size: 24))
                 .foregroundColor(.primary)

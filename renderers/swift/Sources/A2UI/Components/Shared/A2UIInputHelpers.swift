@@ -3,18 +3,18 @@ import OSLog
 
 private let log = OSLog(subsystem: "org.a2ui.renderer", category: "Validation")
 
-@MainActor func updateBinding<T: Sendable>(surface: SurfaceState, binding: BoundValue<T>?, newValue: T) {
-    guard let path = binding?.path else { return }
+@MainActor func updateBinding<T: Sendable>(surface: SurfaceState?, binding: BoundValue<T>?, newValue: T) {
+    guard let surface = surface, let path = binding?.path else { return }
     surface.trigger(action: .dataUpdate(DataUpdateAction(path: path, contents: AnyCodable(newValue))))
 }
 
-@MainActor func resolveValue<T>(_ surface: SurfaceState, binding: BoundValue<T>?) -> T? {
-    guard let binding = binding else { return nil }
+@MainActor func resolveValue<T>(_ surface: SurfaceState?, binding: BoundValue<T>?) -> T? {
+    guard let surface = surface, let binding = binding else { return nil }
     return surface.resolve(binding)
 }
 
-@MainActor func errorMessage(surface: SurfaceState, checks: [CheckRule]?) -> String? {
-    guard let checks = checks, !checks.isEmpty else { return nil }
+@MainActor func errorMessage(surface: SurfaceState?, checks: [CheckRule]?) -> String? {
+    guard let surface = surface, let checks = checks, !checks.isEmpty else { return nil }
     
     os_log("Evaluating %d validation checks", log: log, type: .debug, checks.count)
     

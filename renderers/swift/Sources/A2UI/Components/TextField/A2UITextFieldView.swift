@@ -3,16 +3,20 @@ import SwiftUI
 struct A2UITextFieldView: View {
     let id: String
     let properties: TextFieldProperties
-    @Environment(SurfaceState.self) var surface
-    @State private var text: String = ""
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
+    @State var text: String = ""
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 
-    init(id: String, properties: TextFieldProperties) {
+    init(id: String, properties: TextFieldProperties, surface: SurfaceState? = nil) {
         self.id = id
         self.properties = properties
+        self.surface = surface
     }
 
     var body: some View {
-		let label = resolveValue(surface, binding: properties.label) ?? ""
+		let label = resolveValue(activeSurface, binding: properties.label) ?? ""
 		let variant = properties.variant ?? .shortText
         VStack(alignment: .leading, spacing: 4) {
 			if variant == .obscured {
@@ -32,12 +36,12 @@ struct A2UITextFieldView: View {
         }
 		.textFieldStyle(.roundedBorder)
 		.onChange(of: text) { _, newValue in
-			updateBinding(surface: surface, binding: properties.value, newValue: newValue)
-			surface.runChecks(for: id)
+			updateBinding(surface: activeSurface, binding: properties.value, newValue: newValue)
+			activeSurface?.runChecks(for: id)
 		}
         .onAppear {
-            text = resolveValue(surface, binding: properties.value) ?? ""
-			surface.runChecks(for: id)
+            text = resolveValue(activeSurface, binding: properties.value) ?? ""
+			activeSurface?.runChecks(for: id)
         }
     }
 }

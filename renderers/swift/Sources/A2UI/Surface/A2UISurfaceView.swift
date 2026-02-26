@@ -3,21 +3,25 @@ import OSLog
 
 /// A view that renders an A2UI surface by its ID.
 public struct A2UISurfaceView: View {
-    @Environment(A2UIDataStore.self) var dataStore
+    @Environment(A2UIDataStore.self) var dataStoreEnv: A2UIDataStore?
+    var dataStore: A2UIDataStore?
     public let surfaceId: String
+    
+    private var activeDataStore: A2UIDataStore? { dataStore ?? dataStoreEnv }
 	#if DEBUG
     private let log = OSLog(subsystem: "org.a2ui.renderer", category: "SurfaceView")
 	#else
 		private let log = OSLog.disabled
 	#endif
 
-    public init(surfaceId: String) {
+    public init(surfaceId: String, dataStore: A2UIDataStore? = nil) {
         self.surfaceId = surfaceId
+        self.dataStore = dataStore
     }
 
     public var body: some View {
         let _ = os_log("Rendering A2UISurfaceView for surfaceId: %{public}@", log: log, type: .debug, surfaceId)
-        let surface = dataStore.surfaces[surfaceId]
+        let surface = activeDataStore?.surfaces[surfaceId]
         let _ = os_log("Surface found in dataStore: %{public}@", log: log, type: .debug, String(describing: surface != nil))
         
         Group {

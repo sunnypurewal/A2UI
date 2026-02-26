@@ -1,21 +1,25 @@
 import SwiftUI
 
 struct A2UIButtonView: View {
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
     let id: String
     let properties: ButtonProperties
     let checks: [CheckRule]?
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 
-    init(id: String, properties: ButtonProperties, checks: [CheckRule]? = nil) {
+    init(id: String, properties: ButtonProperties, checks: [CheckRule]? = nil, surface: SurfaceState? = nil) {
         self.id = id
         self.properties = properties
         self.checks = checks
+        self.surface = surface
     }
 
     var body: some View {
 		let variant = properties.variant ?? .primary
         let isDisabled = if let checks = checks {
-            errorMessage(surface: surface, checks: checks) != nil
+            errorMessage(surface: activeSurface, checks: checks) != nil
         } else {
             false
         }
@@ -35,7 +39,7 @@ struct A2UIButtonView: View {
     }
 
     private func performAction() {
-        surface.trigger(action: properties.action)
+        activeSurface?.trigger(action: properties.action)
     }
 }
 

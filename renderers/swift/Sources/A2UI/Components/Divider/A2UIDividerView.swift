@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct A2UIDividerView: View {
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
 	let properties: DividerProperties
     var body: some View {
         Divider()

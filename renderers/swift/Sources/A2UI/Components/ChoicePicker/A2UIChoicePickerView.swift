@@ -3,18 +3,22 @@ import SwiftUI
 struct A2UIChoicePickerView: View {
     let id: String
     let properties: ChoicePickerProperties
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
     @State private var selections: Set<String> = []
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 
-    init(id: String, properties: ChoicePickerProperties) {
+    init(id: String, properties: ChoicePickerProperties, surface: SurfaceState? = nil) {
         self.id = id
         self.properties = properties
+        self.surface = surface
     }
 
     var body: some View {
 		let variant = properties.variant ?? .mutuallyExclusive
         VStack(alignment: .leading) {
-            if let label = properties.label, let labelText = surface.resolve(label) {
+            if let label = properties.label, let labelText = activeSurface?.resolve(label) {
                 Text(labelText)
                     .font(.caption)
             }
@@ -27,14 +31,14 @@ struct A2UIChoicePickerView: View {
                     }
                 )) {
                     ForEach(properties.options, id: \.value) { option in
-                        Text(surface.resolve(option.label) ?? option.value).tag(option.value)
+                        Text(activeSurface?.resolve(option.label) ?? option.value).tag(option.value)
                     }
                 }
                 .pickerStyle(.menu)
             } else {
                 Menu {
                     ForEach(properties.options, id: \.value) { option in
-                        Toggle(surface.resolve(option.label) ?? option.value, isOn: Binding(
+                        Toggle(activeSurface?.resolve(option.label) ?? option.value, isOn: Binding(
                             get: { selections.contains(option.value) },
                             set: { isOn in
                                 if isOn {
@@ -49,7 +53,7 @@ struct A2UIChoicePickerView: View {
                     HStack {
                         let selectedLabels = properties.options
                             .filter { selections.contains($0.value) }
-                            .compactMap { surface.resolve($0.label) }
+                            .compactMap { activeSurface?.resolve($0.label) }
                         
                         let labelText = if selectedLabels.isEmpty {
                             "Select..."
@@ -80,14 +84,14 @@ struct A2UIChoicePickerView: View {
             }
         }
         .onChange(of: selections) { _, newValue in
-            updateBinding(surface: surface, binding: properties.value, newValue: Array(newValue))
-            surface.runChecks(for: id)
+            updateBinding(surface: activeSurface, binding: properties.value, newValue: Array(newValue))
+            activeSurface?.runChecks(for: id)
         }
         .onAppear {
-            if let initial = surface.resolve(properties.value) {
+            if let initial = activeSurface?.resolve(properties.value) {
                 selections = Set(initial)
             }
-            surface.runChecks(for: id)
+            activeSurface?.runChecks(for: id)
         }
     }
 }

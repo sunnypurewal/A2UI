@@ -2,18 +2,22 @@ import SwiftUI
 
 struct A2UIColumnView: View {
     let properties: ContainerProperties
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 
     var body: some View {
         let childIds: [String] = {
             switch properties.children {
             case .list(let list): return list
-            case .template(let template): return surface.expandTemplate(template: template)
+            case .template(let template): return activeSurface?.expandTemplate(template: template) ?? []
             }
         }()
 
         VStack(alignment: horizontalAlignment, spacing: 0) {
             A2UIJustifiedContainer(childIds: childIds, justify: properties.resolvedJustify)
+                .environment(activeSurface)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: Alignment(horizontal: horizontalAlignment, vertical: .center))
     }

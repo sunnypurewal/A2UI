@@ -3,30 +3,34 @@ import SwiftUI
 struct A2UIDateTimeInputView: View {
     let id: String
     let properties: DateTimeInputProperties
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
     @State private var date: Date = Date()
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 
-    init(id: String, properties: DateTimeInputProperties) {
+    init(id: String, properties: DateTimeInputProperties, surface: SurfaceState? = nil) {
         self.id = id
         self.properties = properties
+        self.surface = surface
     }
 
     var body: some View {
         DatePicker(
-            resolveValue(surface, binding: properties.label) ?? "",
+            resolveValue(activeSurface, binding: properties.label) ?? "",
             selection: $date,
             in: dateRange,
             displayedComponents: dateComponents
         )
         .onChange(of: date) { _, newValue in
             updateDate(newValue)
-            surface.runChecks(for: id)
+            activeSurface?.runChecks(for: id)
         }
         .onAppear {
             if let resolved = resolvedValue() {
                 date = resolved
             }
-            surface.runChecks(for: id)
+            activeSurface?.runChecks(for: id)
         }
     }
 
@@ -42,14 +46,14 @@ struct A2UIDateTimeInputView: View {
     }
 
     private var dateRange: ClosedRange<Date> {
-        let minDate = resolvedDate(from: resolveValue(surface, binding: properties.min)) ?? Date.distantPast
-        let maxDate = resolvedDate(from: resolveValue(surface, binding: properties.max)) ?? Date.distantFuture
+        let minDate = resolvedDate(from: resolveValue(activeSurface, binding: properties.min)) ?? Date.distantPast
+        let maxDate = resolvedDate(from: resolveValue(activeSurface, binding: properties.max)) ?? Date.distantFuture
         return minDate...maxDate
     }
 
     private func resolvedValue() -> Date? {
         let formatter = ISO8601DateFormatter()
-        if let value = surface.resolve(properties.value) {
+        if let value = activeSurface?.resolve(properties.value) {
             return formatter.date(from: value)
         }
         return nil
@@ -65,7 +69,7 @@ struct A2UIDateTimeInputView: View {
         guard let path = properties.value.path else { return }
         let formatter = ISO8601DateFormatter()
         let dateString = formatter.string(from: newValue)
-        surface.trigger(action: .dataUpdate(DataUpdateAction(path: path, contents: AnyCodable(dateString))))
+        activeSurface?.trigger(action: .dataUpdate(DataUpdateAction(path: path, contents: AnyCodable(dateString))))
     }
 }
 

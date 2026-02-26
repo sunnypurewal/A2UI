@@ -2,7 +2,11 @@ import SwiftUI
 
 struct A2UIListView: View {
     let properties: ListProperties
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
+
     private var axis: Axis.Set {
         properties.direction == "horizontal" ? .horizontal : .vertical
     }
@@ -27,6 +31,7 @@ struct A2UIListView: View {
         case .list(let list):
             ForEach(list, id: \.self) { id in
                 A2UIComponentRenderer(componentId: id)
+                    .environment(activeSurface)
             }
         case .template(let template):
             renderTemplate(template)
@@ -35,9 +40,10 @@ struct A2UIListView: View {
 
     @ViewBuilder
     private func renderTemplate(_ template: Template) -> some View {
-        let ids = surface.expandTemplate(template: template)
+        let ids = activeSurface?.expandTemplate(template: template) ?? []
         ForEach(ids, id: \.self) { id in
             A2UIComponentRenderer(componentId: id)
+                .environment(activeSurface)
         }
     }
 }

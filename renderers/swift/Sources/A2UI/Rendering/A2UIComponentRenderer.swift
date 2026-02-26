@@ -3,8 +3,8 @@ import OSLog
 
 /// A internal view that resolves a component ID and renders the appropriate SwiftUI view.
 struct A2UIComponentRenderer: View {
-    @Environment(A2UIDataStore.self) var dataStore
-    @Environment(SurfaceState.self) var surface
+    @Environment(A2UIDataStore.self) var dataStore: A2UIDataStore?
+    @Environment(SurfaceState.self) var surface: SurfaceState?
     let componentId: String
     let surfaceOverride: SurfaceState?
 	#if DEBUG
@@ -100,11 +100,11 @@ struct A2UIComponentRenderer: View {
             if let customRenderer = surface.customRenderers[instance.componentTypeName] {
                 customRenderer(instance)
             } else {
-                A2UIStandardComponentView(instance: instance)
+                A2UIStandardComponentView(surface: surface, instance: instance)
             }
         }
         
-        if dataStore.showDebugBorders {
+        if dataStore?.showDebugBorders ?? false {
             content
                 .border(debugColor(for: instance.componentTypeName), width: 1)
         } else {
