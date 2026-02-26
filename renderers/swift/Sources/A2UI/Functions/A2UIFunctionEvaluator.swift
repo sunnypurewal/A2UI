@@ -21,14 +21,16 @@ public enum A2UIFunctionEvaluator {
                   let pattern = resolvedArgs["pattern"] as? String else { return false }
             return matchesRegex(value: val, pattern: pattern)
         case "length":
-            guard let val = resolvedArgs["value"] as? String else { return false }
+            guard let val = resolvedArgs["value"] as? String,
+                  (asInt(resolvedArgs["min"]) != nil || asInt(resolvedArgs["max"]) != nil) else { return false }
             return checkLength(
                 value: val,
                 min: asInt(resolvedArgs["min"]),
                 max: asInt(resolvedArgs["max"])
             )
         case "numeric":
-            guard let val = asDouble(resolvedArgs["value"]) else { return false }
+            guard let val = asDouble(resolvedArgs["value"]),
+                  (asDouble(resolvedArgs["min"]) != nil || asDouble(resolvedArgs["max"]) != nil) else { return false }
             return checkNumeric(
                 value: val,
                 min: asDouble(resolvedArgs["min"]),
@@ -61,22 +63,26 @@ public enum A2UIFunctionEvaluator {
                   let format = resolvedArgs["format"] as? String else { return "" }
             return formatDate(value: val, format: format)
         case "pluralize":
-            guard let val = asDouble(resolvedArgs["value"]) else { return "" }
+            guard let val = asDouble(resolvedArgs["value"]),
+                  let other = resolvedArgs["other"] as? String else { return "" }
             return pluralize(
                 value: val,
                 zero: resolvedArgs["zero"] as? String,
                 one: resolvedArgs["one"] as? String,
-                other: resolvedArgs["other"] as? String
+                two: resolvedArgs["two"] as? String,
+                few: resolvedArgs["few"] as? String,
+                many: resolvedArgs["many"] as? String,
+                other: other
             )
         case "openUrl":
             guard let url = resolvedArgs["url"] as? String else { return nil }
             openUrl(url: url)
             return nil
         case "and":
-            guard let values = resolvedArgs["values"] as? [Bool] else { return false }
+            guard let values = resolvedArgs["values"] as? [Bool], values.count >= 2 else { return false }
             return performAnd(values: values)
         case "or":
-            guard let values = resolvedArgs["values"] as? [Bool] else { return false }
+            guard let values = resolvedArgs["values"] as? [Bool], values.count >= 2 else { return false }
             return performOr(values: values)
         case "not":
             guard let value = resolvedArgs["value"] as? Bool else { return false }
@@ -118,6 +124,9 @@ public enum A2UIFunctionEvaluator {
                 let nestedCall = FunctionCall(call: callName, args: anyCodableArgs, returnType: returnType)
                 return evaluate(call: nestedCall, surface: surface)
             }
+        } else if let array = value as? [Any] {
+            // Handle lists of DynamicValues (like in 'and'/'or' functions)
+            return array.map { resolveDynamicValue($0, surface: surface) }
         }
 
         // Otherwise, it's a literal

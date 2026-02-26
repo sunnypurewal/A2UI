@@ -35,6 +35,10 @@ final class A2UIFunctionTests: XCTestCase {
 
         let call2 = FunctionCall(call: "length", args: ["value": AnyCodable("t"), "min": AnyCodable(2.0)])
         XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: call2, surface: surface) as? Bool, false)
+
+        // Missing both min and max should fail according to anyOf spec
+        let call3 = FunctionCall(call: "length", args: ["value": AnyCodable("test")])
+        XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: call3, surface: surface) as? Bool, false)
     }
 
     func testNumeric() async {
@@ -46,6 +50,10 @@ final class A2UIFunctionTests: XCTestCase {
         
         let call3 = FunctionCall(call: "numeric", args: ["value": AnyCodable("10"), "min": AnyCodable(5.0)])
         XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: call3, surface: surface) as? Bool, true)
+
+        // Missing both min and max should fail according to anyOf spec
+        let call4 = FunctionCall(call: "numeric", args: ["value": AnyCodable(10.0)])
+        XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: call4, surface: surface) as? Bool, false)
     }
 
     func testEmail() async {
@@ -101,6 +109,23 @@ final class A2UIFunctionTests: XCTestCase {
         ]
         let call2 = FunctionCall(call: "pluralize", args: args2)
         XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: call2, surface: surface) as? String, "items")
+
+        // Test with optional categories
+        let args3: [String: AnyCodable] = [
+            "value": AnyCodable(0.0),
+            "zero": AnyCodable("none"),
+            "other": AnyCodable("some")
+        ]
+        let call3 = FunctionCall(call: "pluralize", args: args3)
+        XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: call3, surface: surface) as? String, "none")
+
+        let args4: [String: AnyCodable] = [
+            "value": AnyCodable(2.0),
+            "two": AnyCodable("couple"),
+            "other": AnyCodable("many")
+        ]
+        let call4 = FunctionCall(call: "pluralize", args: args4)
+        XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: call4, surface: surface) as? String, "couple")
     }
 
     func testLogical() async {
@@ -109,6 +134,10 @@ final class A2UIFunctionTests: XCTestCase {
 
         let andCall2 = FunctionCall(call: "and", args: ["values": AnyCodable([true, false])])
         XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: andCall2, surface: surface) as? Bool, false)
+
+        // Min 2 items check
+        let andCall3 = FunctionCall(call: "and", args: ["values": AnyCodable([true])])
+        XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: andCall3, surface: surface) as? Bool, false)
 
         let orCall = FunctionCall(call: "or", args: ["values": AnyCodable([true, false])])
         XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: orCall, surface: surface) as? Bool, true)
@@ -131,6 +160,20 @@ final class A2UIFunctionTests: XCTestCase {
         surface.setValue(at: "/test/val", value: "hello")
         let binding: [String: Sendable] = ["path": "/test/val"]
         let call = FunctionCall(call: "required", args: ["value": AnyCodable(binding)])
+        XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool, true)
+    }
+
+    func testArrayResolutionInFunctionCall() async {
+        surface.setValue(at: "/test/bool1", value: true)
+        surface.setValue(at: "/test/bool2", value: false)
+        
+        let binding1: [String: Sendable] = ["path": "/test/bool1"]
+        let binding2: [String: Sendable] = ["path": "/test/bool2"]
+        
+        let call = FunctionCall(call: "and", args: ["values": AnyCodable([binding1, binding2])])
+        XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool, false)
+        
+        surface.setValue(at: "/test/bool2", value: true)
         XCTAssertEqual(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool, true)
     }
 
