@@ -5,13 +5,13 @@ extension GalleryComponent {
 	static let textField: Self = {
 		return .init(
 			id: "TextField",
-			template: #"{"id":"gallery_component","component":{"TextField":{"text":{"path":"/text"},"placeholder":"Enter text...","type":"{{\#(textFieldTypeKey)}}"}}}"#,
-			staticComponents: [.root],
+			template: #"{"id":"gallery_component","component":{"TextField":{"value":{"path":"/body/text"},"label":{"path":"/label"},"variant":"{{\#(textFieldVariantKey)}}"}}}"#,
+			staticComponents: [.textFieldRoot, .body, .textFieldPreview],
 			dataModelFields: [
-				.init(path: "/text", label: "Text", value: .string("")),
+				.init(path: "/label", label: "Placeholder", value: .string("Enter text")),
 			],
 			properties: [
-				PropertyDefinition(key: textFieldTypeKey, label: "Type", options: ["text", "password", "email", "number"], value: "text")
+				PropertyDefinition(key: textFieldVariantKey, label: "Type", options: TextFieldVariant.allCases.map(\.rawValue), value: TextFieldVariant.shortText.rawValue)
 			]
 		)
 	}()

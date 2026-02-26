@@ -108,8 +108,14 @@ import OSLog
         }
         let newSurface = SurfaceState(id: id)
         newSurface.customRenderers = self.customRenderers
-        newSurface.actionHandler = { [weak self] action in
-            self?.actionHandler?(action)
+        newSurface.actionHandler = { [weak self] userAction in
+            // Locally handle data updates so the UI reflects changes immediately.
+            if case .dataUpdate(let update) = userAction.action {
+                newSurface.setValue(at: update.path, value: update.contents.value)
+            }
+            
+            // Still forward the action to the application's action handler.
+            self?.actionHandler?(userAction)
         }
         surfaces[id] = newSurface
         return newSurface

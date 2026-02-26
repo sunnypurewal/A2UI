@@ -6,17 +6,24 @@ struct A2UITextFieldView: View {
     @State private var text: String = ""
 
     var body: some View {
+		let label = resolveValue(surface, binding: properties.label) ?? ""
         VStack(alignment: .leading, spacing: 4) {
-            Text(resolveValue(surface, binding: properties.label) ?? "")
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            TextField("", text: $text)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .onChange(of: text) { _, newValue in
-                    updateBinding(surface: surface, binding: properties.value, newValue: newValue)
-                }
+			if properties.variant == .obscured {
+				SecureField(label, text: $text)
+			} else if properties.variant == .longText {
+				Text(label ?? "")
+					.font(.caption)
+					.foregroundColor(.secondary)
+				TextEditor(text: $text)
+			} else {
+				TextField(label, text: $text)
+					.keyboardType(properties.variant == .number ? .decimalPad : .default)
+			}
         }
+		.textFieldStyle(.roundedBorder)
+		.onChange(of: text) { _, newValue in
+			updateBinding(surface: surface, binding: properties.value, newValue: newValue)
+		}
         .onAppear {
             text = resolveValue(surface, binding: properties.value) ?? ""
         }

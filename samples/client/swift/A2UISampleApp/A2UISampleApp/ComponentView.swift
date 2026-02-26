@@ -24,7 +24,6 @@ struct ComponentView: View {
 				.background(Color(.systemBackground))
 				.cornerRadius(12)
 				.shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
-//				.frame(height: 200)
 			
 			if component.canEditProperties {
 				VStack(alignment: .leading, spacing: 10) {
