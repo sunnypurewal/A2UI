@@ -22,7 +22,11 @@ enum StaticComponent: String {
 	case modalButton = #"{"id":"trigger_button","component":{"Button":{"child":"button_child","action":{"functionCall":{"call": "button_click"}}}}}"#
 	
 	case textFieldRoot = #"{"id":"root","component":{"Card":{"child":"text_field_preview"}}}"#
-	case textFieldPreview = #"{"id":"text_field_preview","component":{"Column":{"children":["t_body","gallery_component"],"justify":"spaceBetween","align":"center"}}}"#
+	case validationStatus = #"{"id":"validation_status","component":{"Text":{"text":{"path":"/_validationStatus/gallery_component"},"variant":"caption"}}}"#
+	case textFieldPreview = #"{"id":"text_field_preview","component":{"Column":{"children":["t_body","gallery_component","validation_status"],"justify":"spaceBetween","align":"center"}}}"#
+	
+	case validationRoot = #"{"id":"root","component":{"Card":{"child":"validation_preview"}}}"#
+	case validationPreview = #"{"id":"validation_preview","component":{"Column":{"children":["gallery_component","validation_status"],"justify":"spaceBetween","align":"center"}}}"#
 	
 	case checkboxRoot = #"{"id":"root","component":{"Card":{"child":"check_box_preview"}}}"#
 	case checkboxValue = #"{"id":"t_h2","component":{"Text":{"text":{"path":"/value"},"variant":"h2"}}}"#

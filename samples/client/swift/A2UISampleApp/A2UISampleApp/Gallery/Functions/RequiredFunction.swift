@@ -6,7 +6,7 @@ extension GalleryComponent {
         return .init(
             id: "required",
             template: #"{"id":"gallery_component","checks":[{"condition":{"call":"required","args":{"value":{"path":"/name"}}},"message":"Name is required"}],"component":{"TextField":{"value":{"path":"/name"},"label":"Required Demo"}}}"#,
-            staticComponents: [.root],
+            staticComponents: [.validationRoot, .validationPreview, .validationStatus],
             dataModelFields: [
                 DataModelField(path: "/name", label: "Name", value: .string(""), showInEditor: false)
             ],
