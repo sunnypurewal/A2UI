@@ -5,13 +5,14 @@ struct PropertyDefinition: Identifiable {
 	let key: String
 	let label: String
 	let options: [String]
-	var value: String
+	var value: String?
 	var minValue: Double?
 	var maxValue: Double?
 	var isBoolean: Bool
 	var isDate: Bool
+	var mapValue: ((String?) -> String)?
 
-	init(key: String, label: String, options: [String] = [], value: String, minValue: Double? = nil, maxValue: Double? = nil, isBoolean: Bool = false, isDate: Bool = false) {
+	init(key: String, label: String, options: [String] = [], value: String? = nil, minValue: Double? = nil, maxValue: Double? = nil, isBoolean: Bool = false, isDate: Bool = false, mapValue: ((String?) -> String)? = nil) {
 		self.key = key
 		self.label = label
 		self.options = options
@@ -20,6 +21,7 @@ struct PropertyDefinition: Identifiable {
 		self.maxValue = maxValue
 		self.isBoolean = isBoolean
 		self.isDate = isDate
+		self.mapValue = mapValue
 	}
 }
 

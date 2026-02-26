@@ -14,7 +14,7 @@ struct GalleryComponent: Identifiable {
 		return !properties.isEmpty
 	}
 	
-	mutating func setProperty(_ key: String, to value: String) {
+	mutating func setProperty(_ key: String, to value: String?) {
 		guard let index = properties.firstIndex(where: { $0.key == key }) else { return }
 		properties[index].value = value
 	}
@@ -22,7 +22,8 @@ struct GalleryComponent: Identifiable {
 	var resolvedTemplate: String {
 		var comp = template
 		for prop in properties {
-			comp = comp.replacingOccurrences(of: "{{\(prop.key)}}", with: prop.value)
+			let replacement = prop.mapValue?(prop.value) ?? prop.value ?? ""
+			comp = comp.replacingOccurrences(of: "{{\(prop.key)}}", with: replacement)
 		}
 		return comp
 	}

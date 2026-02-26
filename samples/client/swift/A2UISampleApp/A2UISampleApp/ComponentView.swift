@@ -136,7 +136,7 @@ struct ComponentView: View {
 					updateSurface(for: component)
 				}
 		} else if !prop.wrappedValue.options.isEmpty {
-			Picker(prop.wrappedValue.label, selection: prop.value) {
+			Picker(prop.wrappedValue.label, selection: propertyStringBinding(for: prop)) {
 				ForEach(prop.wrappedValue.options, id: \.self) { option in
 					Text(option).tag(option)
 				}
@@ -149,7 +149,7 @@ struct ComponentView: View {
 			HStack {
 				Slider(value: propertyNumericBinding(for: prop), in: min...max)
 					.frame(width: 100)
-				Text(prop.wrappedValue.value)
+				Text(prop.wrappedValue.value ?? "0")
 					.font(.caption)
 					.monospacedDigit()
 					.frame(width: 40, alignment: .trailing)
@@ -158,7 +158,7 @@ struct ComponentView: View {
 				updateSurface(for: component)
 			}
 		} else {
-			TextField("", text: prop.value)
+			TextField("", text: propertyStringBinding(for: prop))
 				.textFieldStyle(.roundedBorder)
 				.frame(width: 120)
 				.onChange(of: prop.wrappedValue.value) {
@@ -167,10 +167,20 @@ struct ComponentView: View {
 		}
 	}
 
+	private func propertyStringBinding(for prop: Binding<PropertyDefinition>) -> Binding<String> {
+		Binding(
+			get: { prop.wrappedValue.value ?? "" },
+			set: { prop.wrappedValue.value = $0.isEmpty ? nil : $0 }
+		)
+	}
+
 	private func propertyNumericBinding(for prop: Binding<PropertyDefinition>) -> Binding<Double> {
 		Binding(
 			get: {
-				Double(prop.wrappedValue.value) ?? 0
+				if let val = prop.wrappedValue.value {
+					return Double(val) ?? 0
+				}
+				return 0
 			},
 			set: { newValue in
 				prop.wrappedValue.value = String(format: "%.0f", newValue)
