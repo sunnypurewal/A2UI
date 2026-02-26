@@ -70,7 +70,7 @@ import OSLog
             return Double(intValue) as? T
         }
         if T.self == Int.self, let doubleValue = value as? Double {
-            return Int(doubleValue) as? T
+			return Int(doubleValue.rounded()) as? T
         }
         
         return nil
