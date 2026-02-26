@@ -329,13 +329,13 @@ struct A2UIParserTests {
     @Test func streamingRemainderLogic() {
         var remainder = ""
         let chunk = "{\"deleteSurface\":{\"surfaceId\":\"1\"}}\n{\"beginRe"
-        let messages = parser.parse(chunk: chunk, remainder: &remainder)
+        var messages = parser.parse(chunk: chunk, remainder: &remainder)
         
         #expect(messages.count == 1)
         #expect(remainder == "{\"beginRe")
         
-        let messages2 = parser.parse(chunk: "ndering\":{\"surfaceId\":\"1\",\"root\":\"r\"}}\n", remainder: &remainder)
-        #expect(messages2.count == 1)
+        messages = parser.parse(chunk: "ndering\":{\"surfaceId\":\"1\",\"root\":\"r\"}}\n", remainder: &remainder)
+        #expect(messages.count == 1)
         #expect(remainder == "")
     }
 }

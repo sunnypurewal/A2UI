@@ -82,13 +82,12 @@ struct A2UIDataStoreTests {
     }
 
     @Test func dataStoreProcessChunkWithSplitMessages() {
-        let chunk1 = "{\"deleteSurface\":{\"surfaceId\":\"s1\"}}\n{\"createSurface"
-        let chunk2 = "\":{\"surfaceId\":\"s2\",\"catalogId\":\"c1\"}}\n"
-        
-        store.process(chunk: chunk1)
+        var chunk = "{\"deleteSurface\":{\"surfaceId\":\"s1\"}}\n{\"createSurface"
+        store.process(chunk: chunk)
         #expect(store.surfaces["s2"] == nil) // Partial message
         
-        store.process(chunk: chunk2)
+        chunk = "\":{\"surfaceId\":\"s2\",\"catalogId\":\"c1\"}}\n"
+        store.process(chunk: chunk)
         #expect(store.surfaces["s2"] != nil)
     }
 
