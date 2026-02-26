@@ -8,9 +8,9 @@ struct A2UIModalView: View {
     var body: some View {
         VStack {
             A2UIComponentRenderer(componentId: properties.trigger)
-                .onTapGesture {
-                    isPresented = true
-                }
+				.simultaneousGesture(TapGesture().onEnded({ _ in
+					isPresented = true
+				}))
         }
         .sheet(isPresented: $isPresented) {
             VStack {
