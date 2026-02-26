@@ -1,46 +1,42 @@
-import XCTest
+import Testing
+import Foundation
 @testable import A2UI
 
 @MainActor
-final class A2UIDataStoreTests: XCTestCase {
-    var store: A2UIDataStore!
-
-    override func setUp() async throws {
-        try await super.setUp()
-        store = A2UIDataStore()
-    }
+struct A2UIDataStoreTests {
+    private let store = A2UIDataStore()
 
     // MARK: - Surface Lifecycle
 
-    func testSurfaceCreationAndRetrieval() {
+    @Test func surfaceCreationAndRetrieval() {
         store.process(chunk: "{\"createSurface\":{\"surfaceId\":\"s1\",\"catalogId\":\"c1\"}}\n")
-        XCTAssertNotNil(store.surfaces["s1"])
+        #expect(store.surfaces["s1"] != nil)
         
         let existingSurface = store.surfaces["s1"]
         store.process(chunk: "{\"updateComponents\":{\"surfaceId\":\"s1\",\"components\":[]}}\n")
-        XCTAssertIdentical(store.surfaces["s1"], existingSurface)
+        #expect(store.surfaces["s1"] === existingSurface)
     }
 
-    func testSurfaceDeletion() {
+    @Test func surfaceDeletion() {
         store.process(chunk: "{\"createSurface\":{\"surfaceId\":\"s1\",\"catalogId\":\"c1\"}}\n")
-        XCTAssertNotNil(store.surfaces["s1"])
+        #expect(store.surfaces["s1"] != nil)
         
         store.process(chunk: "{\"deleteSurface\":{\"surfaceId\":\"s1\"}}\n")
-        XCTAssertNil(store.surfaces["s1"])
+        #expect(store.surfaces["s1"] == nil)
     }
 
     // MARK: - Message Processing
 
-    func testSurfaceUpdateProcessing() {
+    @Test func surfaceUpdateProcessing() {
         let json = "{\"updateComponents\": {\"surfaceId\": \"s1\", \"components\": [{\"id\": \"c1\", \"component\": {\"Text\": {\"text\": \"Hello\"}}}]}}\n"
         store.process(chunk: json)
         
         let surface = store.surfaces["s1"]
-        XCTAssertEqual(surface?.components.count, 1)
-        XCTAssertNotNil(surface?.components["c1"])
+        #expect(surface?.components.count == 1)
+        #expect(surface?.components["c1"] != nil)
     }
 
-    func testDataModelUpdateMerging() {
+    @Test func dataModelUpdateMerging() {
         let surface = SurfaceState(id: "s1")
         surface.dataModel = [
             "name": "initial",
@@ -53,57 +49,57 @@ final class A2UIDataStoreTests: XCTestCase {
         store.process(chunk: json)
         
         let model = store.surfaces["s1"]?.dataModel
-        XCTAssertEqual(model?["name"] as? String, "Alice")
-        XCTAssertEqual(model?["age"] as? Double, 30)
-        XCTAssertEqual(model?["isMember"] as? Bool, true)
+        #expect(model?["name"] as? String == "Alice")
+        #expect(model?["age"] as? Double == 30)
+        #expect(model?["isMember"] as? Bool == true)
         
         // Test deep update
         let deepUpdateJson = "{\"updateDataModel\": {\"surfaceId\": \"s1\", \"path\": \"/user/profile\", \"value\": {\"name\": \"Bob\"}}}"
         store.process(chunk: deepUpdateJson)
-        XCTAssertEqual(surface.getValue(at: "user/profile/name") as? String, "Bob")
+        #expect(surface.getValue(at: "user/profile/name") as? String == "Bob")
         
         // Test array update
         let listJson = "{\"updateDataModel\": {\"surfaceId\": \"s1\", \"path\": \"/items\", \"value\": [\"item1\"]}}"
         store.process(chunk: listJson)
-        XCTAssertEqual(surface.getValue(at: "items/0") as? String, "item1")
+        #expect(surface.getValue(at: "items/0") as? String == "item1")
     }
 
-    func testUserActionTrigger() {
+    @Test func userActionTrigger() async {
         let surface = SurfaceState(id: "s1")
-        let expectation = XCTestExpectation(description: "Action triggered")
         
-        surface.actionHandler = { userAction in
-            if case .custom(let name, _) = userAction.action {
-                XCTAssertEqual(name, "submit")
-            } else {
-                XCTFail("Incorrect action type")
+        await confirmation("Action triggered") { confirmed in
+            surface.actionHandler = { userAction in
+                if case .custom(let name, _) = userAction.action {
+                    #expect(name == "submit")
+                } else {
+                    Issue.record("Incorrect action type")
+                }
+                confirmed()
             }
-            expectation.fulfill()
+            
+            surface.trigger(action: Action.custom(name: "submit", context: nil))
         }
-        
-        surface.trigger(action: Action.custom(name: "submit", context: nil))
-        wait(for: [expectation], timeout: 1.0)
     }
 
-    func testDataStoreProcessChunkWithSplitMessages() {
+    @Test func dataStoreProcessChunkWithSplitMessages() {
         let chunk1 = "{\"deleteSurface\":{\"surfaceId\":\"s1\"}}\n{\"createSurface"
         let chunk2 = "\":{\"surfaceId\":\"s2\",\"catalogId\":\"c1\"}}\n"
         
         store.process(chunk: chunk1)
-        XCTAssertNil(store.surfaces["s2"]) // Partial message
+        #expect(store.surfaces["s2"] == nil) // Partial message
         
         store.process(chunk: chunk2)
-        XCTAssertNotNil(store.surfaces["s2"])
+        #expect(store.surfaces["s2"] != nil)
     }
 
-    func testDataStoreFlush() {
+    @Test func dataStoreFlush() {
         let partial = "{\"createSurface\":{\"surfaceId\":\"s-flush\",\"catalogId\":\"c1\"}}"
         store.process(chunk: partial) // No newline
-        XCTAssertNotNil(store.surfaces["s-flush"])
+        #expect(store.surfaces["s-flush"] != nil)
         
         let beforeFlush = store.surfaces["s-flush"]
         store.flush()
-        XCTAssertNotNil(store.surfaces["s-flush"])
-        XCTAssertIdentical(store.surfaces["s-flush"], beforeFlush)
+        #expect(store.surfaces["s-flush"] != nil)
+        #expect(store.surfaces["s-flush"] === beforeFlush)
     }
 }

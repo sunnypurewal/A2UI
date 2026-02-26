@@ -1,18 +1,14 @@
-import XCTest
+import Testing
+import Foundation
 @testable import A2UI
 
-final class A2UIParserTests: XCTestCase {
-    var parser: A2UIParser!
-
-    override func setUp() {
-        super.setUp()
-        parser = A2UIParser()
-    }
+struct A2UIParserTests {
+    private let parser = A2UIParser()
 
     // MARK: - Root Message Parsing
 
     /// Verifies that a `createSurface` message is correctly decoded with all optional fields.
-    func testParseCreateSurface() throws {
+    @Test func parseCreateSurface() throws {
         let json = """
         {
             "createSurface": {
@@ -23,23 +19,27 @@ final class A2UIParserTests: XCTestCase {
         }
         """
         let messages = try parser.parse(line: json)
-        if case .createSurface(let value) = messages.first {
-            XCTAssertEqual(value.surfaceId, "s1")
-            XCTAssertEqual(value.catalogId, "v08")
-            XCTAssertEqual(value.theme?["primaryColor"]?.value as? String, "#FF0000")
+        
+        let firstMessage = try #require(messages.first)
+        if case .createSurface(let value) = firstMessage {
+            #expect(value.surfaceId == "s1")
+            #expect(value.catalogId == "v08")
+            #expect(value.theme?["primaryColor"]?.value as? String == "#FF0000")
         } else {
-            XCTFail("Failed to decode createSurface")
+            Issue.record("Failed to decode createSurface")
         }
     }
 
     /// Verifies that a `deleteSurface` message is correctly decoded.
-    func testParseDeleteSurface() throws {
+    @Test func parseDeleteSurface() throws {
         let json = "{\"deleteSurface\": {\"surfaceId\": \"s1\"}}"
         let messages = try parser.parse(line: json)
-        if case .deleteSurface(let value) = messages.first {
-            XCTAssertEqual(value.surfaceId, "s1")
+        
+        let firstMessage = try #require(messages.first)
+        if case .deleteSurface(let value) = firstMessage {
+            #expect(value.surfaceId == "s1")
         } else {
-            XCTFail("Failed to decode deleteSurface")
+            Issue.record("Failed to decode deleteSurface")
         }
     }
 
@@ -47,7 +47,7 @@ final class A2UIParserTests: XCTestCase {
 
     /// Verifies that all standard component types (Text, Button, Row, Column, Card)
     /// are correctly decoded via the polymorphic `ComponentType` enum.
-    func testParseAllComponentTypes() throws {
+    @Test func parseAllComponentTypes() throws {
         let componentsJson = """
         {
             "updateComponents": {
@@ -63,31 +63,33 @@ final class A2UIParserTests: XCTestCase {
         }
         """
         let messages = try parser.parse(line: componentsJson)
-        guard case .surfaceUpdate(let update) = messages.first else {
-            XCTFail("Expected surfaceUpdate")
+        
+        let firstMessage = try #require(messages.first)
+        guard case .surfaceUpdate(let update) = firstMessage else {
+            Issue.record("Expected surfaceUpdate")
             return
         }
 
-        XCTAssertEqual(update.components.count, 5)
+        #expect(update.components.count == 5)
         
         // Check Row
         if case .row(let props) = update.components[2].component {
             if case .list(let list) = props.children {
-                XCTAssertEqual(list, ["t1"])
-            } else { XCTFail("Expected list children") }
-        } else { XCTFail("Type mismatch for row") }
+                #expect(list == ["t1"])
+            } else { Issue.record("Expected list children") }
+        } else { Issue.record("Type mismatch for row") }
 
         // Check Column Alignment
         if case .column(let props) = update.components[3].component {
-            XCTAssertEqual(props.align, .center)
-        } else { XCTFail("Type mismatch for column") }
+            #expect(props.align == .center)
+        } else { Issue.record("Type mismatch for column") }
     }
 
     // MARK: - Data Binding & Logic
 
     /// Verifies that `BoundValue` correctly handles literal strings, literal numbers,
     /// literal booleans, and data model paths.
-    func testBoundValueVariants() throws {
+    @Test func boundValueVariants() throws {
         let json = """
         {
             "updateComponents": {
@@ -100,57 +102,60 @@ final class A2UIParserTests: XCTestCase {
         }
         """
         let messages = try parser.parse(line: json)
-        guard case .surfaceUpdate(let update) = messages.first else { return }
+        
+        let firstMessage = try #require(messages.first)
+        guard case .surfaceUpdate(let update) = firstMessage else { return }
         
         if case .text(let props) = update.components[0].component {
-            XCTAssertEqual(props.text.path, "/user/name")
-            XCTAssertNil(props.text.literal)
+            #expect(props.text.path == "/user/name")
+            #expect(props.text.literal == nil)
         }
         
         if case .text(let props) = update.components[1].component {
-            XCTAssertEqual(props.text.literal, "Literal")
-            XCTAssertNil(props.text.path)
+            #expect(props.text.literal == "Literal")
+            #expect(props.text.path == nil)
         }
     }
 
     // MARK: - Error Handling & Edge Cases
 
     /// Verifies that the parser decodes unknown component types as .custom instead of throwing.
-    func testParseUnknownComponent() throws {
+    @Test func parseUnknownComponent() throws {
         let json = "{\"updateComponents\": {\"surfaceId\": \"s1\", \"components\": [{\"id\": \"1\", \"component\": {\"Unknown\": {\"foo\":\"bar\"}}}]}}"
         let messages = try parser.parse(line: json)
         
-        if case .surfaceUpdate(let update) = messages.first,
+        let firstMessage = try #require(messages.first)
+        if case .surfaceUpdate(let update) = firstMessage,
            case .custom(let name, let props) = update.components.first?.component {
-            XCTAssertEqual(name, "Unknown")
-            XCTAssertEqual(props["foo"]?.value as? String, "bar")
+            #expect(name == "Unknown")
+            #expect(props["foo"]?.value as? String == "bar")
         } else {
-            XCTFail("Should have decoded as .custom component")
+            Issue.record("Should have decoded as .custom component")
         }
     }
 
     /// Verifies that the parser can handle multiple JSON objects on a single line,
     /// even if separated by commas (common in some non-standard JSONL producers).
-    func testParseCommaSeparatedObjectsOnOneLine() throws {
+    @Test func parseCommaSeparatedObjectsOnOneLine() throws {
         let json = """
         {"updateDataModel":{"surfaceId":"s1"}},{"updateComponents":{"surfaceId":"s1","components":[]}}
         """
         let messages = try parser.parse(line: json)
-        XCTAssertEqual(messages.count, 2)
+        #expect(messages.count == 2)
         
-        if case .dataModelUpdate = messages[0] {} else { XCTFail("First message should be dataModelUpdate") }
-        if case .surfaceUpdate = messages[1] {} else { XCTFail("Second message should be surfaceUpdate") }
+        if case .dataModelUpdate = messages[0] {} else { Issue.record("First message should be dataModelUpdate") }
+        if case .surfaceUpdate = messages[1] {} else { Issue.record("Second message should be surfaceUpdate") }
     }
 
     /// Verifies that the parser correctly returns an empty array for empty lines in a JSONL stream.
-    func testParseEmptyLine() throws {
-        XCTAssertTrue(try parser.parse(line: "").isEmpty)
-        XCTAssertTrue(try parser.parse(line: "   ").isEmpty)
+    @Test func parseEmptyLine() throws {
+        #expect(try parser.parse(line: "").isEmpty)
+        #expect(try parser.parse(line: "   ").isEmpty)
     }
 
     // MARK: - Children Compatibility Tests
 
-    func testChildrenDirectArray() throws {
+    @Test func childrenDirectArray() throws {
         let json = """
         {
             "version": "v0.10",
@@ -163,23 +168,25 @@ final class A2UIParserTests: XCTestCase {
         }
         """
         let messages = try parser.parse(line: json)
-        guard case .surfaceUpdate(let update) = messages.first else {
-            XCTFail("Expected surfaceUpdate")
+        
+        let firstMessage = try #require(messages.first)
+        guard case .surfaceUpdate(let update) = firstMessage else {
+            Issue.record("Expected surfaceUpdate")
             return
         }
         
         if case .row(let props) = update.components[0].component {
             if case .list(let list) = props.children {
-                XCTAssertEqual(list, ["t1", "t2"])
+                #expect(list == ["t1", "t2"])
             } else {
-                XCTFail("Expected .list")
+                Issue.record("Expected .list")
             }
         } else {
-            XCTFail("Expected .row")
+            Issue.record("Expected .row")
         }
     }
 
-    func testChildrenLegacyExplicitList() throws {
+    @Test func childrenLegacyExplicitList() throws {
         let json = """
         {
             "version": "v0.10",
@@ -192,23 +199,25 @@ final class A2UIParserTests: XCTestCase {
         }
         """
         let messages = try parser.parse(line: json)
-        guard case .surfaceUpdate(let update) = messages.first else {
-            XCTFail("Expected surfaceUpdate")
+        
+        let firstMessage = try #require(messages.first)
+        guard case .surfaceUpdate(let update) = firstMessage else {
+            Issue.record("Expected surfaceUpdate")
             return
         }
         
         if case .row(let props) = update.components[0].component {
             if case .list(let list) = props.children {
-                XCTAssertEqual(list, ["t1", "t2"])
+                #expect(list == ["t1", "t2"])
             } else {
-                XCTFail("Expected .list")
+                Issue.record("Expected .list")
             }
         } else {
-            XCTFail("Expected .row")
+            Issue.record("Expected .row")
         }
     }
 
-    func testChildrenTemplate() throws {
+    @Test func childrenTemplate() throws {
         let json = """
         {
             "version": "v0.10",
@@ -221,20 +230,22 @@ final class A2UIParserTests: XCTestCase {
         }
         """
         let messages = try parser.parse(line: json)
-        guard case .surfaceUpdate(let update) = messages.first else {
-            XCTFail("Expected surfaceUpdate")
+        
+        let firstMessage = try #require(messages.first)
+        guard case .surfaceUpdate(let update) = firstMessage else {
+            Issue.record("Expected surfaceUpdate")
             return
         }
         
         if case .row(let props) = update.components[0].component {
             if case .template(let template) = props.children {
-                XCTAssertEqual(template.componentId, "tpl")
-                XCTAssertEqual(template.path, "/items")
+                #expect(template.componentId == "tpl")
+                #expect(template.path == "/items")
             } else {
-                XCTFail("Expected .template")
+                Issue.record("Expected .template")
             }
         } else {
-            XCTFail("Expected .row")
+            Issue.record("Expected .row")
         }
     }
 
@@ -242,7 +253,7 @@ final class A2UIParserTests: XCTestCase {
 
     /// Verifies that the `AnyCodable` helper correctly handles various JSON types
     /// (String, Double, Bool, Dictionary) without data loss.
-    func testAnyCodable() throws {
+    @Test func anyCodable() throws {
         let dict: [String: Sendable] = ["s": "str", "n": 1.0, "b": true]
         let anyCodable = AnyCodable(dict)
         
@@ -250,31 +261,31 @@ final class A2UIParserTests: XCTestCase {
         let decoded = try JSONDecoder().decode(AnyCodable.self, from: encoded)
         
         let decodedDict = decoded.value as? [String: Sendable]
-        XCTAssertEqual(decodedDict?["s"] as? String, "str")
-        XCTAssertEqual(decodedDict?["n"] as? Double, 1.0)
-        XCTAssertEqual(decodedDict?["b"] as? Bool, true)
+        #expect(decodedDict?["s"] as? String == "str")
+        #expect(decodedDict?["n"] as? Double == 1.0)
+        #expect(decodedDict?["b"] as? Bool == true)
     }
 
     /// Verifies that an A2UIMessage can be encoded back to JSON and re-decoded
     /// without loss of information (Symmetric Serialization).
-    func testSymmetricEncoding() throws {
+    @Test func symmetricEncoding() throws {
         let originalJson = "{\"deleteSurface\":{\"surfaceId\":\"s1\"}}"
         let messages = try parser.parse(line: originalJson)
-        let message = try XCTUnwrap(messages.first)
+        let message = try #require(messages.first)
         
         let encoder = JSONEncoder()
         let encodedData = try encoder.encode(message)
         let decodedMessage = try JSONDecoder().decode(A2UIMessage.self, from: encodedData)
         
         if case .deleteSurface(let value) = decodedMessage {
-            XCTAssertEqual(value.surfaceId, "s1")
+            #expect(value.surfaceId == "s1")
         } else {
-            XCTFail()
+            Issue.record()
         }
     }
 
     /// Verifies that all component types can be encoded and decoded without loss.
-    func testSymmetricComponentEncoding() throws {
+    @Test func symmetricComponentEncoding() throws {
         let action = Action.custom(name: "testAction", context: nil)
         let boundStr = BoundValue<String>(literal: "test")
         let boundBool = BoundValue<Bool>(literal: true)
@@ -306,25 +317,25 @@ final class A2UIParserTests: XCTestCase {
             let encoded = try encoder.encode(comp)
             
             let decoded = try JSONDecoder().decode(ComponentType.self, from: encoded)
-            XCTAssertEqual(comp.typeName, decoded.typeName)
+            #expect(comp.typeName == decoded.typeName)
             
             // Re-encode decoded to ensure symmetry
             let reEncoded = try encoder.encode(decoded)
-            XCTAssertEqual(encoded, reEncoded)
+            #expect(encoded == reEncoded)
         }
     }
 
     /// Verifies that the streaming logic correctly handles split lines across multiple chunks.
-    func testStreamingRemainderLogic() {
+    @Test func streamingRemainderLogic() {
         var remainder = ""
         let chunk = "{\"deleteSurface\":{\"surfaceId\":\"1\"}}\n{\"beginRe"
         let messages = parser.parse(chunk: chunk, remainder: &remainder)
         
-        XCTAssertEqual(messages.count, 1)
-        XCTAssertEqual(remainder, "{\"beginRe")
+        #expect(messages.count == 1)
+        #expect(remainder == "{\"beginRe")
         
         let messages2 = parser.parse(chunk: "ndering\":{\"surfaceId\":\"1\",\"root\":\"r\"}}\n", remainder: &remainder)
-        XCTAssertEqual(messages2.count, 1)
-        XCTAssertEqual(remainder, "")
+        #expect(messages2.count == 1)
+        #expect(remainder == "")
     }
 }

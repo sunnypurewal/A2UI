@@ -1,17 +1,12 @@
-import XCTest
+import Testing
 import SwiftUI
 @testable import A2UI
 
 @MainActor
-final class A2UIExtensibilityTests: XCTestCase {
-    var store: A2UIDataStore!
+struct A2UIExtensibilityTests {
+    private let store = A2UIDataStore()
 
-    override func setUp() async throws {
-        try await super.setUp()
-        store = A2UIDataStore()
-    }
-
-    func testCustomComponentDecoding() {
+    @Test func customComponentDecoding() {
         store.process(chunk: "{\"createSurface\":{\"surfaceId\":\"s1\",\"catalogId\":\"c1\"}}\n")
         let json = "{\"updateComponents\":{\"surfaceId\":\"s1\",\"components\":[{\"id\":\"c1\",\"component\":{\"ChatSurface\":{\"historyPath\":\"/app/history\"}}}]}}"
         
@@ -19,49 +14,47 @@ final class A2UIExtensibilityTests: XCTestCase {
         store.process(chunk: json + "\n")
         
         let surface = store.surfaces["s1"]
-        XCTAssertNotNil(surface)
+        #expect(surface != nil)
         
         let component = surface?.components["c1"]
-        XCTAssertNotNil(component)
+        #expect(component != nil)
         
         // Verify it was captured as a custom component
         if case .custom(let name, let properties) = component?.component {
-            XCTAssertEqual(name, "ChatSurface")
-            XCTAssertEqual(properties["historyPath"]?.value as? String, "/app/history")
+            #expect(name == "ChatSurface")
+            #expect(properties["historyPath"]?.value as? String == "/app/history")
         } else {
-            XCTFail("Component should have been decoded as .custom")
+            Issue.record("Component should have been decoded as .custom")
         }
         
         // Verify helper property
-        XCTAssertEqual(component?.component.typeName, "ChatSurface")
+        #expect(component?.component.typeName == "ChatSurface")
     }
 
-    func testCustomRendererRegistry() {
-        let expectation = XCTestExpectation(description: "Custom renderer called")
-        
-        // Register a mock custom renderer
-        store.customRenderers["ChatSurface"] = { instance in
-            XCTAssertEqual(instance.id, "c1")
-            expectation.fulfill()
-            return AnyView(Text("Mock Chat"))
+    @Test func customRendererRegistry() async {
+        await confirmation("Custom renderer called") { confirmed in
+            // Register a mock custom renderer
+            store.customRenderers["ChatSurface"] = { instance in
+                #expect(instance.id == "c1")
+                confirmed()
+                return AnyView(Text("Mock Chat"))
+            }
+            
+            // Simulate a message arriving
+            store.process(chunk: "{\"createSurface\":{\"surfaceId\":\"s1\",\"catalogId\":\"c1\"}}\n")
+            let json = "{\"updateComponents\":{\"surfaceId\":\"s1\",\"components\":[{\"id\":\"c1\",\"component\":{\"ChatSurface\":{\"historyPath\":\"/app/history\"}}}]}}"
+            store.process(chunk: json + "\n")
+            
+            // In a real app, A2UIComponentRenderer would call this.
+            // We can verify the lookup manually here.
+            let surface = store.surfaces["s1"]!
+            let component = surface.components["c1"]!
+            
+            if let renderer = store.customRenderers[component.component.typeName] {
+                let _ = renderer(component)
+            } else {
+                Issue.record("Custom renderer not found in registry")
+            }
         }
-        
-        // Simulate a message arriving
-        store.process(chunk: "{\"createSurface\":{\"surfaceId\":\"s1\",\"catalogId\":\"c1\"}}\n")
-        let json = "{\"updateComponents\":{\"surfaceId\":\"s1\",\"components\":[{\"id\":\"c1\",\"component\":{\"ChatSurface\":{\"historyPath\":\"/app/history\"}}}]}}"
-        store.process(chunk: json + "\n")
-        
-        // In a real app, A2UIComponentRenderer would call this.
-        // We can verify the lookup manually here.
-        let surface = store.surfaces["s1"]!
-        let component = surface.components["c1"]!
-        
-        if let renderer = store.customRenderers[component.component.typeName] {
-            let _ = renderer(component)
-        } else {
-            XCTFail("Custom renderer not found in registry")
-        }
-        
-        wait(for: [expectation], timeout: 1.0)
     }
 }
