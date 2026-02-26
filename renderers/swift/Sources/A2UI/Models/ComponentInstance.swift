@@ -37,3 +37,9 @@ public struct ComponentInstance: Codable {
         try container.encode(component, forKey: .component)
     }
 }
+
+extension ComponentInstance {
+    public var componentTypeName: String {
+        component.typeName
+    }
+}
