@@ -24,22 +24,51 @@ struct A2UIChoicePickerView: View {
                         Text(surface.resolve(option.label) ?? option.value).tag(option.value)
                     }
                 }
-                .pickerStyle(MenuPickerStyle())
+                .pickerStyle(.menu)
             } else {
-                ForEach(properties.options, id: \.value) { option in
-                    Toggle(isOn: Binding(
-                        get: { selections.contains(option.value) },
-                        set: { isOn in
-                            if isOn {
-                                selections.insert(option.value)
-                            } else {
-                                selections.remove(option.value)
+                Menu {
+                    ForEach(properties.options, id: \.value) { option in
+                        Toggle(surface.resolve(option.label) ?? option.value, isOn: Binding(
+                            get: { selections.contains(option.value) },
+                            set: { isOn in
+                                if isOn {
+                                    selections.insert(option.value)
+                                } else {
+                                    selections.remove(option.value)
+                                }
                             }
-                        }
-                    )) {
-                        Text(surface.resolve(option.label) ?? option.value)
+                        ))
                     }
+                } label: {
+                    HStack {
+                        let selectedLabels = properties.options
+                            .filter { selections.contains($0.value) }
+                            .compactMap { surface.resolve($0.label) }
+                        
+                        let labelText = if selectedLabels.isEmpty {
+                            "Select..."
+                        } else if selectedLabels.count > 2 {
+                            "\(selectedLabels.count) items"
+                        } else {
+                            selectedLabels.joined(separator: ", ")
+                        }
+                        
+                        Text(labelText)
+                            .lineLimit(1)
+                            .foregroundStyle(.primary)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.up.down")
+                            .imageScale(.small)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.secondary.opacity(0.1))
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
                 }
+                .menuActionDismissBehavior(.disabled)
             }
         }
         .onChange(of: selections) { _, newValue in
@@ -51,4 +80,34 @@ struct A2UIChoicePickerView: View {
             }
         }
     }
+}
+
+#Preview {
+    let surface = SurfaceState(id: "test")
+    let dataStore = A2UIDataStore()
+    
+    let options = [
+        SelectionOption(label: .init(literal: "Option 1"), value: "opt1"),
+        SelectionOption(label: .init(literal: "Option 2"), value: "opt2"),
+        SelectionOption(label: .init(literal: "Option 3"), value: "opt3")
+    ]
+    
+    VStack(spacing: 20) {
+        A2UIChoicePickerView(properties: ChoicePickerProperties(
+            label: .init(literal: "Mutually Exclusive"),
+            options: options,
+            variant: .mutuallyExclusive,
+            value: .init(literal: ["opt1"])
+        ))
+        
+        A2UIChoicePickerView(properties: ChoicePickerProperties(
+            label: .init(literal: "Multiple Selection"),
+            options: options,
+            variant: .multipleSelection,
+            value: .init(literal: ["opt1", "opt2"])
+        ))
+    }
+    .padding()
+    .environment(surface)
+    .environment(dataStore)
 }
