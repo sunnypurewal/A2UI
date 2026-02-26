@@ -99,8 +99,7 @@ import OSLog
 
     public func flush() {
         guard !streamRemainder.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        process(chunk: "
-")
+        process(chunk: "\n")
     }
 
     private func getOrCreateSurface(id: String) -> SurfaceState {
