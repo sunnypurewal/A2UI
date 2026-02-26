@@ -9,8 +9,9 @@ struct PropertyDefinition: Identifiable {
 	var minValue: Double?
 	var maxValue: Double?
 	var isBoolean: Bool
+	var isDate: Bool
 
-	init(key: String, label: String, options: [String] = [], value: String, minValue: Double? = nil, maxValue: Double? = nil, isBoolean: Bool = false) {
+	init(key: String, label: String, options: [String] = [], value: String, minValue: Double? = nil, maxValue: Double? = nil, isBoolean: Bool = false, isDate: Bool = false) {
 		self.key = key
 		self.label = label
 		self.options = options
@@ -18,6 +19,7 @@ struct PropertyDefinition: Identifiable {
 		self.minValue = minValue
 		self.maxValue = maxValue
 		self.isBoolean = isBoolean
+		self.isDate = isDate
 	}
 }
 

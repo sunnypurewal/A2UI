@@ -12,6 +12,7 @@ struct ComponentView: View {
 		formatter.maximumFractionDigits = 4
 		return formatter
 	}()
+	private let iso8601Formatter = ISO8601DateFormatter()
 	
 	init(component: GalleryComponent) {
 		self._component = State(initialValue: component)
@@ -122,7 +123,13 @@ struct ComponentView: View {
 
 	@ViewBuilder
 	private func propertyEditor(for prop: Binding<PropertyDefinition>) -> some View {
-		if prop.wrappedValue.isBoolean {
+		if prop.wrappedValue.isDate {
+			DatePicker("", selection: propertyDateBinding(for: prop))
+				.labelsHidden()
+				.onChange(of: prop.wrappedValue.value) {
+					updateSurface(for: component)
+				}
+		} else if prop.wrappedValue.isBoolean {
 			Toggle("", isOn: propertyBoolBinding(for: prop))
 				.labelsHidden()
 				.onChange(of: prop.wrappedValue.value) {
@@ -178,6 +185,17 @@ struct ComponentView: View {
 			},
 			set: { newValue in
 				prop.wrappedValue.value = newValue ? "true" : "false"
+			}
+		)
+	}
+
+	private func propertyDateBinding(for prop: Binding<PropertyDefinition>) -> Binding<Date> {
+		Binding(
+			get: {
+				iso8601Formatter.date(from: prop.wrappedValue.value) ?? Date()
+			},
+			set: { newValue in
+				prop.wrappedValue.value = iso8601Formatter.string(from: newValue)
 			}
 		)
 	}
