@@ -69,7 +69,7 @@ struct A2UIAudioPlayerView: View {
                 }
                 
                 VStack(alignment: .leading) {
-                    Text("Audio Player")
+                    Text(surface.resolve(properties.description) ?? "Audio Player")
                         .font(.caption)
                     
                     Slider(value: $currentTime, in: 0...max(duration, 0.01)) { editing in
@@ -104,25 +104,35 @@ struct A2UIAudioPlayerView: View {
         .background(Color.secondary.opacity(0.1))
         .cornerRadius(8)
         .onAppear {
-            if let urlString = surface.resolve(properties.url), let url = URL(string: urlString) {
-                let avPlayer = AVPlayer(url: url)
-                player = avPlayer
-                volume = Double(avPlayer.volume)
-                
-                // Observe time
-                avPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: 600), queue: .main) { time in
-                    Task { @MainActor in
-                        if !isEditing {
-                            currentTime = time.seconds
-                        }
+            setupPlayer()
+        }
+        .onChange(of: properties.url) { _, _ in
+            setupPlayer()
+        }
+    }
+
+    private func setupPlayer() {
+        if let urlString = surface.resolve(properties.url), let url = URL(string: urlString) {
+            let avPlayer = AVPlayer(url: url)
+            player = avPlayer
+            volume = Double(avPlayer.volume)
+            isPlaying = false
+            currentTime = 0
+            duration = 0
+            
+            // Observe time
+            avPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: 600), queue: .main) { time in
+                Task { @MainActor in
+                    if !isEditing {
+                        currentTime = time.seconds
                     }
                 }
-                
-                // Observe duration
-                Task {
-                    if let duration = try? await avPlayer.currentItem?.asset.load(.duration) {
-                        self.duration = duration.seconds
-                    }
+            }
+            
+            // Observe duration
+            Task {
+                if let duration = try? await avPlayer.currentItem?.asset.load(.duration) {
+                    self.duration = duration.seconds
                 }
             }
         }

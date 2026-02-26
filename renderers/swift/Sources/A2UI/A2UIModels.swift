@@ -599,7 +599,7 @@ public struct DataUpdateAction: Codable, Sendable {
 
 // MARK: - Binding
 
-public struct BoundValue<T: Codable & Sendable>: Codable, Sendable {
+public struct BoundValue<T: Codable & Sendable & Equatable>: Codable, Sendable, Equatable {
     public let literal: T?
     public let path: String?
 

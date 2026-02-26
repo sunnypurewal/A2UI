@@ -136,6 +136,11 @@ import OSLog
         return dataModel["surface_name"] as? String ?? id
     }
 
+    public func resolve<T>(_ boundValue: BoundValue<T>?) -> T? {
+        guard let boundValue = boundValue else { return nil }
+        return resolve(boundValue)
+    }
+
     public func resolve<T>(_ boundValue: BoundValue<T>) -> T? {
         if let path = boundValue.path {
             let value = getValue(at: path)
