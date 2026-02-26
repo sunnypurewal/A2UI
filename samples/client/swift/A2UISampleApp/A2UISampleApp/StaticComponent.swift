@@ -35,4 +35,6 @@ enum StaticComponent: String {
 	
 	case datetimeRoot = #"{"id":"root","component":{"Card":{"child":"datetime_preview"}}}"#
 	case datetimePreview = #"{"id":"datetime_preview","component":{"Column":{"children":["value_text","gallery_component"],"justify":"spaceAround","align":"center"}}}"#
+	
+	case buttonChild = #"{"id":"button_child","component":{"Text":{"text":"Tap Me"}}}"#
 }

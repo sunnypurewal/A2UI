@@ -5,6 +5,7 @@ struct A2UIButtonView: View {
     let properties: ButtonProperties
 
     var body: some View {
+		let variant = properties.variant ?? .primary
         Button(action: {
             performAction()
         }) {
@@ -12,9 +13,9 @@ struct A2UIButtonView: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
         }
-        .applyButtonStyle(variant: properties.variant)
+        .applyButtonStyle(variant: variant)
         #if os(iOS)
-        .tint(properties.variant == "primary" ? .blue : .gray)
+		.tint(variant == .primary ? .blue : .gray)
         #endif
     }
 
@@ -25,9 +26,9 @@ struct A2UIButtonView: View {
 
 extension View {
     @ViewBuilder
-    func applyButtonStyle(variant: String?) -> some View {
-        if variant == "borderless" {
-            self.buttonStyle(.plain)
+    func applyButtonStyle(variant: ButtonVariant) -> some View {
+		if variant == .borderless {
+            self.buttonStyle(.borderless)
         } else {
             self.buttonStyle(.bordered)
         }
@@ -41,23 +42,17 @@ extension View {
     // Add a text component for the button child
     surface.components["t1"] = ComponentInstance(id: "t1", component: .text(TextProperties(text: .init(literal: "Click Me"), variant: nil)))
     
-    return VStack(spacing: 20) {
+	return VStack(spacing: 20) {
         A2UIButtonView(properties: ButtonProperties(
             child: "t1",
             action: .custom(name: "primary_action", context: nil),
-            variant: "primary"
-        ))
-        
-        A2UIButtonView(properties: ButtonProperties(
-            child: "t1",
-            action: .custom(name: "secondary_action", context: nil),
-            variant: "secondary"
+			variant: .primary
         ))
         
         A2UIButtonView(properties: ButtonProperties(
             child: "t1",
             action: .custom(name: "borderless_action", context: nil),
-            variant: "borderless"
+			variant: .borderless
         ))
     }
     .padding()

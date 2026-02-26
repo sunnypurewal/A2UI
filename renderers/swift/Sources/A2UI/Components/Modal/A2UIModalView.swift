@@ -32,7 +32,7 @@ struct A2UIModalView: View {
     let surface = SurfaceState(id: "test")
     let dataStore = A2UIDataStore()
     
-    surface.components["trigger"] = ComponentInstance(id: "trigger", component: .button(ButtonProperties(child: "btn_text", action: .custom(name: "open", context: nil), variant: "primary")))
+	surface.components["trigger"] = ComponentInstance(id: "trigger", component: .button(ButtonProperties(child: "btn_text", action: .custom(name: "open", context: nil), variant: .primary)))
     surface.components["btn_text"] = ComponentInstance(id: "btn_text", component: .text(TextProperties(text: .init(literal: "Open Modal"), variant: nil)))
     surface.components["content"] = ComponentInstance(id: "content", component: .text(TextProperties(text: .init(literal: "This is the modal content"), variant: .h2)))
     

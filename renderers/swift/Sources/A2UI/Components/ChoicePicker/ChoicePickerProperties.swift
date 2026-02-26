@@ -3,7 +3,7 @@ import Foundation
 public struct ChoicePickerProperties: Codable, Sendable {
     public let label: BoundValue<String>?
     public let options: [SelectionOption]
-    public let variant: ChoicePickerVariant? // multipleSelection, mutuallyExclusive
+    public let variant: ChoicePickerVariant?
     public let value: BoundValue<[String]>
 }
 

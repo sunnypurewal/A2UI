@@ -5,8 +5,8 @@ extension GalleryComponent {
 	static let button: Self = {
 		return .init(
 			id: "Button",
-			template: #"{"id":"gallery_component","component":{"Button":{"label":"Click Me","action":"button_clicked"}}}"#,
-			staticComponents: [.root],
+			template: #"{"id":"gallery_component","component":{"Button":{"child":"button_child","action":{"functionCall":{"call": "button_click"}}}}}"#,
+			staticComponents: [.root, .buttonChild],
 			dataModelFields: [],
 			properties: []
 		)
