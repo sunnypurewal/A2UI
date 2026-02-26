@@ -1,9 +1,8 @@
 import Foundation
 
 extension A2UIFunctionEvaluator {
-    internal static func formatDate(args: [String: Any]) -> String {
-        guard let value = args["value"],
-              let format = args["format"] as? String else { return "" }
+    internal static func formatDate(value: Any?, format: String?) -> String {
+        guard let value = value, let format = format else { return "" }
         
         let date: Date
         if let d = value as? Date {

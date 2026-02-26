@@ -1,17 +1,17 @@
 import Foundation
 
 extension A2UIFunctionEvaluator {
-    internal static func pluralize(args: [String: Any]) -> String {
-        guard let value = (args["value"] as? Double) ?? (args["value"] as? Int).map(Double.init) else { return "" }
+    internal static func pluralize(value: Double?, zero: String?, one: String?, other: String?) -> String {
+        guard let value = value else { return "" }
         
         // This is a simplified version of CLDR pluralization
         // For English: 1 -> one, everything else -> other
         if value == 1 {
-            return (args["one"] as? String) ?? (args["other"] as? String) ?? ""
+            return one ?? other ?? ""
         } else if value == 0 {
-            return (args["zero"] as? String) ?? (args["other"] as? String) ?? ""
+            return zero ?? other ?? ""
         } else {
-            return (args["other"] as? String) ?? ""
+            return other ?? ""
         }
     }
 }

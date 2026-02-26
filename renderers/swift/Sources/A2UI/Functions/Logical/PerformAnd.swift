@@ -1,8 +1,8 @@
 import Foundation
 
 extension A2UIFunctionEvaluator {
-    internal static func performAnd(args: [String: Any]) -> Bool {
-        guard let values = args["values"] as? [Bool] else { return false }
+    internal static func performAnd(values: [Bool]?) -> Bool {
+        guard let values = values else { return false }
         return values.allSatisfy { $0 }
     }
 }

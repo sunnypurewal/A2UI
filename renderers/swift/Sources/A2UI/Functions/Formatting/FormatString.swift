@@ -1,8 +1,8 @@
 import Foundation
 
 extension A2UIFunctionEvaluator {
-    internal static func formatString(args: [String: Any], surface: SurfaceState) -> String {
-        guard let format = args["value"] as? String else { return "" }
+    internal static func formatString(format: String?, surface: SurfaceState) -> String {
+        guard let format = format else { return "" }
         
         // Simple interpolation for ${/path} or ${expression}
         // This is a basic implementation of the description in basic_catalog.json

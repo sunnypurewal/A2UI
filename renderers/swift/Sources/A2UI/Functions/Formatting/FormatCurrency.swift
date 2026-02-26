@@ -1,24 +1,22 @@
 import Foundation
 
 extension A2UIFunctionEvaluator {
-    internal static func formatCurrency(args: [String: Any]) -> String {
-        guard let value = (args["value"] as? Double) ?? (args["value"] as? Int).map(Double.init),
-              let currencyCode = args["currency"] as? String else { return "" }
+    internal static func formatCurrency(value: Double?, currency: String?, decimals: Int?, grouping: Bool?) -> String {
+        guard let value = value, let currency = currency else { return "" }
         
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.currencyCode = currencyCode
+        formatter.currencyCode = currency
         
-        if let decimalsVal = args["decimals"] {
-            let decimals = (decimalsVal as? Int) ?? Int(decimalsVal as? Double ?? 0)
+        if let decimals = decimals {
             formatter.minimumFractionDigits = decimals
             formatter.maximumFractionDigits = decimals
         }
         
-        if let grouping = args["grouping"] as? Bool {
+        if let grouping = grouping {
             formatter.usesGroupingSeparator = grouping
         }
         
-        return formatter.string(from: NSNumber(value: value)) ?? "\(currencyCode) \(value)"
+        return formatter.string(from: NSNumber(value: value)) ?? "\(currency) \(value)"
     }
 }

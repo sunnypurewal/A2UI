@@ -6,8 +6,8 @@ import AppKit
 #endif
 
 extension A2UIFunctionEvaluator {
-    internal static func openUrl(args: [String: Any]) {
-        guard let urlString = args["url"] as? String,
+    internal static func openUrl(url: String?) {
+        guard let urlString = url,
               let url = URL(string: urlString) else { return }
         
         #if os(iOS)

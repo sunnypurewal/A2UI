@@ -14,38 +14,74 @@ public enum A2UIFunctionEvaluator {
 
         switch call.call {
         case "required":
-            return isRequired(args: resolvedArgs)
+            return isRequired(value: resolvedArgs["value"])
         case "regex":
-            return matchesRegex(args: resolvedArgs)
+            return matchesRegex(value: resolvedArgs["value"] as? String, pattern: resolvedArgs["pattern"] as? String)
         case "length":
-            return checkLength(args: resolvedArgs)
+            return checkLength(
+                value: resolvedArgs["value"] as? String,
+                min: asInt(resolvedArgs["min"]),
+                max: asInt(resolvedArgs["max"])
+            )
         case "numeric":
-            return checkNumeric(args: resolvedArgs)
+            return checkNumeric(
+                value: resolvedArgs["value"],
+                min: asDouble(resolvedArgs["min"]),
+                max: asDouble(resolvedArgs["max"])
+            )
         case "email":
-            return isEmail(args: resolvedArgs)
+            return isEmail(value: resolvedArgs["value"] as? String)
         case "formatString":
-            return formatString(args: resolvedArgs, surface: surface)
+            return formatString(format: resolvedArgs["value"] as? String, surface: surface)
         case "formatNumber":
-            return formatNumber(args: resolvedArgs)
+            return formatNumber(
+                value: asDouble(resolvedArgs["value"]),
+                decimals: asInt(resolvedArgs["decimals"]),
+                grouping: resolvedArgs["grouping"] as? Bool
+            )
         case "formatCurrency":
-            return formatCurrency(args: resolvedArgs)
+            return formatCurrency(
+                value: asDouble(resolvedArgs["value"]),
+                currency: resolvedArgs["currency"] as? String,
+                decimals: asInt(resolvedArgs["decimals"]),
+                grouping: resolvedArgs["grouping"] as? Bool
+            )
         case "formatDate":
-            return formatDate(args: resolvedArgs)
+            return formatDate(value: resolvedArgs["value"], format: resolvedArgs["format"] as? String)
         case "pluralize":
-            return pluralize(args: resolvedArgs)
+            return pluralize(
+                value: asDouble(resolvedArgs["value"]),
+                zero: resolvedArgs["zero"] as? String,
+                one: resolvedArgs["one"] as? String,
+                other: resolvedArgs["other"] as? String
+            )
         case "openUrl":
-            openUrl(args: resolvedArgs)
+            openUrl(url: resolvedArgs["url"] as? String)
             return nil
         case "and":
-            return performAnd(args: resolvedArgs)
+            return performAnd(values: resolvedArgs["values"] as? [Bool])
         case "or":
-            return performOr(args: resolvedArgs)
+            return performOr(values: resolvedArgs["values"] as? [Bool])
         case "not":
-            return performNot(args: resolvedArgs)
+            return performNot(value: resolvedArgs["value"] as? Bool)
         default:
             os_log("Unknown function call: %{public}@", log: log, type: .error, call.call)
             return nil
         }
+    }
+
+    private static func asInt(_ value: Any?) -> Int? {
+        if let i = value as? Int { return i }
+        if let d = value as? Double { return Int(d) }
+        if let s = value as? String { return Int(s) }
+        return nil
+    }
+
+    private static func asDouble(_ value: Any?) -> Double? {
+        if let d = value as? Double { return d }
+        if let i = value as? Int { return Double(i) }
+        if let s = value as? String { return Double(s) }
+        return nil
     }
 
     public static func resolveDynamicValue(_ value: Any?, surface: SurfaceState) -> Any? {
