@@ -28,29 +28,51 @@ import OSLog
     }
 
     public func resolve<T>(_ boundValue: BoundValue<T>) -> T? {
+        if let functionCall = boundValue.functionCall {
+            let result = A2UIFunctionEvaluator.evaluate(call: functionCall, surface: self)
+            return convert(result)
+        }
+        
         if let path = boundValue.path {
             let value = getValue(at: path)
-            if value is NSNull { return nil }
-            
-            // Special handling for String conversion
-            if T.self == String.self {
-                if let stringValue = value as? String {
-                    return stringValue as? T
-                } else if let intValue = value as? Int {
-                    return String(intValue) as? T
-                } else if let doubleValue = value as? Double {
-                    // Format appropriately, maybe avoid trailing zeros if it's an integer-like double
-                    return String(format: "%g", doubleValue) as? T
-                } else if let boolValue = value as? Bool {
-                    return String(boolValue) as? T
-                } else if value != nil {
-                     return String(describing: value!) as? T
-                }
-            }
-            
-            return value as? T
+            return convert(value)
         }
+        
         return boundValue.literal
+    }
+
+    private func convert<T>(_ value: Any?) -> T? {
+        if value == nil || value is NSNull { return nil }
+        
+        // Special handling for String conversion
+        if T.self == String.self {
+            if let stringValue = value as? String {
+                return stringValue as? T
+            } else if let intValue = value as? Int {
+                return String(intValue) as? T
+            } else if let doubleValue = value as? Double {
+                // Format appropriately, maybe avoid trailing zeros if it's an integer-like double
+                return String(format: "%g", doubleValue) as? T
+            } else if let boolValue = value as? Bool {
+                return String(boolValue) as? T
+            } else if value != nil {
+                 return String(describing: value!) as? T
+            }
+        }
+        
+        if let tValue = value as? T {
+            return tValue
+        }
+        
+        // Numeric conversions
+        if T.self == Double.self, let intValue = value as? Int {
+            return Double(intValue) as? T
+        }
+        if T.self == Int.self, let doubleValue = value as? Double {
+            return Int(doubleValue) as? T
+        }
+        
+        return nil
     }
     
     public func getValue(at path: String) -> Any? {

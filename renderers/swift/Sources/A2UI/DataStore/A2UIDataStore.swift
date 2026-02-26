@@ -115,6 +115,11 @@ import OSLog
                 newSurface.setValue(at: update.path, value: update.contents.value)
             }
             
+            // Locally handle catalog functions with side effects.
+            if case .functionCall(let call) = userAction.action {
+                _ = A2UIFunctionEvaluator.evaluate(call: call, surface: newSurface)
+            }
+            
             // Still forward the action to the application's action handler.
             self?.actionHandler?(userAction)
         }
