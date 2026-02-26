@@ -5,7 +5,6 @@ struct A2UIChoicePickerView: View {
     let properties: ChoicePickerProperties
     @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
     var surface: SurfaceState?
-    @State private var selections: Set<String> = []
     
     private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 
@@ -17,6 +16,20 @@ struct A2UIChoicePickerView: View {
 
     var body: some View {
 		let variant = properties.variant ?? .mutuallyExclusive
+        
+        let selectionsBinding = Binding<Set<String>>(
+            get: {
+                if let initial: [String] = activeSurface?.resolve(properties.value) {
+                    return Set(initial)
+                }
+                return []
+            },
+            set: { newValue in
+                updateBinding(surface: activeSurface, binding: properties.value, newValue: Array(newValue))
+                activeSurface?.runChecks(for: id)
+            }
+        )
+
         VStack(alignment: .leading) {
             if let label = properties.label, let labelText = activeSurface?.resolve(label) {
                 Text(labelText)
@@ -24,10 +37,10 @@ struct A2UIChoicePickerView: View {
             }
 
 			if variant == .mutuallyExclusive {
-                Picker("", selection: Binding(
-                    get: { selections.first ?? "" },
+                Picker("", selection: Binding<String>(
+                    get: { selectionsBinding.wrappedValue.first ?? "" },
                     set: { newValue in
-                        selections = newValue.isEmpty ? [] : [newValue]
+                        selectionsBinding.wrappedValue = newValue.isEmpty ? [] : [newValue]
                     }
                 )) {
                     ForEach(properties.options, id: \.value) { option in
@@ -38,13 +51,13 @@ struct A2UIChoicePickerView: View {
             } else {
                 Menu {
                     ForEach(properties.options, id: \.value) { option in
-                        Toggle(activeSurface?.resolve(option.label) ?? option.value, isOn: Binding(
-                            get: { selections.contains(option.value) },
+                        Toggle(activeSurface?.resolve(option.label) ?? option.value, isOn: Binding<Bool>(
+                            get: { selectionsBinding.wrappedValue.contains(option.value) },
                             set: { isOn in
                                 if isOn {
-                                    selections.insert(option.value)
+                                    selectionsBinding.wrappedValue.insert(option.value)
                                 } else {
-                                    selections.remove(option.value)
+                                    selectionsBinding.wrappedValue.remove(option.value)
                                 }
                             }
                         ))
@@ -52,7 +65,7 @@ struct A2UIChoicePickerView: View {
                 } label: {
                     HStack {
                         let selectedLabels = properties.options
-                            .filter { selections.contains($0.value) }
+                            .filter { selectionsBinding.wrappedValue.contains($0.value) }
                             .compactMap { activeSurface?.resolve($0.label) }
                         
                         let labelText = if selectedLabels.isEmpty {
@@ -83,14 +96,7 @@ struct A2UIChoicePickerView: View {
 #endif
             }
         }
-        .onChange(of: selections) { _, newValue in
-            updateBinding(surface: activeSurface, binding: properties.value, newValue: Array(newValue))
-            activeSurface?.runChecks(for: id)
-        }
         .onAppear {
-            if let initial = activeSurface?.resolve(properties.value) {
-                selections = Set(initial)
-            }
             activeSurface?.runChecks(for: id)
         }
     }

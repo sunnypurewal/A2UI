@@ -5,7 +5,6 @@ struct A2UIDateTimeInputView: View {
     let properties: DateTimeInputProperties
     @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
     var surface: SurfaceState?
-    @State private var date: Date = Date()
     
     private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 
@@ -16,20 +15,23 @@ struct A2UIDateTimeInputView: View {
     }
 
     var body: some View {
+        let dateBinding = Binding<Date>(
+            get: {
+                resolvedValue() ?? Date()
+            },
+            set: { newValue in
+                updateDate(newValue)
+                activeSurface?.runChecks(for: id)
+            }
+        )
+
         DatePicker(
             resolveValue(activeSurface, binding: properties.label) ?? "",
-            selection: $date,
+            selection: dateBinding,
             in: dateRange,
             displayedComponents: dateComponents
         )
-        .onChange(of: date) { _, newValue in
-            updateDate(newValue)
-            activeSurface?.runChecks(for: id)
-        }
         .onAppear {
-            if let resolved = resolvedValue() {
-                date = resolved
-            }
             activeSurface?.runChecks(for: id)
         }
     }

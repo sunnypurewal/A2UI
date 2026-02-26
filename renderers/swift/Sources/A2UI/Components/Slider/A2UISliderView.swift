@@ -4,7 +4,6 @@ struct A2UISliderView: View {
     let id: String
     let properties: SliderProperties
     @Environment(SurfaceState.self) var surface
-    @State private var value: Double = 0
 
     init(id: String, properties: SliderProperties) {
         self.id = id
@@ -12,26 +11,31 @@ struct A2UISliderView: View {
     }
 
     var body: some View {
+        let valueBinding = Binding<Double>(
+            get: {
+                resolveValue(surface, binding: properties.value) ?? properties.min
+            },
+            set: { newValue in
+                updateBinding(surface: surface, binding: properties.value, newValue: newValue)
+                surface.runChecks(for: id)
+            }
+        )
+
         VStack(alignment: .leading) {
             if let label = properties.label, let labelText = surface.resolve(label) {
                 Text(labelText)
                     .font(.caption)
             }
 
-            Slider(value: $value, in: properties.min...properties.max) {
+            Slider(value: valueBinding, in: properties.min...properties.max) {
                 Text("Slider")
             } minimumValueLabel: {
                 Text("\(Int(properties.min))")
             } maximumValueLabel: {
                 Text("\(Int(properties.max))")
             }
-            .onChange(of: value) { _, newValue in
-                updateBinding(surface: surface, binding: properties.value, newValue: newValue)
-                surface.runChecks(for: id)
-            }
         }
         .onAppear {
-            value = resolveValue(surface, binding: properties.value) ?? properties.min
             surface.runChecks(for: id)
         }
     }

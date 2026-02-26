@@ -4,7 +4,6 @@ struct A2UICheckBoxView: View {
     let id: String
     let properties: CheckBoxProperties
     @Environment(SurfaceState.self) var surface
-    @State private var isOn: Bool = false
 
     init(id: String, properties: CheckBoxProperties) {
         self.id = id
@@ -12,15 +11,20 @@ struct A2UICheckBoxView: View {
     }
 
     var body: some View {
-        Toggle(isOn: $isOn) {
+        let isOnBinding = Binding<Bool>(
+            get: {
+                resolveValue(surface, binding: properties.value) ?? false
+            },
+            set: { newValue in
+                updateBinding(surface: surface, binding: properties.value, newValue: newValue)
+                surface.runChecks(for: id)
+            }
+        )
+
+        Toggle(isOn: isOnBinding) {
             Text(resolveValue(surface, binding: properties.label) ?? "")
         }
-        .onChange(of: isOn) { _, newValue in
-            updateBinding(surface: surface, binding: properties.value, newValue: newValue)
-            surface.runChecks(for: id)
-        }
         .onAppear {
-            isOn = resolveValue(surface, binding: properties.value) ?? false
             surface.runChecks(for: id)
         }
     }
