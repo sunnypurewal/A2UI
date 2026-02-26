@@ -5,12 +5,15 @@ extension GalleryComponent {
 	static let slider: Self = {
 		return .init(
 			id: "Slider",
-			template: #"{"id":"gallery_component","component":{"Slider":{"value":{"path":"/value"},"min":0,"max":100}}}"#,
-			staticComponents: [.root],
+			template: #"{"id":"gallery_component","component":{"Slider":{"label":{"path":"/label"},"value":{"path":"/value"},"min":0,"max":100}}}"#,
+			staticComponents: [.sliderRoot, .sliderPreview, .valueText],
 			dataModelFields: [
-				.init(path: "/value", label: "Value", value: .number(50)),
+				DataModelField(path: "/value", label: "Value", value: .number(50), showInEditor: false),
+				DataModelField(path: "/label", label: "Label", value: .string("Slider")),
 			],
-			properties: []
+			properties: [
+	
+			]
 		)
 	}()
 }

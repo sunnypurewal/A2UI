@@ -5,13 +5,13 @@ struct GalleryData {
 	static func components(for category: ComponentCategory) -> [GalleryComponent] {
 		switch category {
 			case .layout:
-				return [.row, .column, .list]
+				return [.column, .list, .row]
 			case .content:
-				return [.text, .image, .icon, .video, .audioPlayer]
+				return [.audioPlayer, .icon, .image, .text, .video]
 			case .input:
-				return [.textField, .checkbox, .slider, .dateTimeInput, .choicePicker]
+				return [.checkbox, .choicePicker, .dateTimeInput, .slider, .textField]
 			case .navigation:
-				return [.button, .tabs, .modal]
+				return [.button, .modal, .tabs]
 			case .decoration:
 				return [.divider]
 		}

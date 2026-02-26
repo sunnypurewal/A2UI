@@ -22,7 +22,7 @@ extension GalleryComponent {
 		return .init(
 			id: "ChoicePicker",
 			template: #"{"id":"gallery_component","component":{"ChoicePicker":{"label":{"path":"/label"},"variant":"{{\#(choicePickerVariantKey)}}","options":[{"label":{"path":"/options/0/label"},"value":"option1"},{"label":{"path":"/options/1/label"},"value":"option2"},{"label":{"path":"/options/2/label"},"value":"option3"}],"value":{"path":"/value"}}}}"#,
-			staticComponents: [.choicePickerRoot, .choicePickerPreview, .choicePickerSelectedList],
+			staticComponents: [.choicePickerRoot, .choicePickerPreview, .valueText],
 			dataModelFields: [
 				DataModelField(path: "/options", label: "Options", value: .listObjects([
 					[

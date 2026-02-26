@@ -1,6 +1,8 @@
 enum StaticComponent: String {
 	case root = #"{"id":"root","component":{"Card":{"child":"gallery_component"}}}"#
 	
+	case valueText = #"{"id":"value_text","component":{"Text":{"text":{"path":"/value"},"variant":"body"}}}"#
+	
 	case h2 = #"{"id":"t_h2","component":{"Text":{"text":{"path":"/headline/text"},"variant":"h2"}}}"#
 	case body = #"{"id":"t_body","component":{"Text":{"text":{"path":"/body/text"},"variant":"body"}}}"#
 	case caption = #"{"id":"t_caption","component":{"Text":{"text":{"path":"/caption/text"},"variant":"caption"}}}"#
@@ -26,6 +28,8 @@ enum StaticComponent: String {
 	case checkboxPreview = #"{"id":"check_box_preview","component":{"Column":{"children":["t_h2","gallery_component"],"justify":"spaceBetween","align":"center"}}}"#
 	
 	case choicePickerRoot = #"{"id":"root","component":{"Card":{"child":"choice_picker_preview"}}}"#
-	case choicePickerPreview = #"{"id":"choice_picker_preview","component":{"Column":{"children":["selected_list","gallery_component"],"justify":"spaceAround","align":"center"}}}"#
-	case choicePickerSelectedList = #"{"id":"selected_list","component":{"Text":{"text":{"path":"/value"},"variant":"body"}}}"#
+	case choicePickerPreview = #"{"id":"choice_picker_preview","component":{"Column":{"children":["value_text","gallery_component"],"justify":"spaceAround","align":"center"}}}"#
+	
+	case sliderRoot = #"{"id":"root","component":{"Card":{"child":"slider_preview"}}}"#
+	case sliderPreview = #"{"id":"slider_preview","component":{"Column":{"children":["value_text","gallery_component"],"justify":"spaceBetween","align":"center"}}}"#
 }
