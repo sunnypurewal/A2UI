@@ -13,6 +13,7 @@ struct DataModelField: Identifiable {
 	let path: String
 	let label: String
 	var value: Value
+	var showInEditor: Bool = true
 	
 	func updateDataModelA2UI(surfaceId: String) -> String {
 		let valueJson: String

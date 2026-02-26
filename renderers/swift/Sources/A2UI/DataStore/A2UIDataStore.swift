@@ -71,6 +71,7 @@ import OSLog
             let surfaceId = update.surfaceId
             let surface = getOrCreateSurface(id: surfaceId)
             os_log("Data model update: %{public}@", log: log, type: .debug, surfaceId)
+			print(update)
 
             let path = update.path ?? "/"
             if let value = update.value?.value {

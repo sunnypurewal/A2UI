@@ -9,7 +9,6 @@ struct A2UICheckBoxView: View {
         Toggle(isOn: $isOn) {
             Text(resolveValue(surface, binding: properties.label) ?? "")
         }
-        .toggleStyle(CheckBoxToggleStyle())
         .onChange(of: isOn) { _, newValue in
             updateBinding(surface: surface, binding: properties.value, newValue: newValue)
         }

@@ -14,4 +14,6 @@ enum StaticComponent: String {
 	case modalContent = #"{"id":"modal_content","component":{"Text":{"text":"This is a modal"}}}"#
 	case textFieldRoot = #"{"id":"root","component":{"Card":{"child":"text_field_preview"}}}"#
 	case textFieldPreview = #"{"id":"text_field_preview","component":{"Column":{"children":["t_body","gallery_component"],"justify":"spaceBetween","align":"center"}}}"#
+	case checkboxValue = #"{"id":"t_h2","component":{"Text":{"text":{"path":"/value"},"variant":"h2"}}}"#
+	case checkboxPreview = #"{"id":"check_box_preview","component":{"Column":{"children":["t_h2","gallery_component"],"justify":"spaceBetween","align":"center"}}}"#
 }

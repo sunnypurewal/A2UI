@@ -66,12 +66,14 @@ struct ComponentView: View {
 			if component.canEditDataModel {
 				VStack(alignment: .leading, spacing: 10) {
 					ForEach($component.dataModelFields) { field in
-						HStack {
-							Text(field.wrappedValue.label)
-								.font(.subheadline)
-								.foregroundColor(.secondary)
-							Spacer()
-							dataModelEditor(for: field)
+						if field.wrappedValue.showInEditor {
+							HStack {
+								Text(field.wrappedValue.label)
+									.font(.subheadline)
+									.foregroundColor(.secondary)
+								Spacer()
+								dataModelEditor(for: field)
+							}
 						}
 					}
 				}
@@ -132,7 +134,7 @@ struct ComponentView: View {
 	}
 
 	private func dataModelJson() -> String {
-		let dataModel = buildDataModel()
+		let dataModel = dataStore.surfaces[component.id]?.dataModel ?? buildDataModel()
 		guard JSONSerialization.isValidJSONObject(dataModel),
 			  let data = try? JSONSerialization.data(withJSONObject: dataModel, options: [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]),
 			  let pretty = String(data: data, encoding: .utf8) else {
@@ -219,6 +221,10 @@ struct ComponentView: View {
 	private func choiceBinding(for field: Binding<DataModelField>) -> Binding<String> {
 		Binding(
 			get: {
+				if let surface = dataStore.surfaces[component.id],
+				   let value = surface.getValue(at: field.wrappedValue.path) as? String {
+					return value
+				}
 				if case .choice(let selected, _) = field.wrappedValue.value {
 					return selected
 				}
@@ -236,6 +242,10 @@ struct ComponentView: View {
 	private func stringBinding(for field: Binding<DataModelField>) -> Binding<String> {
 		Binding(
 			get: {
+				if let surface = dataStore.surfaces[component.id],
+				   let value = surface.getValue(at: field.wrappedValue.path) as? String {
+					return value
+				}
 				if case .string(let value) = field.wrappedValue.value {
 					return value
 				}
@@ -251,6 +261,10 @@ struct ComponentView: View {
 	private func numberBinding(for field: Binding<DataModelField>) -> Binding<Double> {
 		Binding(
 			get: {
+				if let surface = dataStore.surfaces[component.id],
+				   let value = surface.getValue(at: field.wrappedValue.path) as? Double {
+					return value
+				}
 				if case .number(let value) = field.wrappedValue.value {
 					return value
 				}
@@ -266,6 +280,10 @@ struct ComponentView: View {
 	private func boolBinding(for field: Binding<DataModelField>) -> Binding<Bool> {
 		Binding(
 			get: {
+				if let surface = dataStore.surfaces[component.id],
+				   let value = surface.getValue(at: field.wrappedValue.path) as? Bool {
+					return value
+				}
 				if case .bool(let value) = field.wrappedValue.value {
 					return value
 				}
@@ -281,6 +299,10 @@ struct ComponentView: View {
 	private func listBinding(for field: Binding<DataModelField>) -> Binding<String> {
 		Binding(
 			get: {
+				if let surface = dataStore.surfaces[component.id],
+				   let value = surface.getValue(at: field.wrappedValue.path) as? [[String: Any]] {
+					return jsonArrayLiteral(from: value)
+				}
 				if case .listObjects(let value) = field.wrappedValue.value {
 					return jsonArrayLiteral(from: value)
 				}

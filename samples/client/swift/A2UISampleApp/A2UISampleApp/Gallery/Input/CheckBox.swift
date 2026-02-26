@@ -5,10 +5,11 @@ extension GalleryComponent {
 	static let checkbox: Self = {
 		return .init(
 			id: "CheckBox",
-			template: #"{"id":"gallery_component","component":{"CheckBox":{"checked":{"path":"/checked"},"label":"Check me"}}}"#,
-			staticComponents: [.root],
+			template: #"{"id":"gallery_component","component":{"CheckBox":{"value":{"path":"/value"},"label":{"path":"/label"}}}}"#,
+			staticComponents: [.root, .checkboxValue, .checkboxPreview],
 			dataModelFields: [
-				.init(path: "/checked", label: "Checked", value: .bool(false)),
+				DataModelField(path: "/label", label: "Label", value: .string("Toggle")),
+				DataModelField(path: "/value", label: "", value: .bool(false), showInEditor: false)
 			],
 			properties: []
 		)
