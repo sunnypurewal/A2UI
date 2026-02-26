@@ -59,7 +59,7 @@ struct A2UIChoicePickerView: View {
                         
                         Spacer()
                         
-                        Image(systemName: "chevron.up.down")
+                        Image(systemName: "chevron.up.chevron.down")
                             .imageScale(.small)
                             .foregroundStyle(.secondary)
                     }

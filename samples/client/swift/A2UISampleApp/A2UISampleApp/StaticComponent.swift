@@ -26,9 +26,6 @@ enum StaticComponent: String {
 	case checkboxPreview = #"{"id":"check_box_preview","component":{"Column":{"children":["t_h2","gallery_component"],"justify":"spaceBetween","align":"center"}}}"#
 	
 	case choicePickerRoot = #"{"id":"root","component":{"Card":{"child":"choice_picker_preview"}}}"#
-	case choicePickerPreview = #"{"id":"choice_picker_preview","component":{"Column":{"children":["row_selected","gallery_component"],"justify":"spaceBetween","align":"center"}}}"#
-	case choicePickerSelectedList = #"{"id":"gallery_component","component":{"List":{"children":{"template":{"componentId":"card_content_container","path":"/items"}}}}}"#
-	case choicePickerItemLabel = #"{"id":"t_body","component":{"Text":{"text":{"path":"/label"},"variant":"body"}}}"#
-	case choicePickerItemValue = #"{"id":"t_caption","component":{"Text":{"text":{"path":"/value"},"variant":"caption"}}}"#
-	case choicePickerSelectedItem = #"{"id":"card_content_container","component":{"Column":{"children":["t_body","t_caption"],"justify":"spaceAround","align":"center"}}}"#
+	case choicePickerPreview = #"{"id":"choice_picker_preview","component":{"Column":{"children":["selected_list","gallery_component"],"justify":"spaceAround","align":"center"}}}"#
+	case choicePickerSelectedList = #"{"id":"selected_list","component":{"Text":{"text":{"path":"/value"},"variant":"body"}}}"#
 }
