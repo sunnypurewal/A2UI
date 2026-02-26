@@ -10,7 +10,6 @@ public struct BoundValue<T: Codable & Sendable & Equatable>: Codable, Sendable, 
         case call
         case args
         case returnType
-        case functionCall
     }
 
     public init(literal: T? = nil, path: String? = nil, functionCall: FunctionCall? = nil) {
@@ -31,9 +30,6 @@ public struct BoundValue<T: Codable & Sendable & Equatable>: Codable, Sendable, 
             if container.contains(.call) {
                 // Direct function call properties
                 self.functionCall = try FunctionCall(from: decoder)
-            } else if container.contains(.functionCall) {
-                // Wrapped in "functionCall" object
-                self.functionCall = try container.decode(FunctionCall.self, forKey: .functionCall)
             } else {
                 self.functionCall = nil
             }
@@ -44,8 +40,7 @@ public struct BoundValue<T: Codable & Sendable & Equatable>: Codable, Sendable, 
 
     public func encode(to encoder: Encoder) throws {
         if let functionCall = functionCall {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(functionCall, forKey: .functionCall)
+            try functionCall.encode(to: encoder)
         } else if let path = path {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(path, forKey: .path)
