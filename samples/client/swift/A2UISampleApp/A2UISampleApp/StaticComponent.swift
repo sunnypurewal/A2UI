@@ -9,4 +9,7 @@ enum StaticComponent: String {
 	case listH2 = #"{"id":"t_h2","component":{"Text":{"text":{"path":"headline"},"variant":"h2"}}}"#
 	case listBody = #"{"id":"t_body","component":{"Text":{"text":{"path":"body"},"variant":"body"}}}"#
 	case listCaption = #"{"id":"t_caption","component":{"Text":{"text":{"path":"caption"},"variant":"caption"}}}"#
+	case tab1 = #"{"id":"tab1_content","component":{"Text":{"text":"Tab 1 Content"}}}"#
+	case tab2 = #"{"id":"tab2_content","component":{"Text":{"text":"Tab 2 Content"}}}"#
+	case modalContent = #"{"id":"modal_content","component":{"Text":{"text":"This is a modal"}}}"#
 }
