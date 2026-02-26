@@ -37,3 +37,14 @@ let enableDateKey = "enableDate"
 let enableTimeKey = "enableTime"
 let minDateKey = "min"
 let maxDateKey = "max"
+public enum StandardCheckFunction: String, Codable, Sendable, CaseIterable, Identifiable {
+    public var id: String { self.rawValue }
+    case required = "required"
+    case regex = "regex"
+    case length = "length"
+    case numeric = "numeric"
+    case email = "email"
+}
+
+let checkFunctionKey = "checkFunction"
+
