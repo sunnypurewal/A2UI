@@ -122,7 +122,13 @@ struct ComponentView: View {
 
 	@ViewBuilder
 	private func propertyEditor(for prop: Binding<PropertyDefinition>) -> some View {
-		if !prop.wrappedValue.options.isEmpty {
+		if prop.wrappedValue.isBoolean {
+			Toggle("", isOn: propertyBoolBinding(for: prop))
+				.labelsHidden()
+				.onChange(of: prop.wrappedValue.value) {
+					updateSurface(for: component)
+				}
+		} else if !prop.wrappedValue.options.isEmpty {
 			Picker(prop.wrappedValue.label, selection: prop.value) {
 				ForEach(prop.wrappedValue.options, id: \.self) { option in
 					Text(option).tag(option)
@@ -161,6 +167,17 @@ struct ComponentView: View {
 			},
 			set: { newValue in
 				prop.wrappedValue.value = String(format: "%.0f", newValue)
+			}
+		)
+	}
+
+	private func propertyBoolBinding(for prop: Binding<PropertyDefinition>) -> Binding<Bool> {
+		Binding(
+			get: {
+				prop.wrappedValue.value == "true"
+			},
+			set: { newValue in
+				prop.wrappedValue.value = newValue ? "true" : "false"
 			}
 		)
 	}

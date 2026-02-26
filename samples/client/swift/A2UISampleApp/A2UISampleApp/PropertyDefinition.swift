@@ -8,14 +8,16 @@ struct PropertyDefinition: Identifiable {
 	var value: String
 	var minValue: Double?
 	var maxValue: Double?
+	var isBoolean: Bool
 
-	init(key: String, label: String, options: [String] = [], value: String, minValue: Double? = nil, maxValue: Double? = nil) {
+	init(key: String, label: String, options: [String] = [], value: String, minValue: Double? = nil, maxValue: Double? = nil, isBoolean: Bool = false) {
 		self.key = key
 		self.label = label
 		self.options = options
 		self.value = value
 		self.minValue = minValue
 		self.maxValue = maxValue
+		self.isBoolean = isBoolean
 	}
 }
 
@@ -29,3 +31,5 @@ let axisKey = "axis"
 let choicePickerVariantKey = "choicePickerVariant"
 let minKey = "min"
 let maxKey = "max"
+let enableDateKey = "enableDate"
+let enableTimeKey = "enableTime"
