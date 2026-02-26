@@ -79,7 +79,7 @@ final class A2UIParserTests: XCTestCase {
 
         // Check Column Alignment
         if case .column(let props) = update.components[3].component {
-            XCTAssertEqual(props.align, "center")
+            XCTAssertEqual(props.align, .center)
         } else { XCTFail("Type mismatch for column") }
     }
 
@@ -282,12 +282,12 @@ final class A2UIParserTests: XCTestCase {
         let children = Children.list(["c1"])
 
         let components: [ComponentType] = [
-            .text(.init(text: boundStr, variant: "h1")),
+            .text(.init(text: boundStr, variant: .h1)),
             .button(.init(child: "C", action: action, variant: "primary")),
-            .row(.init(children: children, justify: "fill", align: "center")),
-            .column(.init(children: children, justify: "start", align: "leading")),
+            .row(.init(children: children, justify: .stretch, align: .center)),
+            .column(.init(children: children, justify: .start, align: .start)),
             .card(.init(child: "C")),
-            .image(.init(url: boundStr, fit: "cover", variant: nil)),
+            .image(.init(url: boundStr, fit: .cover, variant: nil)),
             .icon(.init(name: boundStr)),
             .video(.init(url: boundStr)),
             .audioPlayer(.init(url: boundStr, description: nil)),

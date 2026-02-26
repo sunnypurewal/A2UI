@@ -99,7 +99,7 @@ final class A2UIRendererTests: XCTestCase {
 
     func testExhaustiveComponentRendering() {
         // Text components
-        render(A2UITextView(properties: TextProperties(text: .init(literal: "Heading"), variant: "h1")).environment(surface).environment(dataStore))
+        render(A2UITextView(properties: TextProperties(text: .init(literal: "Heading"), variant: .h1)).environment(surface).environment(dataStore))
         render(A2UITextView(properties: TextProperties(text: .init(literal: "Text"), variant: nil)).environment(surface).environment(dataStore))
         
         // Button
@@ -107,7 +107,7 @@ final class A2UIRendererTests: XCTestCase {
         render(A2UIButtonView(properties: buttonProps).environment(surface).environment(dataStore))
         
         // Containers
-        let containerProps = ContainerProperties(children: .list(["c1", "c2"]), justify: "start", align: "center")
+        let containerProps = ContainerProperties(children: .list(["c1", "c2"]), justify: .start, align: .center)
         render(A2UIRowView(properties: containerProps).environment(surface).environment(dataStore))
         render(A2UIColumnView(properties: containerProps).environment(surface).environment(dataStore))
         

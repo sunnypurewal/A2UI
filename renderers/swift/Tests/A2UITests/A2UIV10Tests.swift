@@ -58,7 +58,7 @@ final class A2UIV10Tests: XCTestCase {
         XCTAssertEqual(update.surfaceId, "s1")
         XCTAssertEqual(update.components.count, 1)
         if case .text(let props) = update.components[0].component {
-            XCTAssertEqual(props.variant, "h1")
+            XCTAssertEqual(props.variant, .h1)
             XCTAssertEqual(props.text.literal, "Hello")
         } else {
             XCTFail("Component is not Text")
