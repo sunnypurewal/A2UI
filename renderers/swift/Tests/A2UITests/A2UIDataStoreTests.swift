@@ -54,12 +54,12 @@ struct A2UIDataStoreTests {
         #expect(model?["isMember"] as? Bool == true)
         
         // Test deep update
-        let deepUpdateJson = "{\"updateDataModel\": {\"surfaceId\": \"s1\", \"path\": \"/user/profile\", \"value\": {\"name\": \"Bob\"}}}"
+        let deepUpdateJson = "{\"updateDataModel\": {\"surfaceId\": \"s1\", \"path\": \"/user/profile\", \"value\": {\"name\": \"Bob\"}}}\n"
         store.process(chunk: deepUpdateJson)
         #expect(surface.getValue(at: "user/profile/name") as? String == "Bob")
         
         // Test array update
-        let listJson = "{\"updateDataModel\": {\"surfaceId\": \"s1\", \"path\": \"/items\", \"value\": [\"item1\"]}}"
+        let listJson = "{\"updateDataModel\": {\"surfaceId\": \"s1\", \"path\": \"/items\", \"value\": [\"item1\"]}}\n"
         store.process(chunk: listJson)
         #expect(surface.getValue(at: "items/0") as? String == "item1")
     }
@@ -94,11 +94,9 @@ struct A2UIDataStoreTests {
     @Test func dataStoreFlush() {
         let partial = "{\"createSurface\":{\"surfaceId\":\"s-flush\",\"catalogId\":\"c1\"}}"
         store.process(chunk: partial) // No newline
-        #expect(store.surfaces["s-flush"] != nil)
+        #expect(store.surfaces["s-flush"] == nil) // Should not process until newline or flush
         
-        let beforeFlush = store.surfaces["s-flush"]
         store.flush()
         #expect(store.surfaces["s-flush"] != nil)
-        #expect(store.surfaces["s-flush"] === beforeFlush)
     }
 }
