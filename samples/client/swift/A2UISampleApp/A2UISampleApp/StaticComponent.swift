@@ -32,4 +32,7 @@ enum StaticComponent: String {
 	
 	case sliderRoot = #"{"id":"root","component":{"Card":{"child":"slider_preview"}}}"#
 	case sliderPreview = #"{"id":"slider_preview","component":{"Column":{"children":["value_text","gallery_component"],"justify":"spaceBetween","align":"center"}}}"#
+	
+	case datetimeRoot = #"{"id":"root","component":{"Card":{"child":"datetime_preview"}}}"#
+	case datetimePreview = #"{"id":"datetime_preview","component":{"Column":{"children":["value_text","gallery_component"],"justify":"spaceAround","align":"center"}}}"#
 }
