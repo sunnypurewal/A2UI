@@ -46,13 +46,13 @@ final class A2UIRendererTests: XCTestCase {
             expectation.fulfill()
         }
         
-        let view = A2UIButtonView(properties: props).environment(surface).environment(dataStore)
+		let view = A2UIButtonView(id: "button_id", properties: props).environment(surface).environment(dataStore)
         render(view)
     }
 
     func testTextFieldUpdate() {
         let props = TextFieldProperties(label: .init(literal: "L"), value: .init(literal: "initial"), variant: .shortText)
-        let view = A2UITextFieldView(properties: props).environment(surface).environment(dataStore)
+		let view = A2UITextFieldView(id: "text_field_id", properties: props).environment(surface).environment(dataStore)
         render(view)
     }
 
@@ -104,7 +104,7 @@ final class A2UIRendererTests: XCTestCase {
         
         // Button
         let buttonProps = ButtonProperties(child: "t1", action: Action.custom(name: "test", context: nil), variant: .primary)
-        render(A2UIButtonView(properties: buttonProps).environment(surface).environment(dataStore))
+		render(A2UIButtonView(id: "button_id", properties: buttonProps).environment(surface).environment(dataStore))
         
         // Containers
         let containerProps = ContainerProperties(children: .list(["c1", "c2"]), justify: .start, align: .center)
@@ -120,9 +120,9 @@ final class A2UIRendererTests: XCTestCase {
         
         // More Inputs
         let cpProps = ChoicePickerProperties(label: .init(literal: "Pick"), options: [SelectionOption(label: .init(literal: "O1"), value: "v1")], variant: .mutuallyExclusive, value: .init(literal: ["v1"]))
-        render(A2UIChoicePickerView(properties: cpProps).environment(surface).environment(dataStore))
+		render(A2UIChoicePickerView(id: "choice_picker_id", properties: cpProps).environment(surface).environment(dataStore))
 
         let dtProps = DateTimeInputProperties(label: .init(literal: "Date"), value: .init(literal: "2024-01-01"), enableDate: true, enableTime: false, min: nil, max: nil)
-        render(A2UIDateTimeInputView(properties: dtProps).environment(surface).environment(dataStore))
+		render(A2UIDateTimeInputView(id: "date_time_input_id", properties: dtProps).environment(surface).environment(dataStore))
     }
 }

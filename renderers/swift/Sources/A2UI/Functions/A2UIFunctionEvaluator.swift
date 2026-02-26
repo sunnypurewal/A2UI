@@ -119,7 +119,7 @@ public enum A2UIFunctionEvaluator {
                 // It's a FunctionCall
                 // We need to reconstruct the FunctionCall object or evaluate it directly
                 let args = dict["args"] as? [String: Any] ?? [:]
-                let anyCodableArgs = args.mapValues { AnyCodable($0 as! Sendable) }
+                let anyCodableArgs = args.mapValues { AnyCodable(makeSendable($0)) }
                 let returnType = dict["returnType"] as? String
                 let nestedCall = FunctionCall(call: callName, args: anyCodableArgs, returnType: returnType)
                 return evaluate(call: nestedCall, surface: surface)
@@ -131,5 +131,28 @@ public enum A2UIFunctionEvaluator {
 
         // Otherwise, it's a literal
         return value
+    }
+
+    /// Recursively converts Any values (like [String: Any] or [Any]) into Sendable existentials.
+    private static func makeSendable(_ value: Any) -> Sendable {
+        if let dict = value as? [String: Any] {
+            return dict.mapValues { makeSendable($0) }
+        }
+        if let array = value as? [Any] {
+            return array.map { makeSendable($0) }
+        }
+        
+        // Marker protocols like Sendable cannot be used with 'as?'.
+        // We handle common JSON-compatible Sendable types explicitly.
+        if let s = value as? String { return s }
+        if let i = value as? Int { return i }
+        if let d = value as? Double { return d }
+        if let b = value as? Bool { return b }
+        if let date = value as? Date { return date }
+        if let null = value as? JSONNull { return null }
+        if value is NSNull { return JSONNull() }
+        
+        // Default fallback: if we can't guarantee Sendability for a type, we use JSONNull.
+        return JSONNull()
     }
 }
