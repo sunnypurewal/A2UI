@@ -10,6 +10,7 @@ struct A2UIAudioPlayerView: View {
     @State private var currentTime: Double = 0
     @State private var duration: Double = 0
     @State private var isEditing: Bool = false
+    @State private var timeObserverToken: Any?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -59,9 +60,13 @@ struct A2UIAudioPlayerView: View {
         .onAppear {
             setupPlayer()
         }
-		.onChange(of: surface.dataModel.count) { oldValue, newValue in
-			print("Audio Player data model changed from \(oldValue) to \(newValue)")
-		}
+        .onDisappear {
+            if let token = timeObserverToken {
+                player?.removeTimeObserver(token)
+                timeObserverToken = nil
+            }
+            player?.pause()
+        }
     }
 
     private func setupPlayer() {
@@ -74,7 +79,7 @@ struct A2UIAudioPlayerView: View {
             duration = 0
             
             // Observe time
-            avPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: 600), queue: .main) { time in
+            timeObserverToken = avPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: 600), queue: .main) { time in
                 Task { @MainActor in
                     if !isEditing {
                         currentTime = time.seconds
