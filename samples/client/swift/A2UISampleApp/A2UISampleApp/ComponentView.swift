@@ -33,15 +33,7 @@ struct ComponentView: View {
 								.font(.subheadline)
 								.foregroundColor(.secondary)
 							Spacer()
-							Picker(prop.wrappedValue.label, selection: prop.value) {
-								ForEach(prop.wrappedValue.options, id: \.self) { option in
-									Text(option).tag(option)
-								}
-							}
-							.pickerStyle(.menu)
-							.onChange(of: prop.wrappedValue.value) {
-								updateSurface(for: component)
-							}
+							propertyEditor(for: prop)
 						}
 					}
 				}
@@ -126,6 +118,51 @@ struct ComponentView: View {
 	private func updateSurface(for component: GalleryComponent) {
 		dataStore.process(chunk: component.updateComponentsA2UI)
 		dataStore.flush()
+	}
+
+	@ViewBuilder
+	private func propertyEditor(for prop: Binding<PropertyDefinition>) -> some View {
+		if !prop.wrappedValue.options.isEmpty {
+			Picker(prop.wrappedValue.label, selection: prop.value) {
+				ForEach(prop.wrappedValue.options, id: \.self) { option in
+					Text(option).tag(option)
+				}
+			}
+			.pickerStyle(.menu)
+			.onChange(of: prop.wrappedValue.value) {
+				updateSurface(for: component)
+			}
+		} else if let min = prop.wrappedValue.minValue, let max = prop.wrappedValue.maxValue {
+			HStack {
+				Slider(value: propertyNumericBinding(for: prop), in: min...max)
+					.frame(width: 100)
+				Text(prop.wrappedValue.value)
+					.font(.caption)
+					.monospacedDigit()
+					.frame(width: 40, alignment: .trailing)
+			}
+			.onChange(of: prop.wrappedValue.value) {
+				updateSurface(for: component)
+			}
+		} else {
+			TextField("", text: prop.value)
+				.textFieldStyle(.roundedBorder)
+				.frame(width: 120)
+				.onChange(of: prop.wrappedValue.value) {
+					updateSurface(for: component)
+				}
+		}
+	}
+
+	private func propertyNumericBinding(for prop: Binding<PropertyDefinition>) -> Binding<Double> {
+		Binding(
+			get: {
+				Double(prop.wrappedValue.value) ?? 0
+			},
+			set: { newValue in
+				prop.wrappedValue.value = String(format: "%.0f", newValue)
+			}
+		)
 	}
 
 	private func updateDataModel(for field: DataModelField) {

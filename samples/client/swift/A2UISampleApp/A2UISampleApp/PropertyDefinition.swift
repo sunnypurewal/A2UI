@@ -6,6 +6,17 @@ struct PropertyDefinition: Identifiable {
 	let label: String
 	let options: [String]
 	var value: String
+	var minValue: Double?
+	var maxValue: Double?
+
+	init(key: String, label: String, options: [String] = [], value: String, minValue: Double? = nil, maxValue: Double? = nil) {
+		self.key = key
+		self.label = label
+		self.options = options
+		self.value = value
+		self.minValue = minValue
+		self.maxValue = maxValue
+	}
 }
 
 let justifyKey = "justify"
