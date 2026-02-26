@@ -106,9 +106,9 @@ struct A2UIAudioPlayerView: View {
         .onAppear {
             setupPlayer()
         }
-        .onChange(of: properties.url) { _, _ in
-            setupPlayer()
-        }
+		.onChange(of: surface.dataModel.count) { oldValue, newValue in
+			print("Audio Player data model changed from \(oldValue) to \(newValue)")
+		}
     }
 
     private func setupPlayer() {
