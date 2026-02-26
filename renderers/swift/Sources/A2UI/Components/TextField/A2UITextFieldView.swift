@@ -24,12 +24,7 @@ struct A2UITextFieldView: View {
 				
 			}
 			
-			if let error = errorMessage(surface: surface, checks: properties.checks) {
-				Text(error)
-					.font(.caption2)
-					.foregroundColor(.red)
-					.transition(.opacity)
-			}
+			A2UIValidationErrorView(surface: surface, checks: properties.checks)
         }
 		.textFieldStyle(.roundedBorder)
 		.onChange(of: text) { _, newValue in
