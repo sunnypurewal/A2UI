@@ -1,9 +1,15 @@
 import SwiftUI
 
 struct A2UIDateTimeInputView: View {
+    let id: String
     let properties: DateTimeInputProperties
     @Environment(SurfaceState.self) var surface
     @State private var date: Date = Date()
+
+    init(id: String, properties: DateTimeInputProperties) {
+        self.id = id
+        self.properties = properties
+    }
 
     var body: some View {
         DatePicker(
@@ -14,11 +20,13 @@ struct A2UIDateTimeInputView: View {
         )
         .onChange(of: date) { _, newValue in
             updateDate(newValue)
+            surface.runChecks(for: id)
         }
         .onAppear {
             if let resolved = resolvedValue() {
                 date = resolved
             }
+            surface.runChecks(for: id)
         }
     }
 
@@ -66,7 +74,7 @@ struct A2UIDateTimeInputView: View {
     let dataStore = A2UIDataStore()
     
     VStack(spacing: 20) {
-        A2UIDateTimeInputView(properties: DateTimeInputProperties(
+        A2UIDateTimeInputView(id: "dt1", properties: DateTimeInputProperties(
             label: .init(literal: "Date and Time"),
             value: .init(literal: "2024-01-01T12:00:00Z"),
             enableDate: true,
@@ -75,7 +83,7 @@ struct A2UIDateTimeInputView: View {
             max: nil
         ))
         
-        A2UIDateTimeInputView(properties: DateTimeInputProperties(
+        A2UIDateTimeInputView(id: "dt2", properties: DateTimeInputProperties(
             label: .init(literal: "Date Only"),
             value: .init(literal: "2024-01-01T12:00:00Z"),
             enableDate: true,

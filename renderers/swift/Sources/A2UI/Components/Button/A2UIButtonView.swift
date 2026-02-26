@@ -2,10 +2,24 @@ import SwiftUI
 
 struct A2UIButtonView: View {
     @Environment(SurfaceState.self) var surface
+    let id: String
     let properties: ButtonProperties
+    let checks: [CheckRule]?
+
+    init(id: String, properties: ButtonProperties, checks: [CheckRule]? = nil) {
+        self.id = id
+        self.properties = properties
+        self.checks = checks
+    }
 
     var body: some View {
 		let variant = properties.variant ?? .primary
+        let isDisabled = if let checks = checks {
+            errorMessage(surface: surface, checks: checks) != nil
+        } else {
+            false
+        }
+
         Button(action: {
             performAction()
         }) {
@@ -13,6 +27,7 @@ struct A2UIButtonView: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
         }
+        .disabled(isDisabled)
         .applyButtonStyle(variant: variant)
         #if os(iOS)
 		.tint(variant == .primary ? .blue : .gray)
@@ -43,13 +58,13 @@ extension View {
     surface.components["t1"] = ComponentInstance(id: "t1", component: .text(TextProperties(text: .init(literal: "Click Me"), variant: nil)))
     
 	return VStack(spacing: 20) {
-        A2UIButtonView(properties: ButtonProperties(
+        A2UIButtonView(id: "b1", properties: ButtonProperties(
             child: "t1",
             action: .custom(name: "primary_action", context: nil),
 			variant: .primary
         ))
         
-        A2UIButtonView(properties: ButtonProperties(
+        A2UIButtonView(id: "b2", properties: ButtonProperties(
             child: "t1",
             action: .custom(name: "borderless_action", context: nil),
 			variant: .borderless

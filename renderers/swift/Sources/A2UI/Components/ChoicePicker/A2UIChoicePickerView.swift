@@ -1,9 +1,15 @@
 import SwiftUI
 
 struct A2UIChoicePickerView: View {
+    let id: String
     let properties: ChoicePickerProperties
     @Environment(SurfaceState.self) var surface
     @State private var selections: Set<String> = []
+
+    init(id: String, properties: ChoicePickerProperties) {
+        self.id = id
+        self.properties = properties
+    }
 
     var body: some View {
 		let variant = properties.variant ?? .mutuallyExclusive
@@ -75,11 +81,13 @@ struct A2UIChoicePickerView: View {
         }
         .onChange(of: selections) { _, newValue in
             updateBinding(surface: surface, binding: properties.value, newValue: Array(newValue))
+            surface.runChecks(for: id)
         }
         .onAppear {
             if let initial = surface.resolve(properties.value) {
                 selections = Set(initial)
             }
+            surface.runChecks(for: id)
         }
     }
 }
@@ -95,14 +103,14 @@ struct A2UIChoicePickerView: View {
     ]
     
     VStack(spacing: 20) {
-        A2UIChoicePickerView(properties: ChoicePickerProperties(
+        A2UIChoicePickerView(id: "cp1", properties: ChoicePickerProperties(
             label: .init(literal: "Mutually Exclusive"),
             options: options,
             variant: .mutuallyExclusive,
             value: .init(literal: ["opt1"])
         ))
         
-        A2UIChoicePickerView(properties: ChoicePickerProperties(
+        A2UIChoicePickerView(id: "cp2", properties: ChoicePickerProperties(
             label: .init(literal: "Multiple Selection"),
             options: options,
             variant: .multipleSelection,

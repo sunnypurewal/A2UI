@@ -9,6 +9,7 @@ import OSLog
     public var rootComponentId: String?
     public var components: [String: ComponentInstance] = [:]
     public var dataModel: [String: Any] = [:]
+    public var validationErrors: [String: String] = [:]
     
     public var customRenderers: [String: @MainActor (ComponentInstance) -> AnyView] = [:]
     
@@ -76,6 +77,11 @@ import OSLog
     }
     
     public func getValue(at path: String) -> Any? {
+        if path.hasPrefix("/_validation/") {
+            let componentId = String(path.dropFirst("/_validation/".count))
+            return validationErrors[componentId]
+        }
+        
         let cleanPath = path.hasPrefix("/") ? String(path.dropFirst()) : path
         let normalizedPath = cleanPath.replacingOccurrences(of: ".", with: "/")
         let parts = normalizedPath.split(separator: "/").map(String.init)
@@ -91,6 +97,19 @@ import OSLog
             }
         }
         return current
+    }
+
+    public func runChecks(for componentId: String) {
+        guard let instance = components[componentId], let checks = instance.checks else {
+            validationErrors.removeValue(forKey: componentId)
+            return
+        }
+        
+        if let error = errorMessage(surface: self, checks: checks) {
+            validationErrors[componentId] = error
+        } else {
+            validationErrors.removeValue(forKey: componentId)
+        }
     }
 
     public func setValue(at path: String, value: Any) {

@@ -9,7 +9,7 @@ struct A2UIStandardComponentView: View {
         case .text(let props):
             A2UITextView(properties: props)
         case .button(let props):
-            A2UIButtonView(properties: props)
+            A2UIButtonView(id: instance.id, properties: props, checks: instance.checks)
         case .row(let props):
             A2UIRowView(properties: props)
         case .column(let props):
@@ -33,15 +33,15 @@ struct A2UIStandardComponentView: View {
         case .modal(let props):
             A2UIModalView(properties: props)
         case .textField(let props):
-            A2UITextFieldView(properties: props, checks: instance.checks)
+            A2UITextFieldView(id: instance.id, properties: props)
         case .checkBox(let props):
-            A2UICheckBoxView(properties: props)
+            A2UICheckBoxView(id: instance.id, properties: props)
         case .dateTimeInput(let props):
-            A2UIDateTimeInputView(properties: props)
+            A2UIDateTimeInputView(id: instance.id, properties: props)
         case .choicePicker(let props):
-            A2UIChoicePickerView(properties: props)
+            A2UIChoicePickerView(id: instance.id, properties: props)
         case .slider(let props):
-            A2UISliderView(properties: props)
+            A2UISliderView(id: instance.id, properties: props)
         case .custom:
             // Custom components should have been handled by the customRenderer check in A2UIComponentRenderer.
             // If we're here, no custom renderer was found.

@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct A2UITextFieldView: View {
+    let id: String
     let properties: TextFieldProperties
-    let checks: [CheckRule]?
     @Environment(SurfaceState.self) var surface
     @State private var text: String = ""
 
-    init(properties: TextFieldProperties, checks: [CheckRule]? = nil) {
+    init(id: String, properties: TextFieldProperties) {
+        self.id = id
         self.properties = properties
-        self.checks = checks
     }
 
     var body: some View {
@@ -29,15 +29,15 @@ struct A2UITextFieldView: View {
 				#endif
 				
 			}
-			
-			A2UIValidationErrorView(surface: surface, checks: checks)
         }
 		.textFieldStyle(.roundedBorder)
 		.onChange(of: text) { _, newValue in
 			updateBinding(surface: surface, binding: properties.value, newValue: newValue)
+			surface.runChecks(for: id)
 		}
         .onAppear {
             text = resolveValue(surface, binding: properties.value) ?? ""
+			surface.runChecks(for: id)
         }
     }
 }
@@ -47,19 +47,19 @@ struct A2UITextFieldView: View {
     let dataStore = A2UIDataStore()
     
     return VStack(spacing: 20) {
-        A2UITextFieldView(properties: TextFieldProperties(
+        A2UITextFieldView(id: "tf1", properties: TextFieldProperties(
             label: .init(literal: "Short Text"),
             value: .init(literal: ""),
             variant: .shortText
         ))
         
-        A2UITextFieldView(properties: TextFieldProperties(
+        A2UITextFieldView(id: "tf2", properties: TextFieldProperties(
             label: .init(literal: "Number Input"),
             value: .init(literal: ""),
             variant: .number
         ))
         
-        A2UITextFieldView(properties: TextFieldProperties(
+        A2UITextFieldView(id: "tf3", properties: TextFieldProperties(
             label: .init(literal: "Obscured Input"),
             value: .init(literal: ""),
             variant: .obscured

@@ -1,9 +1,15 @@
 import SwiftUI
 
 struct A2UISliderView: View {
+    let id: String
     let properties: SliderProperties
     @Environment(SurfaceState.self) var surface
     @State private var value: Double = 0
+
+    init(id: String, properties: SliderProperties) {
+        self.id = id
+        self.properties = properties
+    }
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -21,10 +27,12 @@ struct A2UISliderView: View {
             }
             .onChange(of: value) { _, newValue in
                 updateBinding(surface: surface, binding: properties.value, newValue: newValue)
+                surface.runChecks(for: id)
             }
         }
         .onAppear {
             value = resolveValue(surface, binding: properties.value) ?? properties.min
+            surface.runChecks(for: id)
         }
     }
 }
@@ -33,7 +41,7 @@ struct A2UISliderView: View {
     let surface = SurfaceState(id: "test")
     let dataStore = A2UIDataStore()
     
-    A2UISliderView(properties: SliderProperties(
+    A2UISliderView(id: "sl1", properties: SliderProperties(
         label: .init(literal: "Adjust Value"),
         min: 0,
         max: 100,

@@ -32,21 +32,6 @@ private let log = OSLog(subsystem: "org.a2ui.renderer", category: "Validation")
     return nil
 }
 
-struct A2UIValidationErrorView: View {
-    let surface: SurfaceState
-    let checks: [CheckRule]?
-
-    var body: some View {
-        if let error = errorMessage(surface: surface, checks: checks) {
-            Text(error)
-                .font(.caption2)
-                .foregroundColor(.red)
-                .transition(.opacity)
-                .padding(.top, 2)
-        }
-    }
-}
-
 struct CheckBoxToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         HStack {
