@@ -9,7 +9,7 @@ struct A2UIIconView: View {
 
     var body: some View {
         if let name = activeSurface?.resolve(properties.name) {
-			Image(systemName: A2UIIconName(rawValue: name)!.sfSymbolName)
+			Image(systemName: A2UIIconName(rawValue: name)?.sfSymbolName ?? "questionmark.square.dashed")
                 .font(.system(size: 24))
                 .foregroundColor(.primary)
         }
