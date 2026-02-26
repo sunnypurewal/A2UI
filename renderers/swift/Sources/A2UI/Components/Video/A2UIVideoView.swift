@@ -14,7 +14,6 @@ struct A2UIVideoView: View {
 			.onAppear {
 				if let urlString = surface.resolve(properties.url), let url = URL(string: urlString) {
 					player = AVPlayer(url: url)
-					player?.play()
 				}
 			}
             .onDisappear {
@@ -22,9 +21,9 @@ struct A2UIVideoView: View {
                 player = nil
             }
 			#if os(iOS)
-			                    .fullScreenCover(isPresented: $showFullscreen) {
-			                            videoView
-			                    }
+			.fullScreenCover(isPresented: $showFullscreen) {
+					videoView
+			}
 			#endif
 			
     }
