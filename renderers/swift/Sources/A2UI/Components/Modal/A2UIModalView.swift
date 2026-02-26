@@ -2,7 +2,9 @@ import SwiftUI
 
 struct A2UIModalView: View {
     let properties: ModalProperties
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
+    
     @State private var isPresented = false
 
     var body: some View {

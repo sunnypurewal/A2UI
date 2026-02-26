@@ -2,12 +2,16 @@ import SwiftUI
 
 struct A2UIImageView: View {
     let properties: ImageProperties
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
 
-    var body: some View {
-		let variant = properties.variant ?? .icon
-        if let urlString = surface.resolve(properties.url), let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
+        var body: some View {
+                    let variant = properties.variant ?? .icon
+            if let urlString = activeSurface?.resolve(properties.url), let url = URL(string: urlString) {
+                AsyncImage(url: url) { phase in
+    
                 switch phase {
                 case .empty:
                     ProgressView()

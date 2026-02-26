@@ -161,6 +161,12 @@ final class A2UIModelsTests: XCTestCase {
         if case let .appMessage(name, data) = message {
             XCTAssertTrue(name == "event1" || name == "event2")
             XCTAssertEqual(data.count, 2)
+            
+            let encoded = try JSONEncoder().encode(message)
+            let decodedAgain = try JSONDecoder().decode(A2UIMessage.self, from: encoded)
+            if case let .appMessage(name2, data2) = decodedAgain {
+                XCTAssertEqual(data2.count, 2)
+            } else { XCTFail() }
         } else {
             XCTFail("Expected appMessage")
         }

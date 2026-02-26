@@ -2,7 +2,11 @@ import SwiftUI
 
 struct A2UITabsView: View {
     let properties: TabsProperties
-    @Environment(SurfaceState.self) var surface
+    @Environment(SurfaceState.self) var surfaceEnv: SurfaceState?
+    var surface: SurfaceState?
+    
+    private var activeSurface: SurfaceState? { surface ?? surfaceEnv }
+    
     @State private var selectedTab: Int = 0
 
     var body: some View {
@@ -10,7 +14,7 @@ struct A2UITabsView: View {
         VStack {
             Picker("", selection: $selectedTab) {
                 ForEach(0..<tabs.count, id: \.self) { index in
-                    Text(surface.resolve(tabs[index].title) ?? "Tab \(index)").tag(index)
+                    Text(activeSurface?.resolve(tabs[index].title) ?? "Tab \(index)").tag(index)
                 }
             }
             .pickerStyle(SegmentedPickerStyle())
