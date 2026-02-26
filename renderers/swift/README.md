@@ -4,12 +4,33 @@ This directory contains the source code for the A2UI Swift Renderer.
 
 It is a native Swift package that provides the necessary components to parse and render A2UI protocol messages within a SwiftUI application.
 
-## Key Components:
+## Architecture Overview
+
+The Swift renderer follows a reactive, data-driven UI paradigm tailored for SwiftUI:
+
+1.  **Parsing (`A2UIParser`)**: Raw A2UI JSON messages from the server are decoded into strongly-typed Swift models.
+2.  **State Management (`A2UIDataStore`)**: The `A2UIDataStore` acts as the single source of truth for a given surface. It holds the parsed component hierarchy and current data model state. It evaluates bindings, function calls, and data updates triggered by user interactions.
+3.  **Rendering (`A2UISurfaceView` & `A2UIComponentRenderer`)**: The `A2UISurfaceView` observes the `A2UIDataStore`. It traverses the component tree starting from the root, recursively calling `A2UIComponentRenderer` for each node. The component renderer acts as a factory, translating A2UI component definitions (e.g., a `Text` or `Row` node) into their corresponding native SwiftUI equivalents.
+4.  **Interaction & Data Flow**: User inputs (like typing in a text field or tapping a button) are captured by the specific SwiftUI views. These views update the `A2UIDataStore`, which automatically propagates changes to bound variables, re-evaluates rules, and potentially dispatches `UserAction` messages back to the server.
+
+## Key Components
 
 -   **A2UIParser**: Deserializes A2UI JSON messages into Swift data models.
--   **A2UIDataStore**: Manages the state of the UI surface and its components.
+-   **A2UIDataStore**: Manages the state of the UI surface, data models, and component state.
 -   **A2UISurfaceView**: A SwiftUI view that orchestrates the rendering of the entire A2UI surface.
--   **A2UIComponentRenderer**: A view responsible for dynamically rendering individual A2UI components (e.g., Text, Button, Card) as native SwiftUI views.
+-   **A2UIComponentRenderer**: A view responsible for dynamically rendering individual A2UI components as native SwiftUI views.
+
+### Implemented UI Components
+- **Layout**: `Column`, `Row`, `List`, `Card`
+- **Content**: `Text`, `Image`, `Icon`, `Video`, `AudioPlayer`
+- **Input**: `TextField`, `CheckBox`, `ChoicePicker`, `Slider`, `DateTimeInput`
+- **Navigation & Interaction**: `Button`, `Tabs`, `Modal`
+- **Decoration**: `Divider`
+
+### Implemented Functions
+- **Formatting**: `FormatString`, `FormatDate`, `FormatCurrency`, `FormatNumber`, `Pluralize`, `OpenUrl`
+- **Validation**: `IsRequired`, `IsEmail`, `MatchesRegex`, `CheckLength`, `CheckNumeric`
+- **Logical**: `PerformAnd`, `PerformOr`, `PerformNot`
 
 For an example of how to use this renderer, please see the sample application in `samples/client/swift`.
 

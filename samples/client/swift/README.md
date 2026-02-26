@@ -8,6 +8,13 @@ The project is located in `A2UISampleApp/` and can be opened with Xcode.
 
 This sample app serves as a practical example and testbed for the Swift renderer located in `renderers/swift`. It includes:
 
--   A gallery of different A2UI responses.
--   An integration of the `A2UISurfaceView` to render the responses.
--   A button to view the raw A2UI JSON for each example.
+-   A **Component Gallery** showcasing different A2UI responses across various categories:
+    - **Content**: `Text`, `Image`, `Icon`, `Video`, `AudioPlayer`
+    - **Layout**: `Row`, `Column`, `List`
+    - **Input**: `TextField`, `CheckBox`, `ChoicePicker`, `Slider`, `DateTimeInput`
+    - **Navigation**: `Button`, `Modal`, `Tabs`
+    - **Decoration**: `Divider`
+    - **Functions**: Formatting (`Pluralize`, `FormatCurrency`, `FormatDate`) and Validation (`Required`, `Email`, `Regex`, `Length`, `Numeric`)
+-   An integration of the `A2UISurfaceView` to dynamically render the A2UI responses.
+-   Data Model demonstrations (e.g., updating bound variables and evaluating constraints).
+-   A button to view the raw A2UI JSON definitions for each gallery example to easily understand the protocol representation.
