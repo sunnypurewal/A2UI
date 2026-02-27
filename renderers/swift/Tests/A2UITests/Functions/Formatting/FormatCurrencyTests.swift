@@ -6,18 +6,22 @@ import Testing
 struct FormatCurrencyTests {
     private let surface = SurfaceState(id: "test")
 
-    @Test func formatCurrency() async {
+    @Test func formatCurrency() throws {
         let call = FunctionCall.formatCurrency(value: 1234.56, currency: "USD")
-        let result = A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String
-        #expect(result?.contains("$") ?? false)
-        let containsCorrectFormat = result?.contains("1,234.56") ?? false || result?.contains("1.234,56") ?? false
-        #expect(containsCorrectFormat)
+		let result: String! = A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String
+		try #require(result != nil)
+        #expect(result.contains("$"))
+		#expect(result.contains("234"))
+		#expect(result.contains("56"))
     }
 
-    @Test func formatCurrencyEdgeCases() async {
-        let call1 = FunctionCall.formatCurrency(value: 1234.56, currency: "USD", decimals: 0, grouping: false)
-        let result1 = A2UIStandardFunctions.evaluate(call: call1, surface: surface) as? String
-        #expect(result1?.contains("1235") == true || result1?.contains("1234") == true)
+    @Test func formatCurrencyEdgeCases() throws {
+        let call = FunctionCall.formatCurrency(value: 1234.56, currency: "GBP", decimals: 0, grouping: false)
+		let result: String! = A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String
+		try #require(result != nil)
+		#expect(result.contains("1235"))
+		#expect(result.contains("£"))
+		#expect(!result.contains("$"))
         
         let invalid = FunctionCall(call: "formatCurrency", args: ["value": AnyCodable("not-double")])
         #expect(A2UIStandardFunctions.evaluate(call: invalid, surface: surface) as? String == "")

@@ -1,7 +1,8 @@
 import Foundation
+import DataDetection
 
 extension A2UIStandardFunctions {
-    internal static func formatDate(value: Any, format: String) -> String {
+	internal static func formatDate(value: Any, format: String, timeZone: TimeZone = .autoupdatingCurrent, locale: Locale = .autoupdatingCurrent) -> String {
         let date: Date
         if let d = value as? Date {
             date = d
@@ -11,8 +12,17 @@ extension A2UIStandardFunctions {
             if let d = isoFormatter.date(from: s) {
                 date = d
             } else {
-                // Try other common formats or return raw
-                return s
+				if let detector = try? NSDataDetector(types: NSTextCheckingAllSystemTypes) {
+					let matches = detector.matches(in: s, range: NSRange(location: 0, length: s.count))
+					let dateMatches = matches.filter { $0.resultType == .date }
+					if let firstDate = dateMatches.first?.date {
+						date = firstDate
+					} else {
+						return s
+					}
+				} else {
+					return s
+				}
             }
         } else if let d = value as? Double {
             // Assume seconds since 1970
@@ -23,6 +33,8 @@ extension A2UIStandardFunctions {
         
         let formatter = DateFormatter()
         formatter.dateFormat = format
+		formatter.timeZone = timeZone
+		formatter.locale = locale
         return formatter.string(from: date)
     }
 }

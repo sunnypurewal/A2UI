@@ -5,13 +5,42 @@ import Testing
 @MainActor
 struct FormatDateTests {
     private let surface = SurfaceState(id: "test")
+	// Use a fixed timestamp for testing: 2026-02-26T12:00:00Z (roughly)
+	let timestamp = 1772107200.0 // Thu Feb 26 2026 12:00:00 UTC
 
-    @Test func formatDate() async {
-        // Use a fixed timestamp for testing: 2026-02-26T12:00:00Z (roughly)
-        let timestamp = 1772107200.0 // Thu Feb 26 2026 12:00:00 UTC
+    @Test func formatDate() throws {
         let call = FunctionCall.formatDate(value: timestamp, format: "yyyy-MM-dd")
-        #expect(A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String == "2026-02-26")
+		let result: String! = A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String
+		try #require(result != nil)
+        #expect(result == "2026-02-26")
     }
+	
+	@Test func formatISO8601DateString() throws {
+		let date = Date(timeIntervalSince1970: timestamp)
+		let systemFormatted = date.ISO8601Format()
+		let call = FunctionCall.formatDate(value: systemFormatted, format: "yyyy-MM-dd")
+		let result: String! = A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String
+		try #require(result != nil)
+		#expect(result == "2026-02-26")
+	}
+	
+	@Test func formatNonStandardLongDateString() throws {
+		let date = Date(timeIntervalSince1970: timestamp)
+		let systemFormatted = date.formatted(date: .long, time: .complete)
+		let call = FunctionCall.formatDate(value: systemFormatted, format: "yyyy-MM-dd")
+		let result: String! = A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String
+		try #require(result != nil)
+		#expect(result == "2026-02-26")
+	}
+	
+	@Test func formatNonStandardShortDateString() throws {
+		let date = Date(timeIntervalSince1970: timestamp)
+		let systemFormatted = date.formatted(date: .abbreviated, time: .shortened)
+		let call = FunctionCall.formatDate(value: systemFormatted, format: "yyyy-MM-dd hh:mm")
+		let result: String! = A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String
+		try #require(result != nil)
+		#expect(result == "2026-02-26 12:00")
+	}
 
     @Test func formatDateEdgeCases() async {
         let date = Date(timeIntervalSince1970: 0)
