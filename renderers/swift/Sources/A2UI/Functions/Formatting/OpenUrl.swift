@@ -17,14 +17,19 @@ extension A2UIStandardFunctions {
     }
 }
 
+@MainActor
 protocol URLOpener: NSObject {
+#if os(iOS)
 	func open(_ url: URL)
+#elseif os(macOS)
+	func open(_ url: URL) -> Bool
+#endif
 }
 #if os(iOS)
 extension UIApplication: URLOpener {
-//	func open(_ url: URL) {
-//		self.open
-//	}
+	func open(_ url: URL) {
+		open(url, options: [:], completionHandler: nil)
+	}
 }
 #elseif os(macOS)
 extension NSWorkspace: URLOpener {}
