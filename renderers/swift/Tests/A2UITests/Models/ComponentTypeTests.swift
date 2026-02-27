@@ -21,7 +21,7 @@ final class ComponentTypeTests: XCTestCase {
             (.icon(IconProperties(name: .init(literal: "star"))), "Icon"),
             (.modal(ModalProperties(trigger: "t1", content: "c1")), "Modal"),
             (.video(VideoProperties(url: .init(literal: ""))), "Video"),
-            (.audioPlayer(AudioPlayerProperties(url: .init(literal: ""))), "AudioPlayer"),
+			(.audioPlayer(AudioPlayerProperties(url: .init(literal: ""), description: nil)), "AudioPlayer"),
             (.custom("MyComp", [:]), "MyComp")
         ]
         
@@ -49,7 +49,7 @@ final class ComponentTypeTests: XCTestCase {
             .icon(IconProperties(name: .init(literal: "star"))),
             .modal(ModalProperties(trigger: "t1", content: "c1")),
             .video(VideoProperties(url: .init(literal: "v"))),
-            .audioPlayer(AudioPlayerProperties(url: .init(literal: "a"))),
+			.audioPlayer(AudioPlayerProperties(url: .init(literal: "a"), description: nil)),
             .custom("MyComp", ["foo": AnyCodable("bar")])
         ]
 

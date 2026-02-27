@@ -15,7 +15,8 @@ struct FormatDateTests {
         components.hour = 12
         components.minute = 0
         components.second = 0
-        let date = try #require(Calendar.current.date(from: components))
+		let date: Date! = Calendar.current.date(from: components)
+		try #require(date != nil, "Failed to create date from components")
         return date.timeIntervalSince1970
     }
 
