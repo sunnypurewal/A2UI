@@ -1,7 +1,7 @@
 import Foundation
 
 extension A2UIStandardFunctions {
-    internal static func matchesRegex(value: String, pattern: String) -> Bool {
+    static func matchesRegex(value: String, pattern: String) -> Bool {
         do {
             let regex = try NSRegularExpression(pattern: pattern, options: [])
             let range = NSRange(location: 0, length: value.utf16.count)

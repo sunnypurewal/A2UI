@@ -1,7 +1,7 @@
 import Foundation
 
 extension A2UIStandardFunctions {
-    internal static func formatString(format: String, surface: SurfaceState) -> String {
+    static func formatString(format: String, surface: SurfaceState) -> String {
         // Simple interpolation for ${/path} or ${expression}
         // This is a basic implementation of the description in basic_catalog.json
         var result = format

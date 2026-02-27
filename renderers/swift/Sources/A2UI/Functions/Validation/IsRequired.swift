@@ -1,7 +1,7 @@
 import Foundation
 
 extension A2UIStandardFunctions {
-    internal static func isRequired(value: Any) -> Bool {
+    static func isRequired(value: Any) -> Bool {
         if let s = value as? String {
             return !s.isEmpty
         }

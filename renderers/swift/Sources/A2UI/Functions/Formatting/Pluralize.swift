@@ -1,7 +1,7 @@
 import Foundation
 
 extension A2UIStandardFunctions {
-    internal static func pluralize(
+    static func pluralize(
         value: Double,
         zero: String?,
         one: String?,

@@ -3,7 +3,7 @@ import Foundation
 /// Internal logger for A2UI.
 /// By default, all logging is disabled to avoid spamming the console of host applications.
 /// To enable logging during development of the library, add 'A2UI_DEBUG' to your active compilation conditions.
-internal enum A2UILogger {
+enum A2UILogger {
     @inline(__always)
     static func debug(_ message: @autoclosure () -> String) {
         #if A2UI_DEBUG

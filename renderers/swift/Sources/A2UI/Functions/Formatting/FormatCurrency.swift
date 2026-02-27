@@ -1,7 +1,7 @@
 import Foundation
 
 extension A2UIStandardFunctions {
-    internal static func formatCurrency(value: Double, currency: String, decimals: Int?, grouping: Bool?) -> String {
+    static func formatCurrency(value: Double, currency: String, decimals: Int?, grouping: Bool?) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencyCode = currency

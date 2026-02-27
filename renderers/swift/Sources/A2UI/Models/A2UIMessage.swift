@@ -48,7 +48,8 @@ public enum A2UIMessage: Codable {
                 }
                 if unknownKeys.count > 1 {
                     A2UILogger.warning("A2UI message contains multiple unknown keys (\(unknownKeys.map { $0.stringValue }.joined(separator: ", "))). All keys will be included in the data dictionary, but only the first will be used as the message name.")
-                }                let primaryName = unknownKeys.first!.stringValue
+                }
+				let primaryName = unknownKeys.first!.stringValue
                 self = .appMessage(name: primaryName, data: allData)
             } else {
                 throw DecodingError.dataCorrupted(
