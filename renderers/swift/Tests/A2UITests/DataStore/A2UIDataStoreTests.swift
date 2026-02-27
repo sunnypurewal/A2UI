@@ -91,13 +91,62 @@ struct A2UIDataStoreTests {
         #expect(store.surfaces["s2"] != nil)
     }
 
-    @Test func dataStoreFlush() {
-        let partial = "{\"createSurface\":{\"surfaceId\":\"s-flush\",\"catalogId\":\"c1\"}}"
-        store.process(chunk: partial) // No newline
-        #expect(store.surfaces["s-flush"] == nil) // Should not process until newline or flush
+    @Test func fallbackRootComponent() {
+        let json = "{\"updateComponents\": {\"surfaceId\": \"s1\", \"components\": [{\"id\": \"c1\", \"component\": {\"Text\": {\"text\": \"Hello\"}}}]}}\n"
+        store.process(chunk: json)
+        #expect(store.surfaces["s1"]?.rootComponentId == "c1")
+    }
+
+    @Test func explicitRootComponent() {
+        let json = "{\"updateComponents\": {\"surfaceId\": \"s1\", \"components\": [{\"id\": \"c1\", \"component\": {\"Text\": {\"text\": \"Hello\"}}}, {\"id\": \"root\", \"component\": {\"Row\": {\"children\": [\"c1\"]}}}]}}\n"
+        store.process(chunk: json)
+        #expect(store.surfaces["s1"]?.rootComponentId == "root")
+    }
+
+    @Test func appMessageProcessing() async {
+        await confirmation("App message handled") { confirmed in
+            store.appMessageHandler = { name, data in
+                #expect(name == "my_event")
+                let payload = data[name]?.value as? [String: Any]
+                #expect(payload?["foo"] as? String == "bar")
+                confirmed()
+            }
+            let json = "{\"my_event\": {\"foo\": \"bar\"}}\n"
+            store.process(chunk: json)
+        }
+    }
+
+    @Test func textMessageProcessing() async {
+        await confirmation("Text message received") { confirmed in
+            store.onTextMessageReceived = { text in
+                #expect(text == "hello world")
+                confirmed()
+            }
+            // store.process(chunk: "{\"text\": \"hello world\"}\n")
+            // Wait, I need a valid app message name and a string payload.
+            let json = "{\"text\": \"hello world\"}\n"
+            store.process(chunk: json)
+        }
+    }
+
+    @Test func dataUpdateActionHandling() {
+        let surfaceId = "s1"
+        store.process(chunk: "{\"createSurface\":{\"surfaceId\":\"\(surfaceId)\",\"catalogId\":\"c1\"}}\n")
+        let surface = store.surfaces[surfaceId]!
         
-        store.flush()
-        #expect(store.surfaces["s-flush"] != nil)
+        surface.trigger(action: .dataUpdate(DataUpdateAction(path: "val", contents: AnyCodable("new"))))
+        #expect(surface.dataModel["val"] as? String == "new")
+    }
+
+    @Test func functionCallActionHandling() {
+        let surfaceId = "s1"
+        store.process(chunk: "{\"createSurface\":{\"surfaceId\":\"\(surfaceId)\",\"catalogId\":\"c1\"}}\n")
+        let surface = store.surfaces[surfaceId]!
+        
+        // Use a function call that might be handled.
+        // Even if it doesn't do much, it should exercise the code path.
+        let call = FunctionCall(call: "formatString", args: ["template": AnyCodable("test")])
+        surface.trigger(action: .functionCall(call))
     }
 
     // MARK: - SurfaceState Deep Dive

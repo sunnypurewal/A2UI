@@ -151,6 +151,34 @@ struct A2UIParserTests {
     @Test func parseEmptyLine() throws {
         #expect(try parser.parse(line: "").isEmpty)
         #expect(try parser.parse(line: "   ").isEmpty)
+        #expect(try parser.parse(line: "\n").isEmpty)
+    }
+
+    @Test func parseArrayDirectly() throws {
+        let json = "[{\"deleteSurface\":{\"surfaceId\":\"s1\"}},{\"deleteSurface\":{\"surfaceId\":\"s2\"}}]"
+        let messages = try parser.parse(line: json)
+        #expect(messages.count == 2)
+    }
+
+    @Test func parseInvalidJson() throws {
+        #expect(throws: (any Error).self) {
+            try parser.parse(line: "not json")
+        }
+    }
+
+    @Test func parseChunkWithError() throws {
+        var remainder = ""
+        let chunk = "{\"deleteSurface\":{\"surfaceId\":\"1\"}}\ninvalid json\n{\"deleteSurface\":{\"surfaceId\":\"2\"}}\n"
+        let messages = parser.parse(chunk: chunk, remainder: &remainder)
+        #expect(messages.count == 2)
+        #expect(remainder.isEmpty)
+    }
+
+    @Test func parseMultipleLinesInChunk() throws {
+        var remainder = ""
+        let chunk = "{\"deleteSurface\":{\"surfaceId\":\"1\"}}\n{\"deleteSurface\":{\"surfaceId\":\"2\"}}\n"
+        let messages = parser.parse(chunk: chunk, remainder: &remainder)
+        #expect(messages.count == 2)
     }
 
     // MARK: - Children Compatibility Tests
