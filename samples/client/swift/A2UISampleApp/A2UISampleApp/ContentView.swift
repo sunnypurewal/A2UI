@@ -7,20 +7,31 @@ struct ContentView: View {
 
     var body: some View {
         NavigationView {
-			List(ComponentCategory.allCases, id: \.self) { category in
-				NavigationLink {
-					List(GalleryData.components(for: category)) { component in
+			List {
+				Section(header: Text("Gallery")) {
+					ForEach(ComponentCategory.allCases, id: \.self) { category in
 						NavigationLink {
-							ComponentView(component: component)
+							List(GalleryData.components(for: category)) { component in
+								NavigationLink {
+									ComponentView(component: component)
+								} label: {
+									Text(component.id)
+								}
+							}
+							.navigationTitle(category.rawValue)
 						} label: {
-							Text(component.id)
+							Text(category.rawValue)
 						}
 					}
-					.navigationTitle(category.rawValue)
-				} label: {
-					Text(category.rawValue)
 				}
 
+				Section(header: Text("App")) {
+					NavigationLink {
+						ResourcesView()
+					} label: {
+						Label("Resources & Settings", systemImage: "gearshape")
+					}
+				}
             }
             .navigationTitle("A2UI Gallery")
         }
