@@ -38,6 +38,12 @@ struct A2UISliderView: View {
             } maximumValueLabel: {
                 Text("\(Int(properties.max))")
             }
+
+            if let error = activeSurface?.validationErrors[id] {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
         }
         .onAppear {
             activeSurface?.runChecks(for: id)

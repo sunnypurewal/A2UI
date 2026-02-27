@@ -7,7 +7,7 @@ extension GalleryComponent {
 		return .init(
 			id: "TextField",
 			template: #"{"id":"gallery_component","checks":[{{\#(checkFunctionKey)}}],"component":{"TextField":{"value":{"path":"/body/text"},"label":{"path":"/label"},"variant":"{{\#(textFieldVariantKey)}}"}}}"#,
-			staticComponents: [.textFieldRoot, .body, .textFieldPreview, .validationStatus],
+			staticComponents: [.textFieldRoot, .body, .textFieldPreview],
 			dataModelFields: [
 				DataModelField(path: "/label", label: "Placeholder", value: .string("Enter text")),
 				DataModelField(path: "/body/text", label: "", value: .string(""), showInEditor: false),

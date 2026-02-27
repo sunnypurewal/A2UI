@@ -77,23 +77,6 @@ import OSLog
     }
     
     public func getValue(at path: String) -> Any? {
-        if path.hasPrefix("/_validation/") {
-            let componentId = String(path.dropFirst("/_validation/".count))
-            return validationErrors[componentId]
-        }
-        
-        if path.hasPrefix("/_validationStatus/") {
-            let componentId = String(path.dropFirst("/_validationStatus/".count))
-            guard let instance = components[componentId], let checks = instance.checks, !checks.isEmpty else {
-                return nil
-            }
-            if let error = validationErrors[componentId] {
-                return "Failed Checks: \(error)"
-            } else {
-                return "Passed Checks"
-            }
-        }
-        
         let cleanPath = path.hasPrefix("/") ? String(path.dropFirst()) : path
         let normalizedPath = cleanPath.replacingOccurrences(of: ".", with: "/")
         let parts = normalizedPath.split(separator: "/").map(String.init)

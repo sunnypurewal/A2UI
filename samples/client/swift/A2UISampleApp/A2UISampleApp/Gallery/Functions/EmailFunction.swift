@@ -6,7 +6,7 @@ extension GalleryComponent {
         return .init(
             id: "email",
             template: #"{"id":"gallery_component","checks":[{"condition":{"call":"email","args":{"value":{"path":"/email"}}},"message":"Invalid email format"}],"component":{"TextField":{"value":{"path":"/email"},"label":"Email Validation Demo"}}}"#,
-            staticComponents: [.validationRoot, .validationPreview, .validationStatus],
+            staticComponents: [.validationRoot, .validationPreview],
             dataModelFields: [
                 DataModelField(path: "/email", label: "Email", value: .string("test@example.com"), showInEditor: false)
             ],

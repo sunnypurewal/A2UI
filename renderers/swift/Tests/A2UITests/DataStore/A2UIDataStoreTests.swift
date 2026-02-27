@@ -135,22 +135,6 @@ struct A2UIDataStoreTests {
         #expect(surface.resolve(BoundValue<String>(functionCall: call)) == "1 apple")
     }
 
-    @Test func surfaceStateValidationPaths() {
-        let surface = SurfaceState(id: "s1")
-        surface.components["c1"] = ComponentInstance(id: "c1", component: .text(.init(text: .init(literal: ""), variant: nil)))
-        surface.validationErrors["c1"] = "Required"
-        
-        #expect(surface.getValue(at: "/_validation/c1") as? String == "Required")
-        
-        surface.components["c2"] = ComponentInstance(id: "c2", checks: [CheckRule(condition: .init(literal: true), message: "err")], component: .text(.init(text: .init(literal: ""), variant: nil)))
-        #expect(surface.getValue(at: "/_validationStatus/c2") as? String == "Passed Checks")
-        
-        surface.validationErrors["c2"] = "Failed"
-        #expect((surface.getValue(at: "/_validationStatus/c2") as? String)?.contains("Failed Checks") == true)
-        
-        #expect(surface.getValue(at: "/_validationStatus/missing") == nil)
-    }
-
     @Test func surfaceStateRunChecks() {
         let surface = SurfaceState(id: "s1")
         let check = CheckRule(condition: BoundValue<Bool>(path: "isValid"), message: "Invalid Value")

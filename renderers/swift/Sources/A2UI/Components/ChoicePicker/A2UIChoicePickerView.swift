@@ -95,6 +95,11 @@ struct A2UIChoicePickerView: View {
                 .menuActionDismissBehavior(.disabled)
 #endif
             }
+            if let error = activeSurface?.validationErrors[id] {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
         }
         .onAppear {
             activeSurface?.runChecks(for: id)

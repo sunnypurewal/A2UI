@@ -39,7 +39,12 @@ struct A2UITextFieldView: View {
 				#if os(iOS)
 				                                    .keyboardType(variant == .number ? .decimalPad : .default)
 				#endif
-				
+
+			}
+			if let error = activeSurface?.validationErrors[id] {
+				Text(error)
+					.font(.caption)
+					.foregroundColor(.red)
 			}
         }
 		.textFieldStyle(.roundedBorder)
