@@ -1,9 +1,9 @@
-import XCTest
+import Testing
 @testable import A2UI
 
-final class A2UITextPropertiesTests: XCTestCase {
-    func testTextVariantId() {
-        XCTAssertEqual(A2UITextVariant.h1.id, "h1")
-        XCTAssertEqual(A2UITextVariant.body.id, "body")
+struct A2UITextPropertiesTests {
+    @Test func textVariantId() {
+        #expect(A2UITextVariant.h1.id == "h1")
+        #expect(A2UITextVariant.body.id == "body")
     }
 }

@@ -1,21 +1,21 @@
-import XCTest
+import Testing
 @testable import A2UI
 
-final class A2UITextFieldPropertiesTests: XCTestCase {
-    func testTextFieldVariantId() {
-        XCTAssertEqual(TextFieldVariant.longText.id, "longText")
-        XCTAssertEqual(TextFieldVariant.number.id, "number")
-        XCTAssertEqual(TextFieldVariant.shortText.id, "shortText")
-        XCTAssertEqual(TextFieldVariant.obscured.id, "obscured")
+struct A2UITextFieldPropertiesTests {
+    @Test func textFieldVariantId() {
+        #expect(TextFieldVariant.longText.id == "longText")
+        #expect(TextFieldVariant.number.id == "number")
+        #expect(TextFieldVariant.shortText.id == "shortText")
+        #expect(TextFieldVariant.obscured.id == "obscured")
     }
 
-    func testTextFieldPropertiesInit() {
+    @Test func textFieldPropertiesInit() {
         let label = BoundValue<String>(literal: "Test Label")
         let value = BoundValue<String>(literal: "Test Value")
         let props = TextFieldProperties(label: label, value: value, variant: .obscured)
         
-        XCTAssertEqual(props.label.literal, "Test Label")
-        XCTAssertEqual(props.value?.literal, "Test Value")
-        XCTAssertEqual(props.variant, .obscured)
+        #expect(props.label.literal == "Test Label")
+        #expect(props.value?.literal == "Test Value")
+        #expect(props.variant == .obscured)
     }
 }

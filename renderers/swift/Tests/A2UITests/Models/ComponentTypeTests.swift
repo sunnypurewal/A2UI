@@ -1,8 +1,9 @@
-import XCTest
+import Testing
 @testable import A2UI
+import Foundation
 
-final class ComponentTypeTests: XCTestCase {
-    func testComponentTypeNames() {
+struct ComponentTypeTests {
+    @Test func componentTypeNames() {
         let cases: [(ComponentType, String)] = [
             (.text(TextProperties(text: .init(literal: ""), variant: nil)), "Text"),
             (.button(ButtonProperties(child: "c1", action: .custom(name: "", context: nil))), "Button"),
@@ -26,11 +27,11 @@ final class ComponentTypeTests: XCTestCase {
         ]
         
         for (type, expectedName) in cases {
-            XCTAssertEqual(type.typeName, expectedName)
+            #expect(type.typeName == expectedName)
         }
     }
 
-    func testComponentTypeCodableRoundTrip() throws {
+    @Test func componentTypeCodableRoundTrip() throws {
         let cases: [ComponentType] = [
             .text(TextProperties(text: .init(literal: "hello"), variant: .h1)),
             .button(ButtonProperties(child: "c1", action: .custom(name: "tap", context: nil))),
@@ -59,21 +60,21 @@ final class ComponentTypeTests: XCTestCase {
         for original in cases {
             let data = try encoder.encode(original)
             let decoded = try decoder.decode(ComponentType.self, from: data)
-            XCTAssertEqual(original.typeName, decoded.typeName)
+            #expect(original.typeName == decoded.typeName)
             
             // Re-encode to ensure consistency
             let reEncoded = try encoder.encode(decoded)
             // We can't always compare data directly because of dictionary ordering or other factors,
             // but for these simple cases it usually works or we can decode again.
             let reDecoded = try decoder.decode(ComponentType.self, from: reEncoded)
-            XCTAssertEqual(original.typeName, reDecoded.typeName)
+            #expect(original.typeName == reDecoded.typeName)
         }
     }
 
-    func testDecodingInvalidComponentType() {
+    @Test func decodingInvalidComponentType() {
         let json = "{}" // Missing keys
         let data = json.data(using: .utf8)!
         let decoder = JSONDecoder()
-        XCTAssertThrowsError(try decoder.decode(ComponentType.self, from: data))
+        #expect(throws: Error.self) { try decoder.decode(ComponentType.self, from: data) }
     }
 }

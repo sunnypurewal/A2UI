@@ -1,16 +1,16 @@
-import XCTest
+import Testing
 @testable import A2UI
 
-final class A2UIButtonPropertiesTests: XCTestCase {
-    func testButtonVariantId() {
-		XCTAssertEqual(ButtonVariant.primary.id, "primary")
-        XCTAssertEqual(ButtonVariant.borderless.id, "borderless")
+struct A2UIButtonPropertiesTests {
+    @Test func buttonVariantId() {
+		#expect(ButtonVariant.primary.id == "primary")
+        #expect(ButtonVariant.borderless.id == "borderless")
     }
 
-    func testButtonPropertiesInit() {
+    @Test func buttonPropertiesInit() {
         let action = Action.custom(name: "test", context: nil)
         let props = ButtonProperties(child: "testChild", action: action, variant: .primary)
-        XCTAssertEqual(props.child, "testChild")
-        XCTAssertEqual(props.variant, .primary)
+        #expect(props.child == "testChild")
+        #expect(props.variant == .primary)
     }
 }

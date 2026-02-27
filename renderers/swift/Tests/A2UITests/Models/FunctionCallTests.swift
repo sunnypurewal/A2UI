@@ -1,8 +1,9 @@
-import XCTest
+import Testing
 @testable import A2UI
+import Foundation
 
-final class FunctionCallTests: XCTestCase {
-    func testFunctionCallCodable() throws {
+struct FunctionCallTests {
+    @Test func functionCallCodable() throws {
         let json = """
         {
             "call": "formatDate",
@@ -12,17 +13,17 @@ final class FunctionCallTests: XCTestCase {
         """.data(using: .utf8)!
 
         let call = try JSONDecoder().decode(FunctionCall.self, from: json)
-        XCTAssertEqual(call.call, "formatDate")
-        XCTAssertEqual(call.returnType, "String")
-        XCTAssertEqual(call.args["timestamp"], AnyCodable(12345.0))
+        #expect(call.call == "formatDate")
+        #expect(call.returnType == "String")
+        #expect(call.args["timestamp"] == AnyCodable(12345.0))
 
         let encoded = try JSONEncoder().encode(call)
         let decoded = try JSONDecoder().decode(FunctionCall.self, from: encoded)
-        XCTAssertEqual(call, decoded)
+        #expect(call == decoded)
         
         let emptyCall = FunctionCall(call: "empty")
         let emptyEncoded = try JSONEncoder().encode(emptyCall)
         let emptyDecoded = try JSONDecoder().decode(FunctionCall.self, from: emptyEncoded)
-        XCTAssertEqual(emptyCall, emptyDecoded)
+        #expect(emptyCall == emptyDecoded)
     }
 }

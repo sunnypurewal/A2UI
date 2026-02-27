@@ -1,8 +1,9 @@
-import XCTest
+import Testing
 @testable import A2UI
+import Foundation
 
-final class A2UIMessageTests: XCTestCase {
-    func testA2UIMessageDecodeVersionError() {
+struct A2UIMessageTests {
+    @Test func a2UIMessageDecodeVersionError() {
         let json = """
         {
             "version": "v0.9",
@@ -10,16 +11,22 @@ final class A2UIMessageTests: XCTestCase {
         }
         """.data(using: .utf8)!
         
-        XCTAssertThrowsError(try JSONDecoder().decode(A2UIMessage.self, from: json)) { error in
-            if case let DecodingError.dataCorrupted(context) = error {
-                XCTAssertTrue(context.debugDescription.contains("Unsupported A2UI version"))
-            } else {
-                XCTFail("Expected dataCorrupted error")
-            }
+        #expect(throws: Error.self) {
+            let error = try JSONDecoder().decode(A2UIMessage.self, from: json)
+            return error
+        } 
+        
+        // Detailed check if possible, but Swift Testing #expect(throws:) is more limited in inspecting error details in-line
+        do {
+            _ = try JSONDecoder().decode(A2UIMessage.self, from: json)
+        } catch DecodingError.dataCorrupted(let context) {
+            #expect(context.debugDescription.contains("Unsupported A2UI version"))
+        } catch {
+            Issue.record("Expected dataCorrupted error, got \(error)")
         }
     }
     
-    func testA2UIMessageAppMessage() throws {
+    @Test func a2UIMessageAppMessage() throws {
         let json = """
         {
             "customEvent": {"data": 123}
@@ -28,23 +35,23 @@ final class A2UIMessageTests: XCTestCase {
         
         let message = try JSONDecoder().decode(A2UIMessage.self, from: json)
         if case let .appMessage(name, data) = message {
-            XCTAssertEqual(name, "customEvent")
-            XCTAssertNotNil(data["customEvent"])
+            #expect(name == "customEvent")
+            #expect(data["customEvent"] != nil)
         } else {
-            XCTFail("Expected appMessage")
+            Issue.record("Expected appMessage")
         }
         
         let encoded = try JSONEncoder().encode(message)
         let decoded = try JSONDecoder().decode(A2UIMessage.self, from: encoded)
         if case let .appMessage(name2, data2) = decoded {
-            XCTAssertEqual(name2, "customEvent")
-            XCTAssertNotNil(data2["customEvent"])
+            #expect(name2 == "customEvent")
+            #expect(data2["customEvent"] != nil)
         } else {
-            XCTFail("Expected appMessage")
+            Issue.record("Expected appMessage")
         }
     }
 
-    func testA2UIMessageAppMessageMultipleKeys() throws {
+    @Test func a2UIMessageAppMessageMultipleKeys() throws {
         let json = """
         {
             "event1": {"a": 1},
@@ -54,25 +61,25 @@ final class A2UIMessageTests: XCTestCase {
         
         let message = try JSONDecoder().decode(A2UIMessage.self, from: json)
         if case let .appMessage(name, data) = message {
-            XCTAssertTrue(name == "event1" || name == "event2")
-            XCTAssertEqual(data.count, 2)
+            #expect(name == "event1" || name == "event2")
+            #expect(data.count == 2)
             
             let encoded = try JSONEncoder().encode(message)
             let decodedAgain = try JSONDecoder().decode(A2UIMessage.self, from: encoded)
             if case let .appMessage(_, data2) = decodedAgain {
-                XCTAssertEqual(data2.count, 2)
-            } else { XCTFail() }
+                #expect(data2.count == 2)
+            } else { Issue.record("Expected appMessage") }
         } else {
-            XCTFail("Expected appMessage")
+            Issue.record("Expected appMessage")
         }
     }
     
-    func testA2UIMessageDecodeError() {
+    @Test func a2UIMessageDecodeError() {
         let json = "{}".data(using: .utf8)!
-        XCTAssertThrowsError(try JSONDecoder().decode(A2UIMessage.self, from: json))
+        #expect(throws: Error.self) { try JSONDecoder().decode(A2UIMessage.self, from: json) }
     }
 
-    func testA2UIMessageDeleteAndDataUpdate() throws {
+    @Test func a2UIMessageDeleteAndDataUpdate() throws {
         // Delete
         let deleteJson = """
         {
@@ -82,11 +89,11 @@ final class A2UIMessageTests: XCTestCase {
         """.data(using: .utf8)!
         let deleteMsg = try JSONDecoder().decode(A2UIMessage.self, from: deleteJson)
         if case .deleteSurface(let ds) = deleteMsg {
-            XCTAssertEqual(ds.surfaceId, "s1")
-        } else { XCTFail() }
+            #expect(ds.surfaceId == "s1")
+        } else { Issue.record("Expected deleteSurface") }
         
         let encodedDelete = try JSONEncoder().encode(deleteMsg)
-        XCTAssertTrue(String(data: encodedDelete, encoding: .utf8)!.contains("deleteSurface"))
+        #expect(String(data: encodedDelete, encoding: .utf8)!.contains("deleteSurface"))
 
         // Data Model Update
         let updateJson = """
@@ -97,12 +104,12 @@ final class A2UIMessageTests: XCTestCase {
         """.data(using: .utf8)!
         let updateMsg = try JSONDecoder().decode(A2UIMessage.self, from: updateJson)
         if case .dataModelUpdate(let dmu) = updateMsg {
-            XCTAssertEqual(dmu.surfaceId, "s1")
-            XCTAssertEqual(dmu.value, AnyCodable(["key": "value"] as [String: Sendable]))
-        } else { XCTFail() }
+            #expect(dmu.surfaceId == "s1")
+            #expect(dmu.value == AnyCodable(["key": "value"] as [String: Sendable]))
+        } else { Issue.record("Expected dataModelUpdate") }
     }
 	
-	func testA2UICreateSurface() throws {
+	@Test func a2UICreateSurface() throws {
 		let createSurfaceJson = """
 		{
 			"version": "v0.10",
@@ -111,12 +118,12 @@ final class A2UIMessageTests: XCTestCase {
 		""".data(using: .utf8)!
 		let message = try JSONDecoder().decode(A2UIMessage.self, from: createSurfaceJson)
 		if case .createSurface(let cs) = message {
-			XCTAssertEqual(cs.surfaceId, "surface123")
-			XCTAssertEqual(cs.catalogId, "catalog456")
-			XCTAssertNil(cs.theme)
-			XCTAssertNil(cs.sendDataModel)
+			#expect(cs.surfaceId == "surface123")
+			#expect(cs.catalogId == "catalog456")
+			#expect(cs.theme == nil)
+			#expect(cs.sendDataModel == nil)
 		} else {
-			XCTFail("Expected createSurface message")
+			Issue.record("Expected createSurface message")
 		}
 	}
 }

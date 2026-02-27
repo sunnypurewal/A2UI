@@ -1,9 +1,9 @@
-import XCTest
+import Testing
 @testable import A2UI
 
-final class A2UIDividerPropertiesTests: XCTestCase {
-    func testDividerAxisId() {
-        XCTAssertEqual(DividerAxis.horizontal.id, "horizontal")
-        XCTAssertEqual(DividerAxis.vertical.id, "vertical")
+struct A2UIDividerPropertiesTests {
+    @Test func dividerAxisId() {
+        #expect(DividerAxis.horizontal.id == "horizontal")
+        #expect(DividerAxis.vertical.id == "vertical")
     }
 }
