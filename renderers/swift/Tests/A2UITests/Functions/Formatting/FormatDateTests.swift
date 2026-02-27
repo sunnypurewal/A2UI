@@ -5,10 +5,22 @@ import Testing
 @MainActor
 struct FormatDateTests {
     private let surface = SurfaceState(id: "test")
-	// Use a fixed timestamp for testing: 2026-02-26T12:00:00Z (roughly)
-	let timestamp = 1772107200.0 // Thu Feb 26 2026 12:00:00 UTC
+    
+    /// Returns a fixed timestamp (2026-02-26 12:00:00) in the LOCAL timezone.
+    private func getLocalTimestamp() throws -> Double {
+        var components = DateComponents()
+        components.year = 2026
+        components.month = 2
+        components.day = 26
+        components.hour = 12
+        components.minute = 0
+        components.second = 0
+        let date = try #require(Calendar.current.date(from: components))
+        return date.timeIntervalSince1970
+    }
 
     @Test func formatDate() throws {
+        let timestamp = try getLocalTimestamp()
         let call = FunctionCall.formatDate(value: timestamp, format: "yyyy-MM-dd")
 		let result: String! = A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String
 		try #require(result != nil)
@@ -16,8 +28,12 @@ struct FormatDateTests {
     }
 	
 	@Test func formatISO8601DateString() throws {
+        let timestamp = try getLocalTimestamp()
 		let date = Date(timeIntervalSince1970: timestamp)
-		let systemFormatted = date.ISO8601Format()
+		let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.timeZone = .current // Match system
+		let systemFormatted = isoFormatter.string(from: date)
+        
 		let call = FunctionCall.formatDate(value: systemFormatted, format: "yyyy-MM-dd")
 		let result: String! = A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String
 		try #require(result != nil)
@@ -25,8 +41,9 @@ struct FormatDateTests {
 	}
 	
 	@Test func formatNonStandardLongDateString() throws {
+        let timestamp = try getLocalTimestamp()
 		let date = Date(timeIntervalSince1970: timestamp)
-		let systemFormatted = date.formatted(date: .long, time: .complete)
+		let systemFormatted = date.formatted(date: .long, time: .omitted)
 		let call = FunctionCall.formatDate(value: systemFormatted, format: "yyyy-MM-dd")
 		let result: String! = A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String
 		try #require(result != nil)
@@ -34,9 +51,10 @@ struct FormatDateTests {
 	}
 	
 	@Test func formatNonStandardShortDateString() throws {
+        let timestamp = try getLocalTimestamp()
 		let date = Date(timeIntervalSince1970: timestamp)
 		let systemFormatted = date.formatted(date: .abbreviated, time: .shortened)
-		let call = FunctionCall.formatDate(value: systemFormatted, format: "yyyy-MM-dd hh:mm")
+		let call = FunctionCall.formatDate(value: systemFormatted, format: "yyyy-MM-dd HH:mm")
 		let result: String! = A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String
 		try #require(result != nil)
 		#expect(result == "2026-02-26 12:00")
