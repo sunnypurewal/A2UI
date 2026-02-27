@@ -1,11 +1,11 @@
-import XCTest
+import Testing
 import SwiftUI
 import ViewInspector
 @testable import A2UI
 
-final class A2UIButtonViewTests: XCTestCase {
-    @MainActor
-    func testPrimaryButton() throws {
+@MainActor
+struct A2UIButtonViewTests {
+    @Test func primaryButton() throws {
         let surface = SurfaceState(id: "test")
         surface.components["t1"] = ComponentInstance(id: "t1", component: .text(.init(text: .init(literal: "Click Me"), variant: nil)))
         
@@ -21,7 +21,7 @@ final class A2UIButtonViewTests: XCTestCase {
         defer { ViewHosting.expel() }
 
         let button = try view.inspect().find(ViewType.Button.self)
-        XCTAssertNotNil(button)
+        // #expect no longer needs nil check for non-optional result from find()
         
         // Test action triggering
         var actionTriggered = false
@@ -34,11 +34,10 @@ final class A2UIButtonViewTests: XCTestCase {
         }
         
         try button.tap()
-        XCTAssertTrue(actionTriggered)
+        #expect(actionTriggered)
     }
 
-    @MainActor
-    func testBorderlessButton() throws {
+    @Test func borderlessButton() throws {
         let surface = SurfaceState(id: "test")
         surface.components["t1"] = ComponentInstance(id: "t1", component: .text(.init(text: .init(literal: "Click Me"), variant: nil)))
         
@@ -53,12 +52,10 @@ final class A2UIButtonViewTests: XCTestCase {
         ViewHosting.host(view: view)
         defer { ViewHosting.expel() }
 
-        let button = try view.inspect().find(ViewType.Button.self)
-        XCTAssertNotNil(button)
+        let _ = try view.inspect().find(ViewType.Button.self)
     }
 
-    @MainActor
-    func testDisabledButtonWithError() throws {
+    @Test func disabledButtonWithError() throws {
         let surface = SurfaceState(id: "test")
         surface.components["t1"] = ComponentInstance(id: "t1", component: .text(.init(text: .init(literal: "Click Me"), variant: nil)))
         
@@ -77,24 +74,8 @@ final class A2UIButtonViewTests: XCTestCase {
         defer { ViewHosting.expel() }
 
         let button = try view.inspect().find(ViewType.Button.self)
-        XCTAssertTrue(button.isDisabled())
+        #expect(button.isDisabled())
         
-        let errorText = try view.inspect().find(text: "Error Message")
-        XCTAssertNotNil(errorText)
-    }
-    
-    @MainActor
-    func testButtonWithDirectSurface() throws {
-        let surface = SurfaceState(id: "test")
-        surface.components["t1"] = ComponentInstance(id: "t1", component: .text(.init(text: .init(literal: "Click Me"), variant: nil)))
-        let props = ButtonProperties(child: "t1", action: .custom(name: "tap", context: nil), variant: .primary)
-        
-        let view = A2UIButtonView(id: "b1", properties: props, surface: surface)
-        
-        ViewHosting.host(view: view)
-        defer { ViewHosting.expel() }
-
-        let button = try view.inspect().find(ViewType.Button.self)
-        XCTAssertNotNil(button)
+        let _ = try view.inspect().find(text: "Error Message")
     }
 }

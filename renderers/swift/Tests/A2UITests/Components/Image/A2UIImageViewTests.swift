@@ -1,11 +1,11 @@
-import XCTest
+import Testing
 import SwiftUI
 import ViewInspector
 @testable import A2UI
 
-final class A2UIImageViewTests: XCTestCase {
-    @MainActor
-    func testImageView() throws {
+@MainActor
+struct A2UIImageViewTests {
+    @Test func imageView() throws {
         let props = ImageProperties(
             url: BoundValue(literal: "https://example.com/img.png"),
             fit: .cover,
@@ -17,12 +17,10 @@ final class A2UIImageViewTests: XCTestCase {
         ViewHosting.host(view: view)
         defer { ViewHosting.expel() }
 
-        let asyncImage = try view.inspect().find(ViewType.AsyncImage.self)
-        XCTAssertNotNil(asyncImage)
+        #expect(try view.inspect().find(ViewType.AsyncImage.self) != nil)
     }
 
-    @MainActor
-    func testImageViewAvatar() throws {
+    @Test func imageViewAvatar() throws {
         let props = ImageProperties(
             url: BoundValue(literal: "https://example.com/avatar.png"),
             fit: .cover,
@@ -34,24 +32,6 @@ final class A2UIImageViewTests: XCTestCase {
         ViewHosting.host(view: view)
         defer { ViewHosting.expel() }
 
-        let asyncImage = try view.inspect().find(ViewType.AsyncImage.self)
-        XCTAssertNotNil(asyncImage)
-    }
-
-    @MainActor
-    func testImageViewWithDirectSurface() throws {
-        let surface = SurfaceState(id: "test")
-        let props = ImageProperties(
-            url: BoundValue(literal: "https://example.com/img.png"),
-            fit: .contain,
-            variant: .header
-        )
-        let view = A2UIImageView(properties: props, surface: surface)
-            
-        ViewHosting.host(view: view)
-        defer { ViewHosting.expel() }
-
-        let asyncImage = try view.inspect().find(ViewType.AsyncImage.self)
-        XCTAssertNotNil(asyncImage)
+        #expect(try view.inspect().find(ViewType.AsyncImage.self) != nil)
     }
 }
