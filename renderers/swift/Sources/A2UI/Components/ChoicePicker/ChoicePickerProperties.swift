@@ -19,8 +19,7 @@ public struct SelectionOption: Codable, Sendable {
     public let value: String
 }
 
-public enum ChoicePickerVariant: String, Codable, Sendable, CaseIterable, Identifiable {
-	public var id: String { self.rawValue }
+public enum ChoicePickerVariant: String, Codable, Sendable {
 	case multipleSelection = "multipleSelection"
 	case mutuallyExclusive = "mutuallyExclusive"
 }

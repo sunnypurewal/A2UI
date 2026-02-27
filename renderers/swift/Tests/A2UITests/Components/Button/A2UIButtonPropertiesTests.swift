@@ -3,8 +3,8 @@ import XCTest
 
 final class A2UIButtonPropertiesTests: XCTestCase {
     func testButtonVariantId() {
-        XCTAssertEqual(ButtonVariant.primary.id, "primary")
-        XCTAssertEqual(ButtonVariant.borderless.id, "borderless")
+		XCTAssertEqual(ButtonVariant.primary.rawValue, "primary")
+        XCTAssertEqual(ButtonVariant.borderless.rawValue, "borderless")
     }
 
     func testButtonPropertiesInit() {

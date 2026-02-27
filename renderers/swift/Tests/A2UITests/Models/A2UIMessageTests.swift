@@ -59,7 +59,7 @@ final class A2UIMessageTests: XCTestCase {
             
             let encoded = try JSONEncoder().encode(message)
             let decodedAgain = try JSONDecoder().decode(A2UIMessage.self, from: encoded)
-            if case let .appMessage(name2, data2) = decodedAgain {
+            if case let .appMessage(_, data2) = decodedAgain {
                 XCTAssertEqual(data2.count, 2)
             } else { XCTFail() }
         } else {
@@ -101,4 +101,22 @@ final class A2UIMessageTests: XCTestCase {
             XCTAssertEqual(dmu.value, AnyCodable(["key": "value"] as [String: Sendable]))
         } else { XCTFail() }
     }
+	
+	func testA2UICreateSurface() throws {
+		let createSurfaceJson = """
+		{
+			"version": "v0.10",
+			"createSurface": {"surfaceId": "surface123","catalogId": "catalog456"}
+		}
+		""".data(using: .utf8)!
+		let message = try JSONDecoder().decode(A2UIMessage.self, from: createSurfaceJson)
+		if case .createSurface(let cs) = message {
+			XCTAssertEqual(cs.surfaceId, "surface123")
+			XCTAssertEqual(cs.catalogId, "catalog456")
+			XCTAssertNil(cs.theme)
+			XCTAssertNil(cs.sendDataModel)
+		} else {
+			XCTFail("Expected createSurface message")
+		}
+	}
 }

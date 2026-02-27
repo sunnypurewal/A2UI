@@ -12,8 +12,7 @@ public struct TextFieldProperties: Codable, Sendable {
     }
 }
 
-public enum TextFieldVariant: String, Codable, Sendable, CaseIterable, Identifiable {
-	public var id: String { self.rawValue }
+public enum TextFieldVariant: String, Codable, Sendable {
 	case longText = "longText"
 	case number = "number"
 	case shortText = "shortText"

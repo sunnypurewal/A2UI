@@ -26,8 +26,7 @@ public struct TextProperties: Codable, Sendable {
     }
 }
 
-public enum A2UITextVariant: String, Codable, Sendable, CaseIterable, Identifiable {
-	public var id: String { self.rawValue }
+public enum A2UITextVariant: String, Codable, Sendable {
 	case h1 = "h1"
 	case h2 = "h2"
 	case h3 = "h3"

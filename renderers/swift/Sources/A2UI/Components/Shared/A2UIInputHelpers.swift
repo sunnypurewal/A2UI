@@ -32,18 +32,6 @@ private let log = OSLog(subsystem: "org.a2ui.renderer", category: "Validation")
     return nil
 }
 
-struct CheckBoxToggleStyle: ToggleStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        HStack {
-            Image(systemName: configuration.isOn ? "checkmark.square" : "square")
-                .onTapGesture {
-                    configuration.isOn.toggle()
-                }
-            configuration.label
-        }
-    }
-}
-
 struct ValidationErrorMessageView: View {
     let id: String
     let surface: SurfaceState?

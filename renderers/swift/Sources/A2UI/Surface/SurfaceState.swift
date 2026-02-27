@@ -19,10 +19,6 @@ import OSLog
         self.id = id
     }
 
-    public var name: String? {
-        return dataModel["surface_name"] as? String ?? id
-    }
-
     public func resolve<T>(_ boundValue: BoundValue<T>?) -> T? {
         guard let boundValue = boundValue else { return nil }
         return resolve(boundValue)

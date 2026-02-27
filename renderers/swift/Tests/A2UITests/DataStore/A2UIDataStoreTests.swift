@@ -204,8 +204,11 @@ struct A2UIDataStoreTests {
         #expect(surface.resolve(BoundValue<Int>(path: "double")) == 3)
         #expect(surface.resolve(BoundValue<Double>(path: "double")) == 3.14)
         
-        #expect(surface.resolve(BoundValue<String>(path: "null")) == nil)
-        #expect(surface.resolve(BoundValue<String>(path: "missing")) == nil)
+        // Optional BoundValue
+        let optionalBound: BoundValue<String>? = nil
+        #expect(surface.resolve(optionalBound) == nil)
+        let presentBound: BoundValue<String>? = BoundValue<String>(literal: "present")
+        #expect(surface.resolve(presentBound) == "present")
         
         // Function Call (minimal test here, A2UIFunctionTests covers more)
         let call = FunctionCall(call: "pluralize", args: ["value": AnyCodable(1), "one": AnyCodable("1 apple"), "other": AnyCodable("apples")])

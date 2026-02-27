@@ -107,7 +107,7 @@ public enum A2UIStandardFunctions {
         return nil
     }
 
-    public static func resolveDynamicValue(_ value: Any?, surface: SurfaceState) -> Any? {
+    static func resolveDynamicValue(_ value: Any?, surface: SurfaceState) -> Any? {
         guard let value = value else { return nil }
 
         // If it's a dictionary, it might be a DataBinding or a FunctionCall
@@ -134,7 +134,7 @@ public enum A2UIStandardFunctions {
     }
 
     /// Recursively converts Any values (like [String: Any] or [Any]) into Sendable existentials.
-    private static func makeSendable(_ value: Any) -> Sendable {
+    static func makeSendable(_ value: Any) -> Sendable {
         if let dict = value as? [String: Any] {
             return dict.mapValues { makeSendable($0) }
         }
