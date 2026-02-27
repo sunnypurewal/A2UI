@@ -17,7 +17,7 @@ extension A2UIStandardFunctions {
 #if os(iOS)
 import UIKit
 extension A2UIStandardFunctions {
-	fileprivate static var sharedURLOpener: URLOpener = UIApplication.shared
+	static var sharedURLOpener: URLOpener = UIApplication.shared
 }
 
 extension UIApplication: URLOpener {
@@ -28,7 +28,7 @@ extension UIApplication: URLOpener {
 #elseif os(macOS)
 import AppKit
 extension A2UIStandardFunctions {
-	fileprivate static var sharedURLOpener: URLOpener = NSWorkspace.shared
+	static var sharedURLOpener: URLOpener = NSWorkspace.shared
 }
 @MainActor
 extension NSWorkspace: URLOpener {
