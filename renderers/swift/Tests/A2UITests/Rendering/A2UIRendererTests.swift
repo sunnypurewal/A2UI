@@ -221,14 +221,5 @@ struct A2UIRendererTests {
         #expect(try missingVirtual.inspect().find(A2UITextView.self) != nil)
         ViewHosting.expel()
 
-        // Debug Borders
-        dataStore.showDebugBorders = true
-        let debugView = A2UIComponentRenderer(componentId: "t1", surface: surface)
-            .environment(dataStore)
-        surface.components["t1"] = ComponentInstance(id: "t1", component: .text(.init(text: .init(literal: "L"), variant: nil)))
-        ViewHosting.host(view: debugView)
-        // Verify it doesn't crash with debug borders
-        #expect(try debugView.inspect().find(A2UITextView.self) != nil)
-        ViewHosting.expel()
     }
 }

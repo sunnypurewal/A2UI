@@ -30,9 +30,6 @@ import OSLog
     /// A registry for custom component renderers.
     public var customRenderers: [String: @MainActor (ComponentInstance) -> AnyView] = [:]
 
-    /// Whether to show debug borders around components.
-    public var showDebugBorders: Bool = false
-
     public override init() {
         super.init()
     }

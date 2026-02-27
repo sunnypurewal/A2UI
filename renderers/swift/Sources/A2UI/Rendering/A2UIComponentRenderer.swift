@@ -3,7 +3,6 @@ import OSLog
 
 /// A internal view that resolves a component ID and renders the appropriate SwiftUI view.
 struct A2UIComponentRenderer: View {
-    @Environment(A2UIDataStore.self) var dataStore: A2UIDataStore?
     @Environment(SurfaceState.self) var surface: SurfaceState?
     let componentId: String
     let surfaceOverride: SurfaceState?
@@ -105,7 +104,8 @@ struct A2UIComponentRenderer: View {
             }
         }
         
-        if dataStore?.showDebugBorders ?? false {
+        let showDebugBorders = ProcessInfo.processInfo.environment["A2UI_DEBUG_BORDERS"] == "true"
+        if showDebugBorders {
             content
                 .border(debugColor(for: instance.componentTypeName), width: 1)
         } else {
