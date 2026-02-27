@@ -83,7 +83,7 @@ struct A2UIMessageTests {
         // Delete
         let deleteJson = """
         {
-            "version": "v0.10",
+            "version": "v0.9",
             "deleteSurface": {"surfaceId": "s1"}
         }
         """.data(using: .utf8)!
@@ -98,7 +98,7 @@ struct A2UIMessageTests {
         // Data Model Update
         let updateJson = """
         {
-            "version": "v0.10",
+            "version": "v0.9",
             "updateDataModel": {"surfaceId": "s1", "value": {"key": "value"}}
         }
         """.data(using: .utf8)!
@@ -112,7 +112,7 @@ struct A2UIMessageTests {
 	@Test func a2UICreateSurface() throws {
 		let createSurfaceJson = """
 		{
-			"version": "v0.10",
+			"version": "v0.9",
 			"createSurface": {"surfaceId": "surface123","catalogId": "catalog456"}
 		}
 		""".data(using: .utf8)!

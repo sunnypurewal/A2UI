@@ -16,7 +16,7 @@ public enum Action: Codable, Sendable {
             self = .functionCall(functionCall)
         } else {
             throw DecodingError.dataCorrupted(
-                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unknown Action type or missing v0.10 structure (event or functionCall)")
+                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unknown Action type or missing v0.9 structure (event or functionCall)")
             )
         }
     }

@@ -1,7 +1,7 @@
 import Foundation
 
 /// Represents a user-initiated action sent from the client to the server.
-/// Matches the 'action' property in the A2UI v0.10 client-to-server schema.
+/// Matches the 'action' property in the A2UI v0.9 client-to-server schema.
 public struct UserAction: Codable, Sendable {
     public let name: String
     public let surfaceId: String

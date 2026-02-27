@@ -2,7 +2,7 @@ import Foundation
 
 /// The root message received from the A2UI stream.
 /// Each line in the JSONL stream should decode into this enum.
-/// Strictly supports A2UI v0.10 specification.
+/// Strictly supports A2UI v0.9 specification.
 public enum A2UIMessage: Codable {
     case createSurface(CreateSurfaceMessage)
     case surfaceUpdate(SurfaceUpdate)
@@ -22,8 +22,8 @@ public enum A2UIMessage: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         // Strictly validate version if present
-        if let version = try? container.decode(String.self, forKey: .version), version != "v0.10" {
-            throw DecodingError.dataCorruptedError(forKey: .version, in: container, debugDescription: "Unsupported A2UI version: \(version). Only v0.10 is supported.")
+        if let version = try? container.decode(String.self, forKey: .version), version != "v0.9" {
+            throw DecodingError.dataCorruptedError(forKey: .version, in: container, debugDescription: "Unsupported A2UI version: \(version). Only v0.9 is supported.")
         }
         
         if container.contains(.createSurface) {
@@ -53,7 +53,7 @@ public enum A2UIMessage: Codable {
                 self = .appMessage(name: primaryName, data: allData)
             } else {
                 throw DecodingError.dataCorrupted(
-                    DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Missing or unknown A2UI v0.10 Message")
+                    DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Missing or unknown A2UI v0.9 Message")
                 )
             }
         }
@@ -61,7 +61,7 @@ public enum A2UIMessage: Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode("v0.10", forKey: .version)
+        try container.encode("v0.9", forKey: .version)
         switch self {
         case .createSurface(let value):
             try container.encode(value, forKey: .createSurface)

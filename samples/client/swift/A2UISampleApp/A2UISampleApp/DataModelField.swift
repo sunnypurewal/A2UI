@@ -29,7 +29,7 @@ struct DataModelField: Identifiable {
 			case .choice(let selected, _):
 				valueJson = jsonLiteral(from: selected)
 		}
-		return #"{"version":"v0.10","updateDataModel":{"surfaceId":"\#(surfaceId)","path":"\#(path)","value":\#(valueJson)}}"#
+		return #"{"version":"v0.9","updateDataModel":{"surfaceId":"\#(surfaceId)","path":"\#(path)","value":\#(valueJson)}}"#
 	}
 	
 	private func jsonLiteral(from stringValue: String) -> String {

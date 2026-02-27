@@ -35,10 +35,10 @@ struct GalleryComponent: Identifiable {
 	}
 	
 	var createSurfaceA2UI: String {
-		return #"{"version":"v0.10","createSurface":{"surfaceId":"\#(id)","catalogId":"a2ui.org:standard_catalog"}}"#
+		return #"{"version":"v0.9","createSurface":{"surfaceId":"\#(id)","catalogId":"a2ui.org:standard_catalog"}}"#
 	}
 	var updateComponentsA2UI: String {
-		return #"{"version":"v0.10","updateComponents":{"surfaceId":"\#(id)","components":[\#(resolvedComponents.joined(separator: ","))]}}"#
+		return #"{"version":"v0.9","updateComponents":{"surfaceId":"\#(id)","components":[\#(resolvedComponents.joined(separator: ","))]}}"#
 	}
 	
 	var resolvedComponents: [String] {

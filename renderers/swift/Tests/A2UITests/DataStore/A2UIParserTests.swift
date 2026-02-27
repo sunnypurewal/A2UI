@@ -186,7 +186,7 @@ struct A2UIParserTests {
     @Test func childrenDirectArray() throws {
         let json = """
         {
-            "version": "v0.10",
+            "version": "v0.9",
             "updateComponents": {
                 "surfaceId": "s1",
                 "components": [
@@ -217,7 +217,7 @@ struct A2UIParserTests {
     @Test func childrenLegacyExplicitList() throws {
         let json = """
         {
-            "version": "v0.10",
+            "version": "v0.9",
             "updateComponents": {
                 "surfaceId": "s1",
                 "components": [
@@ -248,7 +248,7 @@ struct A2UIParserTests {
     @Test func childrenTemplate() throws {
         let json = """
         {
-            "version": "v0.10",
+            "version": "v0.9",
             "updateComponents": {
                 "surfaceId": "s1",
                 "components": [

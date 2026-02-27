@@ -2,13 +2,13 @@ import Testing
 import Foundation
 @testable import A2UI
 
-struct A2UIV10Tests {
+struct A2UIV9Tests {
     private let parser = A2UIParser()
 
     @Test func parseCreateSurface() throws {
         let json = """
         {
-            "version": "v0.10",
+            "version": "v0.9",
             "createSurface": {
                 "surfaceId": "s1",
                 "catalogId": "test.catalog",
@@ -34,7 +34,7 @@ struct A2UIV10Tests {
     @Test func parseUpdateComponents() throws {
         let json = """
         {
-            "version": "v0.10",
+            "version": "v0.9",
             "updateComponents": {
                 "surfaceId": "s1",
                 "components": [
@@ -69,7 +69,7 @@ struct A2UIV10Tests {
     @Test func parseUpdateDataModelWithValue() throws {
         let json = """
         {
-            "version": "v0.10",
+            "version": "v0.9",
             "updateDataModel": {
                 "surfaceId": "s1",
                 "path": "/user/name",
@@ -93,7 +93,7 @@ struct A2UIV10Tests {
     @Test func parseUpdateDataModelWithObjectValue() throws {
         let json = """
         {
-            "version": "v0.10",
+            "version": "v0.9",
             "updateDataModel": {
                 "surfaceId": "s1",
                 "path": "/user",
@@ -122,7 +122,7 @@ struct A2UIV10Tests {
     @Test func choicePickerParsing() throws {
         let json = """
         {
-            "version": "v0.10",
+            "version": "v0.9",
             "updateComponents": {
                 "surfaceId": "s1",
                 "components": [
@@ -161,7 +161,7 @@ struct A2UIV10Tests {
     @Test func parseUserReproWithNulls() throws {
         // This test verifies that 'null' values in 'theme' (AnyCodable) don't crash the parser.
         let json = """
-        {"version":"v0.10","createSurface":{"surfaceId":"9EA1C0C3-4FAE-4FD2-BE58-5DD06F4A73F9","catalogId":"https://a2ui.org/specification/v0_10/standard_catalog.json","theme":{"primaryColor":"#F7931A","agentDisplayName":"BTC Tracker","iconUrl":null},"sendDataModel":true}}
+        {"version":"v0.9","createSurface":{"surfaceId":"9EA1C0C3-4FAE-4FD2-BE58-5DD06F4A73F9","catalogId":"https://a2ui.org/specification/v0_9/standard_catalog.json","theme":{"primaryColor":"#F7931A","agentDisplayName":"BTC Tracker","iconUrl":null},"sendDataModel":true}}
         """
         let messages = try parser.parse(line: json)
         #expect(messages.count == 1)
@@ -178,7 +178,7 @@ struct A2UIV10Tests {
 
     @Test func parseUserReproFlat() throws {
         let json = """
-        {"version":"v0.10","updateComponents":{"surfaceId":"63331743-99E8-44E9-8007-CFF5747F6033","components":[{"id":"card_root","component":"Card","child":"col_main","weight":1},{"id":"col_main","component":"Column","children":["header_text","price_display","meta_row","error_msg","refresh_btn"],"align":"center","justify":"start","weight":1},{"id":"header_text","component":"Text","text":"Bitcoin Price","variant":"h3","weight":0},{"id":"price_display","component":"Text","text":{"path":"/btc/currentPrice"},"variant":"h1","weight":0},{"id":"meta_row","component":"Row","children":["meta_label","meta_time"],"justify":"center","weight":0},{"id":"meta_label","component":"Text","text":"Last updated: ","variant":"caption","weight":0},{"id":"meta_time","component":"Text","text":{"path":"/btc/lastUpdated"},"variant":"caption","weight":0},{"id":"error_msg","component":"Text","text":{"path":"/btc/error"},"variant":"body","weight":0},{"id":"refresh_btn","component":"Button","child":"btn_label","action":{"functionCall":{"call":"refreshBTCPrice","args":{}}},"variant":"primary","weight":0},{"id":"btn_label","component":"Text","text":"Refresh","variant":"body","weight":1}]}}
+        {"version":"v0.9","updateComponents":{"surfaceId":"63331743-99E8-44E9-8007-CFF5747F6033","components":[{"id":"card_root","component":"Card","child":"col_main","weight":1},{"id":"col_main","component":"Column","children":["header_text","price_display","meta_row","error_msg","refresh_btn"],"align":"center","justify":"start","weight":1},{"id":"header_text","component":"Text","text":"Bitcoin Price","variant":"h3","weight":0},{"id":"price_display","component":"Text","text":{"path":"/btc/currentPrice"},"variant":"h1","weight":0},{"id":"meta_row","component":"Row","children":["meta_label","meta_time"],"justify":"center","weight":0},{"id":"meta_label","component":"Text","text":"Last updated: ","variant":"caption","weight":0},{"id":"meta_time","component":"Text","text":{"path":"/btc/lastUpdated"},"variant":"caption","weight":0},{"id":"error_msg","component":"Text","text":{"path":"/btc/error"},"variant":"body","weight":0},{"id":"refresh_btn","component":"Button","child":"btn_label","action":{"functionCall":{"call":"refreshBTCPrice","args":{}}},"variant":"primary","weight":0},{"id":"btn_label","component":"Text","text":"Refresh","variant":"body","weight":1}]}}
         """
         let messages = try parser.parse(line: json)
         

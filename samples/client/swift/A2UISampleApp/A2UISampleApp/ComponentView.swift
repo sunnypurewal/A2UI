@@ -140,7 +140,7 @@ struct ComponentView: View {
 				
 				// Example: Simulate a server response for "button_click"
 				if userAction.name == "button_click" {
-					let updateMsg = #"{"version":"v0.10","dataModelUpdate":{"surfaceId":"\#(component.id)","path":"/status","value":"Clicked at \#(timestamp)!"}}"#
+					let updateMsg = #"{"version":"v0.9","dataModelUpdate":{"surfaceId":"\#(component.id)","path":"/status","value":"Clicked at \#(timestamp)!"}}"#
 					dataStore.process(chunk: updateMsg)
 					dataStore.flush()
 				}
