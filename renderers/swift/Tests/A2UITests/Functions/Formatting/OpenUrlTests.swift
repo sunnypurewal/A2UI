@@ -14,3 +14,13 @@ struct OpenUrlTests {
         #expect(A2UIStandardFunctions.evaluate(call: invalidArgs, surface: surface) == nil)
     }
 }
+
+extension A2UIStandardFunctions {
+	fileprivate static var sharedURLOpener: URLOpener = MockURLOpener()
+}
+class MockURLOpener: NSObject, URLOpener {
+	
+	func open(_ url: URL) {
+		
+	}
+}
