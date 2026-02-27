@@ -140,9 +140,9 @@ struct ComponentView: View {
 				
 				// Example: Simulate a server response for "button_click"
 				if userAction.name == "button_click" {
-					// We can send a message back to the dataStore to update the UI
-					// For example, if there was a text field we wanted to update:
-					// dataStore.process(chunk: #"{"version":"v0.10","dataModelUpdate":{"surfaceId":"\#(component.id)","path":"/status","value":"Clicked!"}}"#)
+					let updateMsg = #"{"version":"v0.10","dataModelUpdate":{"surfaceId":"\#(component.id)","path":"/status","value":"Clicked at \#(timestamp)!"}}"#
+					dataStore.process(chunk: updateMsg)
+					dataStore.flush()
 				}
 			}
 		}

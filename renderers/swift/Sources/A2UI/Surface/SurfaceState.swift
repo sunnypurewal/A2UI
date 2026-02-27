@@ -165,9 +165,33 @@ import OSLog
         }
     }
 
-    public func trigger(action: Action) {
-        let userAction = UserAction(surfaceId: id, action: action)
-        actionHandler?(userAction)
+    public func trigger(action: Action, sourceComponentId: String) {
+        switch action {
+        case .event(let name, let context):
+            var resolvedContext: [String: AnyCodable] = [:]
+            if let context = context {
+                for (key, value) in context {
+                    let resolvedValue = A2UIStandardFunctions.resolveDynamicValue(value.value, surface: self)
+                    resolvedContext[key] = AnyCodable(A2UIStandardFunctions.makeSendable(resolvedValue ?? NSNull()))
+                }
+            }
+            let userAction = UserAction(
+                name: name,
+                surfaceId: id,
+                sourceComponentId: sourceComponentId,
+                timestamp: Date(),
+                context: resolvedContext
+            )
+            actionHandler?(userAction)
+            
+        case .functionCall(let call):
+            _ = A2UIStandardFunctions.evaluate(call: call, surface: self)
+        }
+    }
+
+    /// Internal trigger for data updates that don't come from the protocol Action.
+    public func triggerDataUpdate(path: String, value: Any) {
+        setValue(at: path, value: value)
     }
     
     public func expandTemplate(template: Template) -> [String] {
