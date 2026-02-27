@@ -35,11 +35,12 @@ struct A2UIComponentRenderer: View {
     @ViewBuilder
     private func renderContent(surface: SurfaceState) -> some View {
         let (instance, contextSurface) = resolveInstanceAndContext(surface: surface)
+        let finalSurface = contextSurface ?? surface
         
         if let instance = instance {
             let _ = os_log("Rendering component: %{public}@ (%{public}@)", log: log, type: .debug, componentId, instance.componentTypeName)
-            render(instance: instance, surface: surface)
-                .environment(contextSurface ?? surface)
+            render(instance: instance, surface: finalSurface)
+                .environment(finalSurface)
         } else {
             let _ = os_log("Missing component: %{public}@", log: log, type: .error, componentId)
             // Fallback for missing components to help debugging
