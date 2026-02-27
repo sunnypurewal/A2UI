@@ -366,4 +366,8 @@ struct A2UIParserTests {
         #expect(messages.count == 1)
         #expect(remainder == "")
     }
+	
+	/// Verifies error for non-utf8 encoded strings
+	@Test func streamingNonUtf8() throws {
+	}
 }

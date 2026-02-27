@@ -17,7 +17,7 @@ struct FormatStringTests {
         let result1 = A2UIStandardFunctions.evaluate(call: call1, surface: surface) as? String
         #expect(result1 == "Value is  or ${direct_expr}")
         
-        let invalid = FunctionCall(call: "formatString", args: ["value": AnyCodable(123)])
+		let invalid = FunctionCall.formatString(value: 123)
         #expect(A2UIStandardFunctions.evaluate(call: invalid, surface: surface) as? String == "")
     }
 }
