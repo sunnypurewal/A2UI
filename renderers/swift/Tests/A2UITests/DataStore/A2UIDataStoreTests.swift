@@ -91,6 +91,32 @@ struct A2UIDataStoreTests {
         #expect(store.surfaces["s2"] != nil)
     }
 
+    @Test func dataStoreFlushWithCreate() {
+        let surfaceId = "flush_create"
+        let chunk = "{\"createSurface\":{\"surfaceId\":\"\(surfaceId)\",\"catalogId\":\"c1\"}}"
+        
+        store.process(chunk: chunk)
+        #expect(store.surfaces[surfaceId] == nil)
+        
+        store.flush()
+        #expect(store.surfaces[surfaceId] != nil)
+    }
+
+    @Test func dataStoreFlushWithDelete() {
+        let surfaceId = "flush_delete"
+        // First create it
+        store.process(chunk: "{\"createSurface\":{\"surfaceId\":\"\(surfaceId)\",\"catalogId\":\"c1\"}}\n")
+        #expect(store.surfaces[surfaceId] != nil)
+        
+        // Then send a partial delete
+        let chunk = "{\"deleteSurface\":{\"surfaceId\":\"\(surfaceId)\"}}"
+        store.process(chunk: chunk)
+        #expect(store.surfaces[surfaceId] != nil) // Still there
+        
+        store.flush()
+        #expect(store.surfaces[surfaceId] == nil) // Now deleted
+    }
+
     @Test func fallbackRootComponent() {
         let json = "{\"updateComponents\": {\"surfaceId\": \"s1\", \"components\": [{\"id\": \"c1\", \"component\": {\"Text\": {\"text\": \"Hello\"}}}]}}\n"
         store.process(chunk: json)
