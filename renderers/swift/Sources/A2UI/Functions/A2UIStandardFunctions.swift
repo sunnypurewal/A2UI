@@ -2,7 +2,7 @@ import Foundation
 import OSLog
 
 @MainActor
-public enum A2UIFunctionEvaluator {
+public enum A2UIStandardFunctions {
     internal static let log = OSLog(subsystem: "org.a2ui.renderer", category: "FunctionEvaluator")
 
     public static func evaluate(call: FunctionCall, surface: SurfaceState) -> Any? {

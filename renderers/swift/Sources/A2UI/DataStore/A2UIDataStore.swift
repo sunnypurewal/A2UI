@@ -116,7 +116,7 @@ import OSLog
             // Locally handle catalog functions with side effects.
             if case .functionCall(let call) = userAction.action {
                 if let targetSurface {
-                    _ = A2UIFunctionEvaluator.evaluate(call: call, surface: targetSurface)
+                    _ = A2UIStandardFunctions.evaluate(call: call, surface: targetSurface)
                 }
             }
             

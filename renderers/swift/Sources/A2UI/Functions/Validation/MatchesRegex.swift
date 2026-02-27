@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 
-extension A2UIFunctionEvaluator {
+extension A2UIStandardFunctions {
     internal static func matchesRegex(value: String, pattern: String) -> Bool {
         do {
             let regex = try NSRegularExpression(pattern: pattern, options: [])

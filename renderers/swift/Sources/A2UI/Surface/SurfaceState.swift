@@ -30,7 +30,7 @@ import OSLog
 
     public func resolve<T>(_ boundValue: BoundValue<T>) -> T? {
         if let functionCall = boundValue.functionCall {
-            let result = A2UIFunctionEvaluator.evaluate(call: functionCall, surface: self)
+            let result = A2UIStandardFunctions.evaluate(call: functionCall, surface: self)
             return convert(result)
         }
         

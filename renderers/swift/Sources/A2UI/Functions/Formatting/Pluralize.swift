@@ -1,6 +1,6 @@
 import Foundation
 
-extension A2UIFunctionEvaluator {
+extension A2UIStandardFunctions {
     internal static func pluralize(
         value: Double,
         zero: String?,

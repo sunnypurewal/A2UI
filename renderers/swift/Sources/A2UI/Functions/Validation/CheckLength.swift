@@ -1,6 +1,6 @@
 import Foundation
 
-extension A2UIFunctionEvaluator {
+extension A2UIStandardFunctions {
     internal static func checkLength(value: String, min: Int?, max: Int?) -> Bool {
         let length = value.count
         

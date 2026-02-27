@@ -8,9 +8,9 @@ struct OpenUrlTests {
 
     @Test func openUrl() async {
         let badCall = FunctionCall(call: "openUrl", args: ["url": AnyCodable("")])
-        #expect(A2UIFunctionEvaluator.evaluate(call: badCall, surface: surface) == nil)
+        #expect(A2UIStandardFunctions.evaluate(call: badCall, surface: surface) == nil)
         
         let invalidArgs = FunctionCall(call: "openUrl", args: ["url": AnyCodable(123)])
-        #expect(A2UIFunctionEvaluator.evaluate(call: invalidArgs, surface: surface) == nil)
+        #expect(A2UIStandardFunctions.evaluate(call: invalidArgs, surface: surface) == nil)
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-extension A2UIFunctionEvaluator {
+extension A2UIStandardFunctions {
     internal static func formatDate(value: Any, format: String) -> String {
         let date: Date
         if let d = value as? Date {

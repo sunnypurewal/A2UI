@@ -8,12 +8,12 @@ struct IsRequiredTests {
 
     @Test func required() async {
         var call = FunctionCall.required(value: "hello")
-        #expect(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool == true)
+        #expect(A2UIStandardFunctions.evaluate(call: call, surface: surface) as? Bool == true)
 
         call = FunctionCall.required(value: "")
-        #expect(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool == false)
+        #expect(A2UIStandardFunctions.evaluate(call: call, surface: surface) as? Bool == false)
         
         call = FunctionCall.required(value: JSONNull())
-        #expect(A2UIFunctionEvaluator.evaluate(call: call, surface: surface) as? Bool == false)
+        #expect(A2UIStandardFunctions.evaluate(call: call, surface: surface) as? Bool == false)
     }
 }
