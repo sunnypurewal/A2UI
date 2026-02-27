@@ -97,15 +97,52 @@ struct ComponentView: View {
 			.padding(.vertical, 8)
 			.background(Color.accentColor.opacity(0.1))
 			.cornerRadius(8)
+
+			if !actionLog.isEmpty {
+				VStack(alignment: .leading, spacing: 5) {
+					Text("Recent Actions")
+						.font(.caption)
+						.fontWeight(.bold)
+						.foregroundColor(.secondary)
+					
+					ForEach(0..<actionLog.count, id: \.self) { index in
+						HStack {
+							Text(actionLog[index].path)
+								.font(.system(.caption, design: .monospaced))
+								.fontWeight(.bold)
+							Text(actionLog[index].value)
+								.font(.system(.caption, design: .monospaced))
+							Spacer()
+						}
+						.padding(4)
+						.background(Color.black.opacity(0.05))
+						.cornerRadius(4)
+					}
+				}
+				.padding()
+				.background(Color(.systemGray6))
+				.cornerRadius(10)
+			}
 		}
 		.onAppear {
 			dataStore.process(chunk: component.a2ui)
 			dataStore.flush()
 			dataStore.actionHandler = { userAction in
-				if case .dataUpdate(let update) = userAction.action {
-					let valueString = String(describing: update.contents.value)
-					actionLog.insert((path: update.path, value: valueString), at: 0)
-					if actionLog.count > 5 { actionLog.removeLast() }
+				print("Received Action: \(userAction.name)")
+				
+				let timestamp = DateFormatter.localizedString(from: userAction.timestamp, dateStyle: .none, timeStyle: .medium)
+				let actionDesc = userAction.context.isEmpty ? "" : " (context: \(userAction.context.count) keys)"
+				
+				withAnimation {
+					actionLog.insert((path: "[\(timestamp)] \(userAction.name)", value: actionDesc), at: 0)
+					if actionLog.count > 3 { actionLog.removeLast() }
+				}
+				
+				// Example: Simulate a server response for "button_click"
+				if userAction.name == "button_click" {
+					// We can send a message back to the dataStore to update the UI
+					// For example, if there was a text field we wanted to update:
+					// dataStore.process(chunk: #"{"version":"v0.10","dataModelUpdate":{"surfaceId":"\#(component.id)","path":"/status","value":"Clicked!"}}"#)
 				}
 			}
 		}
