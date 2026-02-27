@@ -41,11 +41,6 @@ struct A2UITextFieldView: View {
 				#endif
 
 			}
-			if let error = activeSurface?.validationErrors[id] {
-				Text(error)
-					.font(.caption)
-					.foregroundColor(.red)
-			}
         }
 		.textFieldStyle(.roundedBorder)
         .onAppear {

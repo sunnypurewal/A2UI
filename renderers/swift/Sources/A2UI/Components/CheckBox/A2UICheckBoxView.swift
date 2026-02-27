@@ -25,15 +25,8 @@ struct A2UICheckBoxView: View {
             }
         )
 
-        VStack(alignment: .leading) {
-            Toggle(isOn: isOnBinding) {
-                Text(resolveValue(activeSurface, binding: properties.label) ?? "")
-            }
-            if let error = activeSurface?.validationErrors[id] {
-                Text(error)
-                    .font(.caption)
-                    .foregroundColor(.red)
-            }
+        Toggle(isOn: isOnBinding) {
+            Text(resolveValue(activeSurface, binding: properties.label) ?? "")
         }
         .onAppear {
             activeSurface?.runChecks(for: id)
