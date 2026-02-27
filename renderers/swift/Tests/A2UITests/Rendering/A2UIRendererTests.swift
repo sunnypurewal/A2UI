@@ -29,13 +29,13 @@ struct A2UIRendererTests {
         
         let renderer = A2UIComponentRenderer(componentId: "c1", surface: surface)
         try verifyRendering(renderer) { view in
-            let text = try view.find(A2UITextView.self).text().string()
+            let text = try view.find(ViewType.Text.self).string()
             #expect(text == "Test Text")
         }
 
         let missingRenderer = A2UIComponentRenderer(componentId: "missing", surface: surface)
         try verifyRendering(missingRenderer) { view in
-            let text = try view.text().string()
+            let text = try view.find(ViewType.Text.self).string()
             #expect(text.contains("Missing: missing"))
         }
     }
