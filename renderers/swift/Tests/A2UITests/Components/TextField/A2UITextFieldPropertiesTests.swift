@@ -3,10 +3,10 @@ import XCTest
 
 final class A2UITextFieldPropertiesTests: XCTestCase {
     func testTextFieldVariantId() {
-        XCTAssertEqual(TextFieldVariant.longText.rawValue, "longText")
-        XCTAssertEqual(TextFieldVariant.number.rawValue, "number")
-        XCTAssertEqual(TextFieldVariant.shortText.rawValue, "shortText")
-        XCTAssertEqual(TextFieldVariant.obscured.rawValue, "obscured")
+        XCTAssertEqual(TextFieldVariant.longText.id, "longText")
+        XCTAssertEqual(TextFieldVariant.number.id, "number")
+        XCTAssertEqual(TextFieldVariant.shortText.id, "shortText")
+        XCTAssertEqual(TextFieldVariant.obscured.id, "obscured")
     }
 
     func testTextFieldPropertiesInit() {

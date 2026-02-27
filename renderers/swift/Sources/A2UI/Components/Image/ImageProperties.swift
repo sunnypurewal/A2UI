@@ -6,7 +6,8 @@ public struct ImageProperties: Codable, Sendable {
     public let variant: A2UIImageVariant? // icon, avatar, smallFeature, mediumFeature, largeFeature, header
 }
 
-public enum A2UIImageVariant: String, Codable, Sendable {
+public enum A2UIImageVariant: String, Codable, Sendable, CaseIterable, Identifiable {
+    public var id: String { self.rawValue }
 	case icon = "icon"
 	case avatar = "avatar"
 	case smallFeature = "smallFeature"
@@ -15,7 +16,8 @@ public enum A2UIImageVariant: String, Codable, Sendable {
 	case header = "header"
 }
 
-public enum A2UIImageFit: String, Codable, Sendable {
+public enum A2UIImageFit: String, Codable, Sendable, CaseIterable, Identifiable {
+    public var id: String { self.rawValue }
 	case contain = "contain"
 	case cover = "cover"
 	case fill = "fill"

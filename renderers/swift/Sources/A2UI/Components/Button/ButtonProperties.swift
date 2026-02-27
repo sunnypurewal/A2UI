@@ -12,7 +12,8 @@ public struct ButtonProperties: Codable, Sendable {
     }
 }
 
-public enum ButtonVariant: String, Codable, Sendable {
+public enum ButtonVariant: String, Codable, Sendable, CaseIterable, Identifiable {
+    public var id: String { self.rawValue }
 	case primary
 	case borderless
 }

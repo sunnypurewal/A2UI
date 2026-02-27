@@ -17,4 +17,14 @@ struct ContainerPropertiesTests {
         let props2 = ContainerProperties(children: .list([]), justify: nil, align: .start)
         #expect(props2.resolvedAlign == .start)
     }
+
+    @Test func justifyId() {
+        #expect(A2UIJustify.center.id == "center")
+        #expect(A2UIJustify.spaceBetween.id == "spaceBetween")
+    }
+
+    @Test func alignId() {
+        #expect(A2UIAlign.start.id == "start")
+        #expect(A2UIAlign.stretch.id == "stretch")
+    }
 }

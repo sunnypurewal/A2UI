@@ -20,7 +20,8 @@ extension ContainerProperties {
     }
 }
 
-public enum A2UIJustify: String, Codable, Sendable {
+public enum A2UIJustify: String, Codable, Sendable, CaseIterable, Identifiable {
+    public var id: String { self.rawValue }
     case center = "center"
     case end = "end"
     case spaceAround = "spaceAround"
@@ -30,7 +31,8 @@ public enum A2UIJustify: String, Codable, Sendable {
     case stretch = "stretch"
 }
 
-public enum A2UIAlign: String, Codable, Sendable {
+public enum A2UIAlign: String, Codable, Sendable, CaseIterable, Identifiable {
+    public var id: String { self.rawValue }
 	case start = "start"
 	case center = "center"
 	case end = "end"

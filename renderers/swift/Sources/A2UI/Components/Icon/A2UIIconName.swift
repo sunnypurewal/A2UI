@@ -1,7 +1,8 @@
 import Foundation
 
 /// Supported Google Font / Material icon names.
-enum A2UIIconName: String, CaseIterable {
+enum A2UIIconName: String, CaseIterable, Identifiable {
+    public var id: String { self.rawValue }
     case accountCircle
     case add
     case arrowBack

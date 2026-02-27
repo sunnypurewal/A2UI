@@ -3,8 +3,8 @@ import XCTest
 
 final class A2UIChoicePickerPropertiesTests: XCTestCase {
     func testChoicePickerVariantId() {
-        XCTAssertEqual(ChoicePickerVariant.multipleSelection.rawValue, "multipleSelection")
-        XCTAssertEqual(ChoicePickerVariant.mutuallyExclusive.rawValue, "mutuallyExclusive")
+        XCTAssertEqual(ChoicePickerVariant.multipleSelection.id, "multipleSelection")
+        XCTAssertEqual(ChoicePickerVariant.mutuallyExclusive.id, "mutuallyExclusive")
     }
 
     func testChoicePickerPropertiesInit() {
