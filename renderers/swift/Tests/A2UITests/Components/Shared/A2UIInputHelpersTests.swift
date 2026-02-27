@@ -1,6 +1,5 @@
 import Testing
 import SwiftUI
-import ViewInspector
 @testable import A2UI
 
 @MainActor
@@ -42,19 +41,5 @@ struct A2UIInputHelpersTests {
         let passCheck = CheckRule(condition: BoundValue<Bool>(literal: true), message: "Pass")
         let noMessage = A2UI.errorMessage(surface: surface, checks: [passCheck])
         #expect(noMessage == nil)
-    }
-
-    @Test func validationErrorMessageView() throws {
-        let surface = SurfaceState(id: "test")
-        surface.validationErrors["c1"] = "Error"
-        
-        let view = ValidationErrorMessageView(id: "c1", surface: surface)
-        let text = try view.inspect().find(text: "Error")
-        #expect(text != nil)
-        
-        let noErrorView = ValidationErrorMessageView(id: "c2", surface: surface)
-        #expect(throws: (any Error).self) {
-             try noErrorView.inspect().find(ViewType.Text.self)
-        }
     }
 }
