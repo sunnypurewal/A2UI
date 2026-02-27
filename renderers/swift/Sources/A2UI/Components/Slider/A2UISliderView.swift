@@ -38,7 +38,7 @@ struct A2UISliderView: View {
             } maximumValueLabel: {
                 Text("\(Int(properties.max))")
             }
-
+            ValidationErrorMessageView(id: id, surface: activeSurface)
         }
         .onAppear {
             activeSurface?.runChecks(for: id)

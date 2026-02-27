@@ -18,24 +18,37 @@ struct A2UIButtonView: View {
 
     var body: some View {
 		let variant = properties.variant ?? .primary
-        let isDisabled = if let checks = checks {
-            errorMessage(surface: activeSurface, checks: checks) != nil
+        let error = if let checks = checks {
+            errorMessage(surface: activeSurface, checks: checks)
         } else {
-            false
+            nil
         }
+        let isDisabled = error != nil
 
-        Button(action: {
-            performAction()
-        }) {
-            A2UIComponentRenderer(componentId: properties.child)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
+        VStack(alignment: .leading, spacing: 0) {
+            Button(action: {
+                performAction()
+            }) {
+                A2UIComponentRenderer(componentId: properties.child)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+            }
+            .disabled(isDisabled)
+            .applyButtonStyle(variant: variant)
+            #if os(iOS)
+            .tint(variant == .primary ? .blue : .gray)
+            #endif
+            
+            if let error = error {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+                    .padding(.top, 2)
+            }
         }
-        .disabled(isDisabled)
-        .applyButtonStyle(variant: variant)
-        #if os(iOS)
-		.tint(variant == .primary ? .blue : .gray)
-        #endif
+        .onAppear {
+            activeSurface?.runChecks(for: id)
+        }
     }
 
     private func performAction() {

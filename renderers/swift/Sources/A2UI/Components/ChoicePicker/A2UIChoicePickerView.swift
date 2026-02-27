@@ -95,6 +95,7 @@ struct A2UIChoicePickerView: View {
                 .menuActionDismissBehavior(.disabled)
 #endif
             }
+            ValidationErrorMessageView(id: id, surface: activeSurface)
         }
         .onAppear {
             activeSurface?.runChecks(for: id)

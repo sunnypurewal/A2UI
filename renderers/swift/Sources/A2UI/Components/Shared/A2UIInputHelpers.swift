@@ -43,3 +43,18 @@ struct CheckBoxToggleStyle: ToggleStyle {
         }
     }
 }
+
+struct ValidationErrorMessageView: View {
+    let id: String
+    let surface: SurfaceState?
+
+    var body: some View {
+        if let surface = surface, let error = surface.validationErrors[id] {
+            Text(error)
+                .font(.caption)
+                .foregroundColor(.red)
+                .padding(.top, 2)
+                .transition(.opacity)
+        }
+    }
+}

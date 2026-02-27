@@ -41,6 +41,7 @@ struct A2UITextFieldView: View {
 				#endif
 
 			}
+            ValidationErrorMessageView(id: id, surface: activeSurface)
         }
 		.textFieldStyle(.roundedBorder)
         .onAppear {

@@ -25,12 +25,15 @@ struct A2UIDateTimeInputView: View {
             }
         )
 
-        DatePicker(
-            resolveValue(activeSurface, binding: properties.label) ?? "",
-            selection: dateBinding,
-            in: dateRange,
-            displayedComponents: dateComponents
-        )
+        VStack(alignment: .leading, spacing: 0) {
+            DatePicker(
+                resolveValue(activeSurface, binding: properties.label) ?? "",
+                selection: dateBinding,
+                in: dateRange,
+                displayedComponents: dateComponents
+            )
+            ValidationErrorMessageView(id: id, surface: activeSurface)
+        }
         .onAppear {
             activeSurface?.runChecks(for: id)
         }
