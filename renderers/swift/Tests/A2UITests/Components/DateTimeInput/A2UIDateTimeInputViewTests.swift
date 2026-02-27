@@ -28,7 +28,7 @@ final class A2UIDateTimeInputViewTests: XCTestCase {
         }
         
         let view = A2UIDateTimeInputView(id: "dt1", properties: props, surface: surface)
-        let datePicker = try view.inspect().datePicker()
+        let datePicker = try view.inspect().find(ViewType.DatePicker.self)
         
         let label = try datePicker.labelView().text().string()
         XCTAssertEqual(label, "Test Label")
@@ -56,7 +56,7 @@ final class A2UIDateTimeInputViewTests: XCTestCase {
         )
         
         let view = A2UIDateTimeInputView(id: "dt2", properties: props, surface: surface)
-        let datePicker = try view.inspect().datePicker()
+        let datePicker = try view.inspect().find(ViewType.DatePicker.self)
         
         // Literal date fallback to current date or invalid date handles
         let label = try datePicker.labelView().text().string()

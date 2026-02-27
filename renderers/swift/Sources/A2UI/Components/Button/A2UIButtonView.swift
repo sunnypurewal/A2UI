@@ -18,7 +18,7 @@ struct A2UIButtonView: View {
 
     var body: some View {
 		let variant = properties.variant ?? .primary
-        let error = if let checks = checks {
+		let error: String? = if let checks = checks {
             errorMessage(surface: activeSurface, checks: checks)
         } else {
             nil

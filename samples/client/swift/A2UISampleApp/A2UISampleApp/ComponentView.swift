@@ -6,6 +6,7 @@ struct ComponentView: View {
 	@State private var jsonToShow: String?
 	@State private var jsonTitle: String?
 	@State private var component: GalleryComponent
+	@State private var actionLog: [(path: String, value: String)] = []
 	private let numberFormatter: NumberFormatter = {
 		let formatter = NumberFormatter()
 		formatter.numberStyle = .decimal
@@ -20,11 +21,20 @@ struct ComponentView: View {
 	
 	var body: some View {
 		VStack {
+			Rectangle()
+				.fill(.green)
+				.frame(maxWidth: .infinity)
+				.frame(height: 2)
 			A2UISurfaceView(surfaceId: component.id)
 				.padding()
 				.background(Color(.systemBackground))
 				.cornerRadius(12)
 				.shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+			
+			Rectangle()
+				.fill(.green)
+				.frame(maxWidth: .infinity)
+				.frame(height: 2)
 			
 			if component.canEditProperties {
 				VStack(alignment: .leading, spacing: 10) {
@@ -91,6 +101,13 @@ struct ComponentView: View {
 		.onAppear {
 			dataStore.process(chunk: component.a2ui)
 			dataStore.flush()
+			dataStore.actionHandler = { userAction in
+				if case .dataUpdate(let update) = userAction.action {
+					let valueString = String(describing: update.contents.value)
+					actionLog.insert((path: update.path, value: valueString), at: 0)
+					if actionLog.count > 5 { actionLog.removeLast() }
+				}
+			}
 		}
 		.sheet(isPresented: Binding(
 			get: { jsonToShow != nil },
