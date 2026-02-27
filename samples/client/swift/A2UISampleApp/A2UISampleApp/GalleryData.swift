@@ -9,9 +9,9 @@ struct GalleryData {
 			case .content:
 				return [.audioPlayer, .icon, .image, .text, .video]
 			case .input:
-				return [.checkbox, .choicePicker, .dateTimeInput, .slider, .textField]
+				return [.button, .checkbox, .choicePicker, .dateTimeInput, .slider, .textField]
 			case .navigation:
-				return [.button, .modal, .tabs]
+				return [.modal, .tabs]
 			case .decoration:
 				return [.divider]
 			case .functions:
