@@ -1,7 +1,4 @@
 import SwiftUI
-import OSLog
-
-private let log = OSLog(subsystem: "org.a2ui.renderer", category: "Validation")
 
 @MainActor func updateBinding<T: Sendable>(surface: SurfaceState?, binding: BoundValue<T>?, newValue: T) {
     guard let surface = surface, let path = binding?.path else { return }
@@ -16,17 +13,17 @@ private let log = OSLog(subsystem: "org.a2ui.renderer", category: "Validation")
 @MainActor func errorMessage(surface: SurfaceState?, checks: [CheckRule]?) -> String? {
     guard let surface = surface, let checks = checks, !checks.isEmpty else { return nil }
     
-    os_log("Evaluating %d validation checks", log: log, type: .debug, checks.count)
+    A2UILogger.debug("Evaluating \(checks.count) validation checks")
     
     for check in checks {
         let isValid = surface.resolve(check.condition) ?? true
         let conditionDesc = String(describing: check.condition)
         
         if !isValid {
-            os_log("Check FAILED: %{public}@ (Condition: %{public}@)", log: log, type: .debug, check.message, conditionDesc)
+            A2UILogger.debug("Check FAILED: \(check.message) (Condition: \(conditionDesc))")
             return check.message
         } else {
-            os_log("Check PASSED (Condition: %{public}@)", log: log, type: .debug, conditionDesc)
+            A2UILogger.debug("Check PASSED (Condition: \(conditionDesc))")
         }
     }
     return nil

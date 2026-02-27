@@ -1,16 +1,10 @@
 import SwiftUI
-import OSLog
 
 /// A internal view that resolves a component ID and renders the appropriate SwiftUI view.
 struct A2UIComponentRenderer: View {
     @Environment(SurfaceState.self) var surface: SurfaceState?
     let componentId: String
     let surfaceOverride: SurfaceState?
-	#if DEBUG
-    private let log = OSLog(subsystem: "org.a2ui.renderer", category: "ComponentRenderer")
-	#else
-	private let log = OSLog.disabled
-	#endif
 
     init(componentId: String, surface: SurfaceState? = nil) {
         self.componentId = componentId
@@ -37,11 +31,11 @@ struct A2UIComponentRenderer: View {
         let finalSurface = contextSurface ?? surface
         
         if let instance = instance {
-            let _ = os_log("Rendering component: %{public}@ (%{public}@)", log: log, type: .debug, componentId, instance.componentTypeName)
+            let _ = A2UILogger.debug("Rendering component: \(componentId) (\(instance.componentTypeName))")
             render(instance: instance, surface: finalSurface)
                 .environment(finalSurface)
         } else {
-            let _ = os_log("Missing component: %{public}@", log: log, type: .error, componentId)
+            let _ = A2UILogger.error("Missing component: \(componentId)")
             // Fallback for missing components to help debugging
             Text("Missing: \(componentId)")
                 .foregroundColor(.white)
@@ -87,7 +81,7 @@ struct A2UIComponentRenderer: View {
             if let component = surface.components[componentId] {
                 return (component, nil)
             } else {
-                os_log("Component not found in surface: %{public}@", log: log, type: .error, componentId)
+                A2UILogger.error("Component not found in surface: \(componentId)")
                 return (nil, nil)
             }
         }

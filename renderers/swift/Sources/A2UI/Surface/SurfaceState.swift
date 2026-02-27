@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import OSLog
 
 /// Represents the live state of a single UI surface.
 @MainActor @Observable public class SurfaceState: Identifiable, Sendable {

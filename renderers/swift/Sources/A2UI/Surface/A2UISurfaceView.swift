@@ -1,5 +1,4 @@
 import SwiftUI
-import OSLog
 
 /// A view that renders an A2UI surface by its ID.
 public struct A2UISurfaceView: View {

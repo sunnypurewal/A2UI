@@ -1,14 +1,8 @@
 import Foundation
-import OSLog
 
 /// A parser that handles the JSONL stream and emits A2UIMessages.
 public class A2UIParser {
     private let decoder = JSONDecoder()
-	#if DEBUG
-    private let log = OSLog(subsystem: "org.a2ui.renderer", category: "Parser")
-	#else
-		private let log = OSLog.disabled
-	#endif
 
     public init() {}
 
@@ -66,14 +60,14 @@ public class A2UIParser {
                 let parsedMessages = try parse(line: line)
                 messages.append(contentsOf: parsedMessages)
             } catch {
-                os_log("A2UI Parser Error: %{public}@ on line: %{public}@", log: log, type: .error, "\(error)", line)
+                A2UILogger.error("A2UI Parser Error: \(error) on line: \(line)")
             }
         }
 
         let end = DispatchTime.now()
         let diff = Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
         if !messages.isEmpty {
-            os_log("Parsed %d messages in %.3fms", log: log, type: .debug, messages.count, diff)
+            A2UILogger.debug("Parsed \(messages.count) messages in \(String(format: "%.3f", diff))ms")
         }
         
         return messages

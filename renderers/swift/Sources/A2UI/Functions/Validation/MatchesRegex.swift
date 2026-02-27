@@ -1,5 +1,4 @@
 import Foundation
-import OSLog
 
 extension A2UIStandardFunctions {
     internal static func matchesRegex(value: String, pattern: String) -> Bool {
@@ -8,7 +7,7 @@ extension A2UIStandardFunctions {
             let range = NSRange(location: 0, length: value.utf16.count)
             return regex.firstMatch(in: value, options: [], range: range) != nil
         } catch {
-            os_log("Invalid regex pattern: %{public}@", log: log, type: .error, pattern)
+            A2UILogger.error("Invalid regex pattern: \(pattern)")
             return false
         }
     }

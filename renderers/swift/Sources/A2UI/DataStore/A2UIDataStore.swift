@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import OSLog
 
 /// The central store for all A2UI surfaces and their data.
 @MainActor @Observable public class A2UIDataStore: NSObject, URLSessionDataDelegate, Sendable {
@@ -9,11 +8,6 @@ import OSLog
     
     private let parser = A2UIParser()
     private var streamRemainder = ""
-	#if DEBUG
-    private let log = OSLog(subsystem: "org.a2ui.renderer", category: "DataStore")
-	#else
-		private let log = OSLog.disabled
-	#endif
     
     /// A callback for components to trigger actions that need to be sent back to the server.
     public var actionHandler: ((UserAction) -> Void)?
@@ -41,15 +35,15 @@ import OSLog
 
         switch message {
         case .createSurface(let create):
-            os_log("Create surface: %{public}@", log: log, type: .info, create.surfaceId)
+            A2UILogger.info("Create surface: \(create.surfaceId)")
             let _ = getOrCreateSurface(id: create.surfaceId)
             
             
         case .surfaceUpdate(let update):
             let surface = getOrCreateSurface(id: update.surfaceId)
-            os_log("Surface update: %{public}@ (%d components)", log: log, type: .debug, update.surfaceId, update.components.count)
+            A2UILogger.debug("Surface update: \(update.surfaceId) (\(update.components.count) components)")
             surface.isReady = true
-            os_log("Surface %{public}@ is now READY", log: log, type: .info, update.surfaceId)
+            A2UILogger.info("Surface \(update.surfaceId) is now READY")
             for component in update.components {
                 surface.components[component.id] = component
             }
@@ -60,14 +54,14 @@ import OSLog
                 } else if let first = update.components.first {
                     // Fallback: use the first component as root if "root" isn't found
                     surface.rootComponentId = first.id
-                    os_log("No 'root' component found, defaulting to first component: %{public}@", log: log, type: .info, first.id)
+                    A2UILogger.info("No 'root' component found, defaulting to first component: \(first.id)")
                 }
             }
             
         case .dataModelUpdate(let update):
             let surfaceId = update.surfaceId
             let surface = getOrCreateSurface(id: surfaceId)
-            os_log("Data model update: %{public}@", log: log, type: .debug, surfaceId)
+            A2UILogger.debug("Data model update: \(surfaceId)")
 
             let path = update.path ?? "/"
             if let value = update.value?.value {
@@ -75,11 +69,11 @@ import OSLog
             }
             
         case .deleteSurface(let delete):
-            os_log("Delete surface: %{public}@", log: log, type: .info, delete.surfaceId)
+            A2UILogger.info("Delete surface: \(delete.surfaceId)")
             surfaces.removeValue(forKey: delete.surfaceId)
             
         case .appMessage(let name, let data):
-            os_log("Received application message: %{public}@", log: log, type: .info, name)
+            A2UILogger.info("Received application message: \(name)")
             if name == "text", let text = data["text"]?.value as? String {
                 onTextMessageReceived?(text)
             }

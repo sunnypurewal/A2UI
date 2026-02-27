@@ -1,9 +1,7 @@
 import Foundation
-import OSLog
 
 @MainActor
 public enum A2UIStandardFunctions {
-    internal static let log = OSLog(subsystem: "org.a2ui.renderer", category: "FunctionEvaluator")
 
     public static func evaluate(call: FunctionCall, surface: SurfaceState) -> Any? {
         // First, resolve all arguments
@@ -88,7 +86,7 @@ public enum A2UIStandardFunctions {
             guard let value = resolvedArgs["value"] as? Bool else { return false }
             return performNot(value: value)
         default:
-            os_log("Unknown function call: %{public}@", log: log, type: .error, call.call)
+            A2UILogger.error("Unknown function call: \(call.call)")
             return nil
         }
     }
