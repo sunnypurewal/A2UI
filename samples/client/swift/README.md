@@ -1,20 +1,24 @@
-# A2UI Swift Sample Client
+# Sample App
+The sample app attempts to demonstrate the correct functionality of the SwiftUI A2UI renderer.
 
-This directory contains a sample iOS application that demonstrates how to use the A2UI Swift renderer.
+It shows the link between 3 components of A2UI
+1. Component adjacency list
+2. Data model
+3. Rendered UI
 
-The project is located in `A2UISampleApp/` and can be opened with Xcode.
+### Gallery ###
+- Each component can be viewed in the Gallery
+- The **data model** and the **component adjacency list** are displayed as JSON.
+- The bounds of the A2UI Surface are indicated by **green lines**.
+- Some components have variants which can be specified through a **native** input control below the rendered component.
 
-## Purpose
-
-This sample app serves as a practical example and testbed for the Swift renderer located in `renderers/swift`. It includes:
-
--   A **Component Gallery** showcasing different A2UI responses across various categories:
-    - **Content**: `Text`, `Image`, `Icon`, `Video`, `AudioPlayer`
-    - **Layout**: `Row`, `Column`, `List`
-    - **Input**: `TextField`, `CheckBox`, `ChoicePicker`, `Slider`, `DateTimeInput`
-    - **Navigation**: `Button`, `Modal`, `Tabs`
-    - **Decoration**: `Divider`
-    - **Functions**: Formatting (`Pluralize`, `FormatCurrency`, `FormatDate`) and Validation (`Required`, `Email`, `Regex`, `Length`, `Numeric`)
--   An integration of the `A2UISurfaceView` to dynamically render the A2UI responses.
--   Data Model demonstrations (e.g., updating bound variables and evaluating constraints).
--   A button to view the raw A2UI JSON definitions for each gallery example to easily understand the protocol representation.
+**Component Types**
+- **Layout** components arrange child A2UI components.
+- **Content** components display values from the data model and are non-interactive.
+- **Input** components modify the data model.
+They can also run functions from the A2UI basic catalog:
+1. Validate input
+2. Format strings
+3. Perform logic operations
+- **Navigation** components toggle between child A2UI components
+- **Decoration** components consist of only the Divider component
