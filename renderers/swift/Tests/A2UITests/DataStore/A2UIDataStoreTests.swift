@@ -107,6 +107,8 @@ struct A2UIDataStoreTests {
         // First create it
         store.process(chunk: "{\"createSurface\":{\"surfaceId\":\"\(surfaceId)\",\"catalogId\":\"c1\"}}\n")
         #expect(store.surfaces[surfaceId] != nil)
+		store.flush()
+		#expect(store.surfaces[surfaceId] != nil)
         
         // Then send a partial delete
         let chunk = "{\"deleteSurface\":{\"surfaceId\":\"\(surfaceId)\"}}"
