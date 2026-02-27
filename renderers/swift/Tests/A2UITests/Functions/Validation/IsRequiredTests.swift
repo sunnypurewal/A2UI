@@ -15,5 +15,8 @@ struct IsRequiredTests {
         
         call = FunctionCall.required(value: JSONNull())
         #expect(A2UIStandardFunctions.evaluate(call: call, surface: surface) as? Bool == false)
+		
+		call = FunctionCall.required(value: 2)
+		#expect(A2UIStandardFunctions.evaluate(call: call, surface: surface) as? Bool == true)
     }
 }
