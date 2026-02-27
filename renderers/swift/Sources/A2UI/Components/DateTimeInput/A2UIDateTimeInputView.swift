@@ -74,7 +74,7 @@ struct A2UIDateTimeInputView: View {
         guard let path = properties.value.path else { return }
         let formatter = ISO8601DateFormatter()
         let dateString = formatter.string(from: newValue)
-        activeSurface?.trigger(action: .dataUpdate(DataUpdateAction(path: path, contents: AnyCodable(dateString))))
+        activeSurface?.triggerDataUpdate(path: path, value: dateString)
     }
 }
 

@@ -106,21 +106,7 @@ import OSLog
         let newSurface = SurfaceState(id: id)
         newSurface.customRenderers = self.customRenderers
         newSurface.actionHandler = { [weak self] userAction in
-            let targetSurface = self?.surfaces[userAction.surfaceId]
-            
-            // Locally handle data updates so the UI reflects changes immediately.
-            if case .dataUpdate(let update) = userAction.action {
-                targetSurface?.setValue(at: update.path, value: update.contents.value)
-            }
-            
-            // Locally handle catalog functions with side effects.
-            if case .functionCall(let call) = userAction.action {
-                if let targetSurface {
-                    _ = A2UIStandardFunctions.evaluate(call: call, surface: targetSurface)
-                }
-            }
-            
-            // Still forward the action to the application's action handler.
+            // Forward the action (event) to the application's action handler.
             self?.actionHandler?(userAction)
         }
         surfaces[id] = newSurface

@@ -54,7 +54,7 @@ struct A2UIParserTests {
                 "surfaceId": "s1",
                 "components": [
                     { "id": "t1", "component": { "Text": { "text": "Hello" } } },
-                    { "id": "b1", "component": { "Button": { "child": "t1", "action": { "name": "tap" } } } },
+                    { "id": "b1", "component": { "Button": { "child": "t1", "action": { "event": { "name": "tap" } } } } },
                     { "id": "r1", "component": { "Row": { "children": ["t1"] } } },
                     { "id": "c1", "component": { "Column": { "children": ["b1"], "align": "center" } } },
                     { "id": "card1", "component": { "Card": { "child": "r1" } } }
@@ -314,7 +314,7 @@ struct A2UIParserTests {
 
     /// Verifies that all component types can be encoded and decoded without loss.
     @Test func symmetricComponentEncoding() throws {
-        let action = Action.custom(name: "testAction", context: nil)
+        let action = Action.event(name: "testAction", context: nil)
         let boundStr = BoundValue<String>(literal: "test")
         let boundBool = BoundValue<Bool>(literal: true)
         let boundNum = BoundValue<Double>(literal: 42)

@@ -16,18 +16,9 @@ struct A2UIInputHelpersTests {
 
     @Test func updateBinding() {
         let surface = SurfaceState(id: "test")
-        var actionTriggered = false
-        surface.actionHandler = { action in
-            if case .dataUpdate(let update) = action.action {
-                #expect(update.path == "testPath")
-                #expect(update.contents.value as? String == "newValue")
-                actionTriggered = true
-            }
-        }
-        
         let binding = BoundValue<String>(path: "testPath")
         A2UI.updateBinding(surface: surface, binding: binding, newValue: "newValue")
-        #expect(actionTriggered)
+        #expect(surface.dataModel["testPath"] as? String == "newValue")
     }
 
     @Test func errorMessage() {

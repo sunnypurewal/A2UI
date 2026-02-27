@@ -6,7 +6,7 @@ struct ComponentTypeTests {
     @Test func componentTypeNames() {
         let cases: [(ComponentType, String)] = [
             (.text(TextProperties(text: .init(literal: ""), variant: nil)), "Text"),
-            (.button(ButtonProperties(child: "c1", action: .custom(name: "", context: nil))), "Button"),
+            (.button(ButtonProperties(child: "c1", action: .event(name: "tap", context: nil))), "Button"),
             (.column(ContainerProperties(children: .list([]), justify: nil, align: nil)), "Column"),
             (.row(ContainerProperties(children: .list([]), justify: nil, align: nil)), "Row"),
             (.card(CardProperties(child: "c1")), "Card"),
@@ -34,7 +34,7 @@ struct ComponentTypeTests {
     @Test func componentTypeCodableRoundTrip() throws {
         let cases: [ComponentType] = [
             .text(TextProperties(text: .init(literal: "hello"), variant: .h1)),
-            .button(ButtonProperties(child: "c1", action: .custom(name: "tap", context: nil))),
+            .button(ButtonProperties(child: "c1", action: .event(name: "tap", context: nil))),
             .column(ContainerProperties(children: .list(["a"]), justify: .center, align: .center)),
             .row(ContainerProperties(children: .list(["b"]), justify: .start, align: .end)),
             .card(CardProperties(child: "c1")),

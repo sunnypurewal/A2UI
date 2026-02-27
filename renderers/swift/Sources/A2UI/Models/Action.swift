@@ -1,48 +1,53 @@
 import Foundation
 
 public enum Action: Codable, Sendable {
-    case custom(name: String, context: [String: AnyCodable]?)
-    case dataUpdate(DataUpdateAction)
+    case event(name: String, context: [String: AnyCodable]?)
     case functionCall(FunctionCall)
 
     enum CodingKeys: String, CodingKey {
-        case name, context, dataUpdate, functionCall, event
-    }
-
-    struct EventPayload: Decodable {
-        let name: String
-        let context: [String: AnyCodable]?
+        case event, functionCall
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        if let dataUpdate = try? container.decode(DataUpdateAction.self, forKey: .dataUpdate) {
-            self = .dataUpdate(dataUpdate)
+        if let eventPayload = try? container.decode(EventPayload.self, forKey: .event) {
+            self = .event(name: eventPayload.name, context: eventPayload.context)
         } else if let functionCall = try? container.decode(FunctionCall.self, forKey: .functionCall) {
             self = .functionCall(functionCall)
-        } else if let event = try? container.decode(EventPayload.self, forKey: .event) {
-            self = .custom(name: event.name, context: event.context)
-        } else if let name = try? container.decode(String.self, forKey: .name) {
-            let context = try? container.decode([String: AnyCodable].self, forKey: .context)
-            self = .custom(name: name, context: context)
         } else {
-            throw DecodingError.dataCorruptedError(forKey: .name, in: container, debugDescription: "Unknown Action type")
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unknown Action type or missing v0.10 structure (event or functionCall)")
+            )
         }
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
-        case .custom(let name, let context):
-            try container.encode(name, forKey: .name)
-            try container.encodeIfPresent(context, forKey: .context)
-        case .dataUpdate(let du): try container.encode(du, forKey: .dataUpdate)
-        case .functionCall(let fc): try container.encode(fc, forKey: .functionCall)
+        case .event(let name, let context):
+            try container.encode(EventPayload(name: name, context: context), forKey: .event)
+        case .functionCall(let fc):
+            try container.encode(fc, forKey: .functionCall)
         }
     }
 }
 
-public struct DataUpdateAction: Codable, Sendable {
+public struct EventPayload: Codable, Sendable {
+    public let name: String
+    public let context: [String: AnyCodable]?
+
+    public init(name: String, context: [String: AnyCodable]? = nil) {
+        self.name = name
+        self.context = context
+    }
+}
+
+public struct DataUpdateAction: Sendable {
     public let path: String
-    public let contents: AnyCodable // Can be a value or expression
+    public let contents: AnyCodable
+    
+    public init(path: String, contents: AnyCodable) {
+        self.path = path
+        self.contents = contents
+    }
 }

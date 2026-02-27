@@ -69,15 +69,12 @@ struct A2UIDataStoreTests {
         
         await confirmation("Action triggered") { confirmed in
             surface.actionHandler = { userAction in
-                if case .custom(let name, _) = userAction.action {
-                    #expect(name == "submit")
-                } else {
-                    Issue.record("Incorrect action type")
-                }
+                #expect(userAction.name == "submit")
+                #expect(userAction.sourceComponentId == "b1")
                 confirmed()
             }
             
-            surface.trigger(action: Action.custom(name: "submit", context: nil))
+            surface.trigger(action: .event(name: "submit", context: nil), sourceComponentId: "b1")
         }
     }
 
@@ -162,7 +159,7 @@ struct A2UIDataStoreTests {
         store.process(chunk: "{\"createSurface\":{\"surfaceId\":\"\(surfaceId)\",\"catalogId\":\"c1\"}}\n")
         let surface = store.surfaces[surfaceId]!
         
-        surface.trigger(action: .dataUpdate(DataUpdateAction(path: "val", contents: AnyCodable("new"))))
+        surface.triggerDataUpdate(path: "val", value: "new")
         #expect(surface.dataModel["val"] as? String == "new")
     }
 
@@ -173,8 +170,8 @@ struct A2UIDataStoreTests {
         
         // Use a function call that might be handled.
         // Even if it doesn't do much, it should exercise the code path.
-        let call = FunctionCall(call: "formatString", args: ["template": AnyCodable("test")])
-        surface.trigger(action: .functionCall(call))
+        let call = FunctionCall(call: "formatString", args: ["value": AnyCodable("test")])
+        surface.trigger(action: .functionCall(call), sourceComponentId: "b1")
     }
 
     // MARK: - SurfaceState Deep Dive

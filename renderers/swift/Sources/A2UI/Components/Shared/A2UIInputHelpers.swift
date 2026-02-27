@@ -5,7 +5,7 @@ private let log = OSLog(subsystem: "org.a2ui.renderer", category: "Validation")
 
 @MainActor func updateBinding<T: Sendable>(surface: SurfaceState?, binding: BoundValue<T>?, newValue: T) {
     guard let surface = surface, let path = binding?.path else { return }
-    surface.trigger(action: .dataUpdate(DataUpdateAction(path: path, contents: AnyCodable(newValue))))
+    surface.triggerDataUpdate(path: path, value: newValue)
 }
 
 @MainActor func resolveValue<T>(_ surface: SurfaceState?, binding: BoundValue<T>?) -> T? {

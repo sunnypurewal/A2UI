@@ -52,7 +52,7 @@ struct A2UIButtonView: View {
     }
 
     private func performAction() {
-        activeSurface?.trigger(action: properties.action)
+        activeSurface?.trigger(action: properties.action, sourceComponentId: id)
     }
 }
 
@@ -77,13 +77,13 @@ extension View {
 	return VStack(spacing: 20) {
         A2UIButtonView(id: "b1", properties: ButtonProperties(
             child: "t1",
-            action: .custom(name: "primary_action", context: nil),
+            action: .event(name: "primary_action", context: nil),
 			variant: .primary
         ))
         
         A2UIButtonView(id: "b2", properties: ButtonProperties(
             child: "t1",
-            action: .custom(name: "borderless_action", context: nil),
+            action: .event(name: "borderless_action", context: nil),
 			variant: .borderless
         ))
     }

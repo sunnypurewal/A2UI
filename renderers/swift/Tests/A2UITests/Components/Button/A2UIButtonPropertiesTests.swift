@@ -8,7 +8,7 @@ struct A2UIButtonPropertiesTests {
     }
 
     @Test func buttonPropertiesInit() {
-        let action = Action.custom(name: "test", context: nil)
+        let action = Action.event(name: "test", context: nil)
         let props = ButtonProperties(child: "testChild", action: action, variant: .primary)
         #expect(props.child == "testChild")
         #expect(props.variant == .primary)
