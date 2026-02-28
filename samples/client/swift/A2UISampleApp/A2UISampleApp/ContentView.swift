@@ -20,7 +20,7 @@ struct ContentView: View {
 							}
 							.navigationTitle(category.rawValue)
 						} label: {
-							Text(category.rawValue)
+							Label(category.rawValue, systemImage: category.systemImage)
 						}
 					}
 				}
@@ -29,7 +29,7 @@ struct ContentView: View {
 					NavigationLink {
 						ResourcesView()
 					} label: {
-						Label("Resources", systemImage: "gearshape")
+						Label("Resources", systemImage: "books.vertical.fill")
 					}
 				}
             }
@@ -45,6 +45,17 @@ enum ComponentCategory: String, CaseIterable {
 	case navigation = "Navigation"
 	case decoration = "Decoration"
 	case functions = "Functions"
+	
+	var systemImage: String {
+		switch self {
+		case .layout: return "rectangle.3.group"
+		case .content: return "doc.text"
+		case .input: return "keyboard"
+		case .navigation: return "location.fill"
+		case .decoration: return "sparkles"
+		case .functions: return "function"
+		}
+	}
 }
 
 enum ComponentType: String {
