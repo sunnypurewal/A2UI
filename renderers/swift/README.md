@@ -1,4 +1,4 @@
-# A2UI Swift Renderer
+# A2UI SwiftUI Renderer
 
 This directory contains the source code for the A2UI Swift Renderer.
 
