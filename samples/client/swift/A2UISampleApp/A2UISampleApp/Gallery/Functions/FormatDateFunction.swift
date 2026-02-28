@@ -8,11 +8,10 @@ extension GalleryComponent {
             template: #"{"id":"gallery_component","component":{"Column":{"children":["t_body"],"justify":"center","align":"center"}}}"#,
             staticComponents: [.root, .formatDateText],
             dataModelFields: [
-                DataModelField(path: "/date", label: "ISO Date", value: .string("2026-02-26T14:30:00Z"), showInEditor: false)
+				DataModelField(path: "/date", label: "ISO Date", value: .string(Date.now.ISO8601Format()), showInEditor: false),
+				DataModelField(path: "/dateFormat", label: "Date Format", value: .string("MMM d, yyyy"))
             ],
-            properties: [
-                PropertyDefinition(key: "dateFormat", label: "Format", options: ["MMM dd, yyyy", "HH:mm", "h:mm a", "EEEE, d MMMM"], value: "MMM dd, yyyy")
-            ]
+            properties: []
         )
     }()
 }

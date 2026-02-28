@@ -2,7 +2,6 @@ import Foundation
 import Testing
 @testable import A2UI
 
-@MainActor
 struct FormatDateTests {
     private let surface = SurfaceState(id: "test")
     

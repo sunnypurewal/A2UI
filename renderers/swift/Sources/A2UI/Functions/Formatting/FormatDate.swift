@@ -32,9 +32,11 @@ extension A2UIStandardFunctions {
         }
         
         let formatter = DateFormatter()
-        formatter.dateFormat = format
+		print(format, timeZone, locale)
 		formatter.timeZone = timeZone
-		formatter.locale = locale
-        return formatter.string(from: date)
+        formatter.setLocalizedDateFormatFromTemplate(format)
+        let str = formatter.string(from: date)
+        print(str)
+        return str
     }
 }
