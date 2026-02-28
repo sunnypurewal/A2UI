@@ -19,13 +19,17 @@ struct GalleryComponent: Identifiable {
 		properties[index].value = value
 	}
 	
-	var resolvedTemplate: String {
-		var comp = template
+	func resolveProperties(_ input: String) -> String {
+		var output = input
 		for prop in properties {
 			let replacement = prop.mapValue?(prop.value) ?? prop.value ?? ""
-			comp = comp.replacingOccurrences(of: "{{\(prop.key)}}", with: replacement)
+			output = output.replacingOccurrences(of: "{{\(prop.key)}}", with: replacement)
 		}
-		return comp
+		return output
+	}
+	
+	var resolvedTemplate: String {
+		return resolveProperties(template)
 	}
 	
 	var a2ui: String {
@@ -42,7 +46,7 @@ struct GalleryComponent: Identifiable {
 	}
 	
 	var resolvedComponents: [String] {
-		return [resolvedTemplate] + staticComponents.map { $0.rawValue }
+		return [resolvedTemplate] + staticComponents.map { resolveProperties($0.rawValue) }
 	}
 	
 	var prettyJson: String {
