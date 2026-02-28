@@ -11,6 +11,7 @@ import SwiftUI
     public var validationErrors: [String: String] = [:]
     
     public var customRenderers: [String: @MainActor (ComponentInstance) -> AnyView] = [:]
+    public var customFunctions: [String: @MainActor ([String: Any], SurfaceState) -> Any?] = [:]
     
     var actionHandler: ((UserAction) -> Void)?
     

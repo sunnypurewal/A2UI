@@ -24,6 +24,9 @@ import SwiftUI
     /// A registry for custom component renderers.
     public var customRenderers: [String: @MainActor (ComponentInstance) -> AnyView] = [:]
 
+    /// A registry for custom functions.
+    public var customFunctions: [String: @MainActor ([String: Any], SurfaceState) -> Any?] = [:]
+
     public override init() {
         super.init()
     }
@@ -99,6 +102,7 @@ import SwiftUI
         }
         let newSurface = SurfaceState(id: id)
         newSurface.customRenderers = self.customRenderers
+        newSurface.customFunctions = self.customFunctions
         newSurface.actionHandler = { [weak self] userAction in
             // Forward the action (event) to the application's action handler.
             self?.actionHandler?(userAction)

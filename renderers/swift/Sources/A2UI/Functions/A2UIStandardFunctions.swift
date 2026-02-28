@@ -10,6 +10,11 @@ public enum A2UIStandardFunctions {
             resolvedArgs[key] = resolveDynamicValue(value.value, surface: surface)
         }
 
+        // Check for custom function implementations first
+        if let customHandler = surface.customFunctions[call.call] {
+            return customHandler(resolvedArgs, surface)
+        }
+
         switch call.call {
         case "required":
             guard let val = resolvedArgs["value"] else { return false }
