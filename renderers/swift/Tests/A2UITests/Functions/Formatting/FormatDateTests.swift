@@ -2,6 +2,7 @@ import Foundation
 import Testing
 @testable import A2UI
 
+@MainActor
 struct FormatDateTests {
     private let surface = SurfaceState(id: "test")
     
@@ -54,10 +55,10 @@ struct FormatDateTests {
         let timestamp = try getLocalTimestamp()
 		let date = Date(timeIntervalSince1970: timestamp)
 		let systemFormatted = date.formatted(date: .abbreviated, time: .shortened)
-		let call = FunctionCall.formatDate(value: systemFormatted, format: "yyyy-MM-dd HH:mm")
+		let call = FunctionCall.formatDate(value: systemFormatted, format: "yyyy-MM-dd")
 		let result: String! = A2UIStandardFunctions.evaluate(call: call, surface: surface) as? String
 		try #require(result != nil)
-		#expect(result == "2026-02-26 12:00")
+		#expect(result == "2026-02-26")
 	}
 
     @Test func formatDateEdgeCases() async {

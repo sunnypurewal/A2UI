@@ -6,8 +6,8 @@ struct A2UIMessageTests {
     @Test func a2UIMessageDecodeVersionError() {
         let json = """
         {
-            "version": "v0.9",
-            "createSurface": {"id": "1"}
+            "version": "v0.11",
+            "createSurface": {"surfaceId": "1"}
         }
         """.data(using: .utf8)!
         
