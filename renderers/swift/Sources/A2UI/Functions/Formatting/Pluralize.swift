@@ -10,6 +10,7 @@ extension A2UIStandardFunctions {
         many: String?,
         other: String
     ) -> String {
+		
         // This is a simplified version of CLDR pluralization
         // For English: 1 -> one, everything else -> other
         if value == 1 {

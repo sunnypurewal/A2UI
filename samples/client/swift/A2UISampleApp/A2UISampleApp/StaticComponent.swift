@@ -49,6 +49,6 @@ enum StaticComponent: String {
 	
 	case formatDateText = #"{"id":"t_body","component":{"Text":{"text":{"call":"formatDate","args":{"value":{"path":"/date"},"format":{"path":"/dateFormat"}}},"variant":"h2"}}}"#
 	case formatCurrencyText = #"{"id":"t_body","component":{"Text":{"text":{"call":"formatCurrency","args":{"value":{"path":"/amount"},"currency":"{{currencyCode}}"}},"variant":"h2"}}}"#
-	case pluralizeText = #"{"id":"t_body","component":{"Text":{"text":{"call":"pluralize","args":{"value":{"path":"/count"},"one":"One item","other":"Multiple items"}},"variant":"h2"}}}"#
+	case pluralizeText = #"{"id":"t_body","component":{"Text":{"text":{"call":"pluralize","args":{"value":{"path":"/count"},"zero":"No items","one":"One item","other":"Multiple items"}},"variant":"h2"}}}"#
 	case pluralizeInput = #"{"id":"gallery_input","component":{"Slider":{"value":{"path":"/count"},"min":0,"max":10,"label":"Count"}}}"#
 }

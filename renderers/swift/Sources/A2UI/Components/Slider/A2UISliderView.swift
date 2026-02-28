@@ -31,7 +31,7 @@ struct A2UISliderView: View {
                     .font(.caption)
             }
 
-            Slider(value: valueBinding, in: properties.min...properties.max) {
+            Slider(value: valueBinding, in: properties.min...properties.max, step: 1) {
                 Text("Slider")
             } minimumValueLabel: {
                 Text("\(Int(properties.min))")

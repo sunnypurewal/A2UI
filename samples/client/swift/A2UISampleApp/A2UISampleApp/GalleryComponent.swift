@@ -1,7 +1,7 @@
 import Foundation
 import A2UI
 
-struct GalleryComponent: Identifiable {
+struct GalleryComponent: Identifiable, Hashable {
 	let id: String
 	let template: String
 	let staticComponents: [StaticComponent]
@@ -61,6 +61,13 @@ struct GalleryComponent: Identifiable {
 			return "[\n\(resolvedComponents.joined(separator: ",\n"))\n]"
 		}
 		return pretty
+	}
+	
+	static func == (lhs: GalleryComponent, rhs: GalleryComponent) -> Bool {
+		return lhs.id == rhs.id
+	}
+	func hash(into hasher: inout Hasher) {
+		hasher.combine(id)
 	}
 }
 
